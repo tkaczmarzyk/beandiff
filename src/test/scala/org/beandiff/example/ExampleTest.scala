@@ -1,6 +1,6 @@
 package org.beandiff.example
 
-import org.beandiff.java.SimpleJavaBean
+import org.beandiff.beans.SimpleJavaBean
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

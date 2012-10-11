@@ -1,4 +1,4 @@
-package org.beandiff.java;
+package org.beandiff.beans;
 
 public class SimpleJavaBean {
 
