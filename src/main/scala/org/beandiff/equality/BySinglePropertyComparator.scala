@@ -1,9 +1,9 @@
 package org.beandiff.equality
 
 import java.util.Comparator
-import org.beandiff.core.Property
+import org.beandiff.core.Path
 
-class BySinglePropertyComparator[T](private val field: Property[T]) extends Comparator[T] {
+class BySinglePropertyComparator[T]() extends Comparator[T] {
   
   
   override def compare(o1: T, o2: T): Int = {

@@ -1,29 +1,33 @@
 package org.beandiff
 
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Map
 import org.beandiff.core.Diff
-import org.beandiff.core.FieldTraverser
 import org.beandiff.core.EndOnSimpleTypeStrategy
+import org.beandiff.core.Path
+import org.beandiff.core.Property
+import org.beandiff.core.ObjectWalker
+import scala.collection.mutable.ListBuffer
+import org.beandiff.core.LeafDiff
 
+/**
+ * A container for syntactic sugar methods
+ * 
+ * @author Tomasz Kaczmarzyk
+ */
 object BeanDiff {
 
-  def descStrategy = EndOnSimpleTypeStrategy
-  
-  
-  def diff(o1: Object, o2: Object): Diff = {
-    require(o1.getClass() == o2.getClass())
-    diff(new Diff(null, "."), o1, o2)
-  }
-  
-  private def diff(root: Diff, o1: Object, o2: Object): Diff = {
-    new FieldTraverser().walk(o1.getClass(),
-      f => 
-        if (f.get(o1) != f.get(o2)) {
-          val d = new Diff(root, f.getName)
-          if (descStrategy.shouldProceed(f.getDeclaringClass())) {
-            diff(d, f.get(o1), f.get(o2))
-          }
+  val descStrategy = EndOnSimpleTypeStrategy
+
+  def diff(o1: Any, o2: Any): Diff = {
+    val d = new Diff()
+    
+    new ObjectWalker().walk(o1, o2) {
+      (path, val1, val2, isLeaf) =>
+        if (val1 != val2) {
+          d(path) = if (isLeaf) new LeafDiff else new Diff()
         }
-    )
-    root
+    }
+    d
   }
 }

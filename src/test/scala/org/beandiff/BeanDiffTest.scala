@@ -7,6 +7,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.CollectionBean
+import java.util.ArrayList
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTest extends FunSuite with ShouldMatchers {
@@ -23,6 +25,35 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     val child2 = new SimpleJavaBean("lisa", 8)
     val parent2 = new ParentBean("homer", child2)
+  }
+  
+  trait CollectionBeans {
+    val abc = CollectionBean.listBean("a", "b", "c")
+    val abd = CollectionBean.listBean("a", "b", "d")
+    
+    val beans1 = CollectionBean.listBean(new SimpleJavaBean("aaa", 1), new SimpleJavaBean("bbb", 2))
+    val beans2 = CollectionBean.listBean(new SimpleJavaBean("aaa", 1), new SimpleJavaBean("bbb", 3))
+  }
+  
+  
+  test("should detect exact difference in collection of beans") {
+    new CollectionBeans {
+      val d = diff(beans1, beans2)
+      assert(!d.hasDifference("collection[0]"))
+      assert(d.hasDifference("collection[1]"))
+      assert(!d.hasDifference("collection[1].name"))
+      assert(d.hasDifference("collection[1].value"))
+    }
+  }
+  
+  test("should detect exact difference in collection of strings") {
+    new CollectionBeans {
+      val d = diff(abc, abd)
+      assert(d.hasDifference)
+      assert(!d.hasDifference("collection[0]"))
+      assert(!d.hasDifference("collection[1]"))
+      assert(d.hasDifference("collection[2]"))
+    }
   }
   
   test("should detect difference in nested bean") {

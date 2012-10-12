@@ -3,11 +3,11 @@ package org.beandiff.core
 import java.lang.reflect.Field
 
 
-class FieldTraverser {
+object FieldTraverser {
 
-  def walk(src: Class[_], callback: Field => Unit) = {
-    src.getDeclaredFields() foreach {
-      f => 
+  def walk(src: Any)(callback: Field => Unit) = {
+    src.getClass().getDeclaredFields() foreach {
+      f =>
         f.setAccessible(true)
         callback(f)
     }

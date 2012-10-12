@@ -4,28 +4,30 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
 
 
-class Diff(val parent: Diff, val name: String) {
+class Diff(val diffs: Map[Property, Diff]) {
 
-  val children: Map[String, Diff] = new HashMap[String, Diff]()
+  def this() = this(new HashMap)
+
   
-  if (parent != null)
-    parent.children.put(this.name, this)
-  
-  
-  def hasDifference(): Boolean = {
-    !children.isEmpty
+  def update(p: Path, d: Diff): Unit = {
+    if (p.depth == 1) {
+      diffs += (p.head -> d)
+    } else {
+      if (!diffs.contains(p.head)) {
+        diffs += (p.head -> new Diff())
+      }
+      diffs(p.head).update(p.tail, d)
+    }
   }
   
-  def getChildren() = children
+  def hasDifference() = !diffs.isEmpty
   
-  def hasDifference(path: String): Boolean = {
-    hasDifference(path.split('.'))
-  }
+  def hasDifference(path: String): Boolean = hasDifference(Path.of(path))
   
-  private def hasDifference(path: Array[String]): Boolean = {
-    if (path.isEmpty) true
-    else if (children.contains(path.head))
-      children(path.head).hasDifference(path.tail)
-    else false
+  def hasDifference(p: Path): Boolean = {
+    if (!diffs.contains(p.head))
+      false
+    else
+      (p.depth == 1) || diffs(p.head).hasDifference(p.tail)
   }
 }

@@ -14,17 +14,4 @@ class PropertyTest extends FunSuite {
     val parentBean1 = new ParentBean(javaBean1)
   }
   
-  test("should return value of a single private field") {
-    new TestBeans {
-       val prop = new Property(classOf[SimpleJavaBean], "name")
-       assert(prop.value(javaBean1) === "javaBean1")
-    }
-  }
-  
-  ignore("should return value of a nested property") {
-    new TestBeans {
-      val prop = new Property(classOf[ParentBean], "child.name")
-      assert(prop.value(parentBean1) === "javaBean1")
-    }
-  }
 }
