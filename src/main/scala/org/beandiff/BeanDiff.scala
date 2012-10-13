@@ -1,19 +1,12 @@
 package org.beandiff
 
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.Map
 import org.beandiff.core.Diff
+import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
-import org.beandiff.core.Path
-import org.beandiff.core.Property
-import org.beandiff.core.ObjectWalker
-import scala.collection.mutable.ListBuffer
-import org.beandiff.core.LeafDiff
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
-import org.beandiff.core.DiffEngine
-import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.support.ClassDictionary
 
 /**
  * A container for syntactic sugar methods
