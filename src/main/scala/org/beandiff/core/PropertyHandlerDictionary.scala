@@ -11,9 +11,11 @@ class PropertyHandlerDictionary(val defaultHandler: PropertyHandler) {
     handlers.foreach(handlerMap += _)
   }
   
-  def apply(c: Class[_]) = {
+  def apply(c: Class[_]): PropertyHandler = {
     if (handlerMap.contains(c))
       handlerMap(c)
+    else if (c != classOf[Object])
+      apply(c.getSuperclass())
     else
       defaultHandler
   }

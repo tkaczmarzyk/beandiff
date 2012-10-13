@@ -1,21 +1,14 @@
 package org.beandiff.core
 
 import java.lang.reflect.Field
+import scala.util.parsing.combinator.RegexParsers
 
 object Path {
   
-  val NameSeparator = '.'
-
-  def of(path: String): Path = {
-    of(path.split(NameSeparator))
+  def of(pathStr: String): Path = {
+    new PathParser().parsePath(pathStr)
   }
 
-  def of(path: Iterable[String]): Path = {
-    if (path.size == 1)
-      new Path(Property.of(path.head))
-    else
-      new Path(Property.of(path.head), of(path.tail))
-  }
 }
 
 class Path(val head: Property, val tail: Path) {
@@ -29,12 +22,7 @@ class Path(val head: Property, val tail: Path) {
     else 1 + tail.depth
   }
   
-  def withIndex(i: Int): Path = {
-    if (tail == null)
-      new Path(new Property(head.name, i))
-    else
-      new Path(head, tail.withIndex(i))
-  }
+  def withIndex(i: Int): Path = step(new IndexProperty(i))
   
   def step(p: Property): Path = {
     if (tail == null)
@@ -43,9 +31,30 @@ class Path(val head: Property, val tail: Path) {
       new Path(head, tail.step(p))
   }
   
+  def step(props: List[Property]): Path = {
+    if (props.isEmpty)
+      this
+    else
+      this.step(props.head).step(props.tail)
+  }
+  
   def last: Property = {
     if (tail == null) 
       head
     else tail.last
+  }
+  
+  override def equals(o: Any): Boolean = {
+    o match {
+      case that: Path => this.head == that.head && this.tail == that.tail
+      case _ => false
+    }
+  }
+  
+  override def toString() = {
+    head.toString + {
+      if (tail != null) tail.toString
+      else ""
+    }
   }
 }
