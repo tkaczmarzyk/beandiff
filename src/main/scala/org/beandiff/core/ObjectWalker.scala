@@ -5,11 +5,11 @@ import org.beandiff.support.ClassDictionary
 class ObjectWalker(
     val callback: (Path, Any, Any, Boolean) => Unit, 
     val descStrategy: DescendingStrategy,
-    val handlers: ClassDictionary[PropertyHandler]) {
+    val handlers: ClassDictionary[RoutePlanner]) {
 
   def this(callback: (Path, Any, Any, Boolean) => Unit) = {
-    this(callback, EndOnSimpleTypeStrategy, new ClassDictionary(new DefaultPropertyHandler,
-      (classOf[java.util.List[_]], new ListHandler)))
+    this(callback, EndOnSimpleTypeStrategy, new ClassDictionary(new FieldRoutePlanner,
+      (classOf[java.util.List[_]], new ListRoutePlanner)))
   }
 
   def walk(o1: Any, o2: Any): Unit = {

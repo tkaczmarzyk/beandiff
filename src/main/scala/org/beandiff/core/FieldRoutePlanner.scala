@@ -1,6 +1,6 @@
 package org.beandiff.core
 
-class DefaultPropertyHandler extends PropertyHandler {
+class FieldRoutePlanner extends RoutePlanner {
 
   def handle(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {
     o1.getClass.getDeclaredFields foreach {

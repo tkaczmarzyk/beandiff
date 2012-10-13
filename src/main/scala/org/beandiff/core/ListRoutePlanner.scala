@@ -2,7 +2,7 @@ package org.beandiff.core
 
 import java.util.List
 
-class ListHandler extends PropertyHandler {
+class ListRoutePlanner extends RoutePlanner {
 
   def handle(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit = {
     val list1 = val1.asInstanceOf[List[_]]
