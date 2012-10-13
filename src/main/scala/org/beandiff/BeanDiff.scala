@@ -22,12 +22,12 @@ object BeanDiff {
   def diff(o1: Any, o2: Any): Diff = {
     val d = new Diff()
     
-    new ObjectWalker().walk(o1, o2) {
+    new ObjectWalker(
       (path, val1, val2, isLeaf) =>
         if (val1 != val2) {
           d(path) = if (isLeaf) new LeafDiff else new Diff()
         }
-    }
+    ).walk(o1, o2) 
     d
   }
 }
