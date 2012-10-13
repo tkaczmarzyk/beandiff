@@ -1,9 +1,9 @@
 package org.beandiff.core
 
-class ObjectWalker(val descStrategy: DescendingStrategy, val handlers: PropertyHandlerDictionary) {
+class ObjectWalker(val descStrategy: DescendingStrategy, val handlers: ClassDictionary[PropertyHandler]) {
 
   def this() = {
-    this(EndOnSimpleTypeStrategy, new PropertyHandlerDictionary(new DefaultPropertyHandler,
+    this(EndOnSimpleTypeStrategy, new ClassDictionary(new DefaultPropertyHandler,
       (classOf[java.util.AbstractList[_]], new ListHandler)))
   }
 
