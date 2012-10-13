@@ -1,6 +1,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.BeanDiff.ignoreCase
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
 import org.junit.runner.RunWith
@@ -17,6 +18,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   trait SimpleBeans {
     val a1a = new SimpleJavaBean("a", 1)
     val a1b = new SimpleJavaBean("a", 1)
+    val A1 = new SimpleJavaBean("A", 1)
     val b1 = new SimpleJavaBean("b", 1)
   }
   
@@ -50,6 +52,18 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val d = diff(sList1, sList2)
       
       assert(d.hasDifference("[0]"))
+    }
+  }
+  
+  test("should be case sensitive if not specified otherwise") {
+    new SimpleBeans {
+      assert(diff(a1a, A1).hasDifference)
+    }
+  }
+  
+  test("should ignore case if requested") {
+    new SimpleBeans {
+      assert(!diff(a1a, A1, ignoreCase).hasDifference)
     }
   }
   
