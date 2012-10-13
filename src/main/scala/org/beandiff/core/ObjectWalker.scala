@@ -1,10 +1,12 @@
 package org.beandiff.core
 
+import org.beandiff.support.ClassDictionary
+
 class ObjectWalker(val descStrategy: DescendingStrategy, val handlers: ClassDictionary[PropertyHandler]) {
 
   def this() = {
     this(EndOnSimpleTypeStrategy, new ClassDictionary(new DefaultPropertyHandler,
-      (classOf[java.util.AbstractList[_]], new ListHandler)))
+      (classOf[java.util.List[_]], new ListHandler)))
   }
 
   def walk(o1: Any, o2: Any)(callback: (Path, Any, Any, Boolean) => Unit): Unit = {
