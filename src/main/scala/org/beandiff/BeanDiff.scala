@@ -25,7 +25,7 @@ object BeanDiff {
     val eqInvestigators = new ClassDictionary[EqualityInvestigator](
       new StdEqualityInvestigator, getEqInvestigatorMappings(modifiers.toList))
 
-    new DiffEngine(eqInvestigators).calculateDiff(o1, o2)
+    new DiffEngine(eqInvestigators, EndOnSimpleTypeStrategy).calculateDiff(o1, o2)
   }
 
   val ignoreCase =

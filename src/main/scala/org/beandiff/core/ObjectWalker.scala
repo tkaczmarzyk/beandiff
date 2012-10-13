@@ -7,8 +7,8 @@ class ObjectWalker(
     val descStrategy: DescendingStrategy,
     val handlers: ClassDictionary[RoutePlanner]) {
 
-  def this(callback: (Path, Any, Any, Boolean) => Unit) = {
-    this(callback, EndOnSimpleTypeStrategy, new ClassDictionary(new FieldRoutePlanner,
+  def this(descStrategy: DescendingStrategy, callback: (Path, Any, Any, Boolean) => Unit) = {
+    this(callback, descStrategy, new ClassDictionary(new FieldRoutePlanner,
       (classOf[java.util.List[_]], new ListRoutePlanner)))
   }
 
