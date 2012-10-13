@@ -20,7 +20,7 @@ class ObjectWalker(
     val isLeaf = !descStrategy.shouldProceed(o1)
 
     if (!isLeaf) {
-      handlers(o1.getClass()).handle(current, o1, o2, this)
+      handlers(o1.getClass()).guide(current, o1, o2, this)
     } else {
       callback(current, o1, o2, isLeaf)
     }

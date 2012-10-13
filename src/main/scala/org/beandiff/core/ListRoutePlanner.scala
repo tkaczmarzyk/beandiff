@@ -4,7 +4,7 @@ import java.util.List
 
 class ListRoutePlanner extends RoutePlanner {
 
-  def handle(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit = {
+  def guide(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit = {
     val list1 = val1.asInstanceOf[List[_]]
     val list2 = val2.asInstanceOf[List[_]]
     

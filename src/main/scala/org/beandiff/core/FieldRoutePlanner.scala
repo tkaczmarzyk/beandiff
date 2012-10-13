@@ -2,7 +2,7 @@ package org.beandiff.core
 
 class FieldRoutePlanner extends RoutePlanner {
 
-  def handle(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {
+  def guide(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {
     o1.getClass.getDeclaredFields foreach {
         f =>
         f.setAccessible(true)
