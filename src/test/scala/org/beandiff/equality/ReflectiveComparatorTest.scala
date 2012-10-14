@@ -84,4 +84,11 @@ class ReflectiveComparatorTest extends FunSuite with ShouldMatchers {
       comparator.compare(a2parent, a1parent) should be > 0
     }
   }
+  
+  test("should be able to compare list of lists") {
+    new Collections {
+      comparator.compare(Arrays.asList(a1a1List, a1a1List), Arrays.asList(a1a1List, a1a2List)) should be < 0
+      comparator.compare(Arrays.asList(a1a2List, a1a2List), Arrays.asList(a1a2List, a1a2List)) should be === 0
+    }
+  }
 }
