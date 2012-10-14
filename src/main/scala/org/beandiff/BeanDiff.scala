@@ -18,7 +18,11 @@ import org.beandiff.display.PlainTextDiffPresenter
 object BeanDiff {
 
   val descStrategy = EndOnSimpleTypeStrategy
+  
+  val ignoreCase =
+    (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
+    
   def diff(o1: Any, o2: Any): Diff = {
     diff(o1, o2, null)
   }
@@ -37,9 +41,6 @@ object BeanDiff {
     val presenter = new PlainTextDiffPresenter
     out.println(presenter.present(diff(o1, o2, modifiers : _*)))
   }
-
-  val ignoreCase =
-    (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
   private def getEqInvestigatorMappings(objects: List[_]) = {
     objects.filter(_.isInstanceOf[(Class[_], EqualityInvestigator)])
