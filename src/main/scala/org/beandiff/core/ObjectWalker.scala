@@ -9,6 +9,8 @@ object ObjectWalker {
     (classOf[java.util.List[_]], new ListRoutePlanner))
 }
 
+// TODO depth-first and breadth-first strategies
+// TODO move to support package?
 class ObjectWalker(
   val descStrategy: DescendingStrategy,
   val routePlanners: ClassDictionary[RoutePlanner],
