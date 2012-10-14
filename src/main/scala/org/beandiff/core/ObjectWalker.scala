@@ -2,11 +2,10 @@ package org.beandiff.core
 
 import org.beandiff.support.ClassDictionary
 import ObjectWalker._
-import org.beandiff.support.ClassDictionary
 
 object ObjectWalker {
   final val DefaultRoutePlanners: ClassDictionary[RoutePlanner] = new ClassDictionary(new FieldRoutePlanner,
-    (classOf[java.util.List[_]], new ListRoutePlanner))
+    (classOf[java.util.Collection[_]], new CollectionRoutePlanner))
 }
 
 // TODO depth-first and breadth-first strategies

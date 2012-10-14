@@ -11,6 +11,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.CollectionBean
 import java.util.ArrayList
 import java.util.Arrays
+import java.util.HashSet
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTest extends FunSuite with ShouldMatchers {
@@ -44,6 +45,9 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     val sList1 = List("aaa", "bbb", "ccc")
     val sList2 = List("111", "bbb", "ccc")
+    
+    val jSet1 = new HashSet(Arrays.asList("aaa", "bbb"))
+    val jSet2 = new HashSet(Arrays.asList("aaa", "bbb"))
   }
   
   
@@ -52,6 +56,12 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val d = diff(sList1, sList2)
       
       assert(d.hasDifference("[0]"))
+    }
+  }
+  
+  test("should detect that hash sets have the same elements") {
+    new Collections {
+      assert(!diff(jSet1, jSet2).hasDifference)
     }
   }
   
