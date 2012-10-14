@@ -6,6 +6,6 @@ object EndOnSimpleTypeStrategy extends DescendingStrategy {
     classOf[Int], classOf[Integer], classOf[Long], classOf[Double])
 
   def shouldProceed(obj: Any): Boolean = {
-    !leafClasses.exists(obj.getClass == _)
+    obj != null && !leafClasses.exists(obj.getClass == _)
   }
 }

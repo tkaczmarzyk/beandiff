@@ -18,6 +18,10 @@ class ClassDictionary[T](val defaultValue: T) {
   def this(defaultValue: T, values: (Class[_], T)*) = {
     this(defaultValue, values.toList)
   }
+  
+  def withDefault(defaultValue: T): ClassDictionary[T] = {
+    new ClassDictionary[T](defaultValue, map.toIterable)
+  }
 
   def apply(c: Class[_]): T = {
     if (map.contains(c))

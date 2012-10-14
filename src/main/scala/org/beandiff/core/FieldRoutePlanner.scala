@@ -3,7 +3,7 @@ package org.beandiff.core
 class FieldRoutePlanner extends RoutePlanner {
 
   def guide(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {
-    o1.getClass.getDeclaredFields foreach {
+    getDeclaredFields(o1.getClass) foreach {
         f =>
         f.setAccessible(true)
 
@@ -14,4 +14,7 @@ class FieldRoutePlanner extends RoutePlanner {
         walker.walk(path, val1, val2)
     }
   }
+  
+  protected def getDeclaredFields(c: Class[_]) =
+    c.getDeclaredFields()
 }
