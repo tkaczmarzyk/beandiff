@@ -11,6 +11,7 @@
 
 	<properties>
 		<scala.version>2.9.2</scala.version>
+		<wagon-ftp.version>2.2</wagon-ftp.version>
 	</properties>
 
 	<repositories>
@@ -57,6 +58,14 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>${wagon-ftp.version}</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
@@ -88,4 +97,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>repo.kaczmarzyk.net</id>
+			<url>ftp://web3.rootnode.net:55990</url>
+		</repository>
+	</distributionManagement>
 </project>
