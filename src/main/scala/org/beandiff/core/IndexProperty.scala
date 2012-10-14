@@ -5,7 +5,7 @@ import org.beandiff.support.ObjectSupport._
 
 class IndexProperty(val index: Int) extends Property {
   
-  override def value(o: Object) = {
+  override def value(o: Any) = {
     if (o.isInstanceOf[List[_]])
       o(index)
     else null

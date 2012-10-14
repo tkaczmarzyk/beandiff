@@ -4,7 +4,7 @@ import org.beandiff.support.ObjectSupport._
 
 class FieldProperty(val name: String) extends Property {
 
-  override def value(o: Object): Object = {
+  override def value(o: Any): Any = {
     if (o hasField name)
       o getFieldVal name
     else null

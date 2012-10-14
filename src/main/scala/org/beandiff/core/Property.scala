@@ -2,5 +2,5 @@ package org.beandiff.core
 
 trait Property {
   
-  def value(o: Object): Object
+  def value(o: Any): Any
 }

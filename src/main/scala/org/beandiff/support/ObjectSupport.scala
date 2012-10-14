@@ -5,10 +5,10 @@ import java.lang.reflect.Field
 
 object ObjectSupport {
   
-  implicit def convert(o: Object) = new ObjectSupport(o)
+  implicit def convert(o: Any) = new ObjectSupport(o)
 }
 
-class ObjectSupport(val target: Object) {
+class ObjectSupport(val target: Any) {
   
   def hasField(name: String) = {
     target.getClass.getDeclaredFields().contains((f: Field) => f.getName == name)

@@ -26,4 +26,8 @@ class PathTest extends FunSuite {
   test("should parse chain of property names") {
     assert(Path.of("a.b") === new Path(new FieldProperty("a"), new Path(new FieldProperty("b"))))
   }
+  
+  test("toString should return parseable representation") {
+    assert(Path.of("values[0].id").toString === "values[0].id")
+  }
 }

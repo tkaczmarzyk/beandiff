@@ -23,7 +23,7 @@ class PathParser extends RegexParsers with JavaTokenParsers {
     (fieldSeparator ~> fieldProperty) | indexProperty
   }
   
-  def fieldSeparator: Parser[String] = "."
+  def fieldSeparator: Parser[String] = Path.FieldSeparator
     
   def positiveInt: Parser[Int] = {
     """\d+""".r ^^ (_.toInt)

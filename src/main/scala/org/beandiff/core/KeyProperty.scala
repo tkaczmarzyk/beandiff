@@ -2,7 +2,7 @@ package org.beandiff.core
 
 class KeyProperty(val key: String) extends Property {
 
-  override def value(o: Object) = {
+  override def value(o: Any) = {
     throw new IllegalStateException("not implemented yet")
   }
   

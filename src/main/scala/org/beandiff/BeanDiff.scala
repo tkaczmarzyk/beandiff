@@ -7,6 +7,8 @@ import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
+import java.io.PrintStream
+import org.beandiff.display.PlainTextDiffPresenter
 
 /**
  * A container for syntactic sugar methods
@@ -26,6 +28,14 @@ object BeanDiff {
       new StdEqualityInvestigator, getEqInvestigatorMappings(modifiers.toList))
 
     new DiffEngine(eqInvestigators, EndOnSimpleTypeStrategy).calculateDiff(o1, o2)
+  }
+  
+  def printDiff(o1: Any, o2: Any, modifiers: Any*): Unit =
+    printDiff(System.out, o1, o2, modifiers : _*)
+  
+  def printDiff(out: PrintStream, o1: Any, o2: Any, modifiers: Any*) = {
+    val presenter = new PlainTextDiffPresenter
+    out.println(presenter.present(diff(o1, o2, modifiers : _*)))
   }
 
   val ignoreCase =

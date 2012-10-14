@@ -2,6 +2,8 @@ package org.beandiff.core
 
 object Path {
 
+  final val FieldSeparator = "."
+  
   /**
    * Parses path from string input. Example argument:
    * 
@@ -19,7 +21,7 @@ object Path {
 class Path(val head: Property, val tail: Path) {
 
   def this(head: Property) = {
-    this(head, null)
+    this(head, null) // TODO EmptyPath instead of null?
   }
 
   def depth: Int = {
@@ -29,6 +31,20 @@ class Path(val head: Property, val tail: Path) {
 
   def withIndex(i: Int): Path = step(new IndexProperty(i))
 
+  def value(o: Any): Any = {
+    if (tail == null)
+      head.value(o)
+    else
+      tail.value(head.value(o))
+  }
+  
+  def stepBack: Path = {
+    if (tail == null)
+      EmptyPath
+    else
+      new Path(head, tail.stepBack)
+  }
+  
   def step(p: Property): Path = {
     if (tail == null)
       new Path(head, new Path(p, null))
@@ -58,7 +74,11 @@ class Path(val head: Property, val tail: Path) {
 
   override def toString() = {
     head.toString + {
-      if (tail != null) tail.toString
+      if (tail != null)
+        if (tail.head.isInstanceOf[FieldProperty]) // FIXME avoid type check
+          Path.FieldSeparator + tail.toString
+        else 
+          tail.toString
       else ""
     }
   }
