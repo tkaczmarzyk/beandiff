@@ -55,6 +55,14 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  test("should not hang on object cycle") {
+    val p1 = new ParentBean("p1")
+    val p2 = new ParentBean("p2", p1)
+    p1.setChild(p2)
+    
+    diff(p1, p2)
+  }
+  
   test("should be case sensitive if not specified otherwise") {
     new SimpleBeans {
       assert(diff(a1a, A1).hasDifference)
