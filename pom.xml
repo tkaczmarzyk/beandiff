@@ -9,8 +9,23 @@
 	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<inceptionYear>2012</inceptionYear>
+	<url>www.beandif.org</url>
+
+	<developers>
+		<developer>
+			<name>Tomasz Kaczmarzyk</name>
+			<email>tomasz@beandiff.org</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>kaczmarzyk.net</organization>
+		</developer>
+	</developers>
+
 	<properties>
 		<scala.version>2.9.2</scala.version>
+		<scala-maven-plugin.version>3.1.0</scala-maven-plugin.version>
 		<wagon-ftp.version>2.2</wagon-ftp.version>
 	</properties>
 
@@ -34,8 +49,9 @@
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
 		<plugins>
 			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
+				<version>${scala-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -69,8 +85,9 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-
+				<version>3.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.kohsuke</groupId>
@@ -78,6 +95,29 @@
 						<version>1.0</version>
 					</dependency>
 				</dependencies>
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-project-info-reports-plugin</artifactId>
+							<version>2.2</version>
+							<configuration>
+								<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+								<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+							</configuration>
+							<reports>
+								<report>summary</report>
+								<report>project-team</report>
+								<report>dependencies</report>
+							</reports>
+						</plugin>
+						<plugin>
+							<groupId>net.alchim31.maven</groupId>
+							<artifactId>scala-maven-plugin</artifactId>
+							<version>${scala-maven-plugin.version}</version>
+						</plugin>
+					</reportPlugins>
+				</configuration>
 			</plugin>
 		</plugins>
 
@@ -117,6 +157,7 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.0</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

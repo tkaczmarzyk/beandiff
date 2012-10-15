@@ -27,12 +27,21 @@
 	</custom>
 
     <body>
+    	<head>
+    		<script type="text/javascript">
+                $(document).ready(function () {
+                    $("pre code").addClass("prettyprint");
+                    prettyPrint();
+                });
+			</script>
+    	</head>
+    
         <links>
             <item name="source control" href="http://github.com/tkaczmarzyk/beandiff"/>
         </links>
 
         <menu name="Regular Web Site">
-            <item name="APT Format" href="format.html"/>
+            <item name="APT Format" href="index.html"/>
             <item name="Xdoc Example" href="xdoc.html"/>
             <item name="FAQ" href="faq.html"/>
         </menu>

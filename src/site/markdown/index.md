@@ -17,3 +17,7 @@ You added the following snippet to your _pom_ file:
 And you generated the web site using:
 
     mvn site
+
+And a `test` example wich is *just to play* with **markdown** and nothing more! hmm where is <tt>tt</tt>
+
+    def test(o: Any): Unit = { println("haha!") }

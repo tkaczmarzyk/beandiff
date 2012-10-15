@@ -21,7 +21,8 @@ import org.beandiff.core.ObjectWalker
  *
  * <p>
  *   For example, consider following classes:
- *   <pre>{@code class A {
+ *   <pre>{@code
+ * class A {
  *    private String name1;
  *    private String name2;
  *
@@ -42,9 +43,12 @@ import org.beandiff.core.ObjectWalker
  *   Then the comparator would work as follows:
  *   <br/><br/>
  *   <table border="1">
+ *     <thead>
  *     <tr>
  *       <th>obj1</th><th>obj2</th><th>comparison result</th>
  *     </tr>
+ *     </thead>
+ *     <tbody>
  *     <tr>
  *       <td>{@code "abc"}</td>
  *       <td>{@code "def"}</td>
@@ -65,6 +69,7 @@ import org.beandiff.core.ObjectWalker
  *       <td>{@code new B(new A("AA", "BB"))}</td>
  *       <td>{@code "aa".compareTo("AA")}</td>
  *     </tr>
+ *     </tbody>
  *   </table>
  * </p>
  *
