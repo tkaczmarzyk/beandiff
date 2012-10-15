@@ -140,6 +140,13 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- utils -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava-collections</artifactId>
+			<version>r03</version>
+		</dependency>
+
 		<!-- test deps -->
 		<dependency>
 			<groupId>org.perf4j</groupId>

@@ -5,7 +5,7 @@ object EndOnSimpleTypeStrategy extends DescendingStrategy {
   private val leafClasses = List(classOf[String], classOf[Boolean],
     classOf[Int], classOf[Integer], classOf[Long], classOf[Double])
 
-  def shouldProceed(obj: Any): Boolean = {
-    obj != null && !leafClasses.exists(obj.getClass == _)
+  def shouldProceed(obj1: Any, ojb2: Any): Boolean = {
+    !leafClasses.exists(obj1.getClass == _)
   }
 }

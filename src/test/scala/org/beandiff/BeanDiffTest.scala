@@ -12,6 +12,8 @@ import org.beandiff.beans.CollectionBean
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
+import com.google.common.collect.Sets
+import java.util.IdentityHashMap
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTest extends FunSuite with ShouldMatchers {
@@ -79,7 +81,11 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val p2 = new ParentBean("p2", p1)
     p1.setChild(p2)
     
-    diff(p1, p2)
+    val p3 = new ParentBean("p3")
+    val p4 = new ParentBean("p4", p3)
+    p3.setChild(p4)
+    
+    diff(p1, p3)
   }
   
   test("should be case sensitive if not specified otherwise") {
@@ -152,6 +158,28 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val d = diff(a1a, b1)
       assert(d.hasDifference)
       assert(d.hasDifference("name"))
+    }
+  }
+  
+  test("should handle null property on left") {
+    new NestedBeans {
+      parent1.setChild(null)
+      assert(diff(parent1, parent2).hasDifference("child"))
+    }
+  }
+  
+  test("should handle null property on right") {
+    new NestedBeans {
+      parent2.setChild(null)
+      assert(diff(parent1, parent2).hasDifference("child"))
+    }
+  }
+  
+  test("should show now difference if both properties are null") {
+    new NestedBeans {
+      parent1.setChild(null)
+      parent2.setChild(null)
+      assert(!diff(parent1, parent2).hasDifference)
     }
   }
 }

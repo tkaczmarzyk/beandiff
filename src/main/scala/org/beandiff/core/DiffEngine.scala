@@ -10,7 +10,7 @@ class DiffEngine(
   def calculateDiff(o1: Any, o2: Any) = {
     val d = new Diff(o1, o2)
 
-    new ObjectWalker(new BreakCycleStrategy(descStrategy),
+    new ObjectWalker(new EndOnNullStrategy(descStrategy),
       (path, val1, val2, isLeaf) =>
         if (!getEqInvestigator(val1, val2).areEqual(val1, val2)) {
           d(path) = if (isLeaf) new LeafDiff(val1, val2) else new Diff(val1, val2)

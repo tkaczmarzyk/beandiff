@@ -24,7 +24,7 @@ class ObjectWalker(
   }
 
   def walk(current: Path, o1: Any, o2: Any): Unit = {
-    val isLeaf = !descStrategy.shouldProceed(o1)
+    val isLeaf = !descStrategy.shouldProceed(o1, o2)
 
     if (!isLeaf) {
       routePlanners(o1.getClass()).guide(current, o1, o2, this)

@@ -1,10 +1,10 @@
 package org.beandiff.equality
 
 import java.util.Comparator
-
 import org.beandiff.core.BreakCycleStrategy
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.core.ObjectWalker
+import org.beandiff.core.EndOnNullStrategy
 
 /**
  * <p>
@@ -94,7 +94,7 @@ class ReflectiveComparator extends Comparator[Any] {
       } else { //FIXME var and dependency to core
         var result = 0
         
-        new ObjectWalker(new BreakCycleStrategy(EndOnSimpleTypeStrategy), //TODO add it as comparator's parameters?
+        new ObjectWalker(new EndOnNullStrategy(new BreakCycleStrategy(EndOnSimpleTypeStrategy)), //TODO add it as comparator's parameters?
             ObjectWalker.DefaultRoutePlanners.withDefault(FieldRoutePlannerWithCache),
           (path, val1, val2, isLeaf) =>
             if (result == 0)
