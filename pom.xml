@@ -10,8 +10,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<inceptionYear>2012</inceptionYear>
+	<licenses>
+		<license>
+			<name>LGPL</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+		</license>
+	</licenses>
 	<url>www.beandif.org</url>
-
 	<developers>
 		<developer>
 			<name>Tomasz Kaczmarzyk</name>
