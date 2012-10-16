@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import java.lang.Long
 import java.lang.Double
 import java.lang.Boolean
+import java.lang.Byte
 import org.beandiff.beans.SimpleEnum._
 import java.lang.Float
 import org.scalatest.junit.JUnitRunner
@@ -44,5 +45,9 @@ class EndOnSimpleTypeStrategyTest extends FunSuite with ShouldMatchers {
   
   test("should end on java Enum") {
     EndOnSimpleTypeStrategy.shouldProceed(ONE, TWO) should be (false)
+  }
+  
+  test("should end on java Byte") {
+    EndOnSimpleTypeStrategy.shouldProceed(Byte.MIN_VALUE, Byte.MAX_VALUE) should be (false)
   }
 }
