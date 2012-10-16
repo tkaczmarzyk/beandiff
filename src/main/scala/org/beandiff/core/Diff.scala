@@ -34,4 +34,6 @@ class Diff(
     else
       (p.depth == 1) || diffs(p.head).hasDifference(p.tail)
   }
+  
+  override def toString() = "Diff[" + o1 + ", " + o2 + "]"
 }
