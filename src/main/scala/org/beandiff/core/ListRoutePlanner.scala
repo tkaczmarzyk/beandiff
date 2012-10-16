@@ -9,7 +9,10 @@ class ListRoutePlanner extends RoutePlanner {
     val list2 = val2.asInstanceOf[List[_]]
     
     for (i <- 0 until (list1.size max list2.size)) {
-      walker.walk(current.withIndex(i), list1.get(i), list2.get(i))
+      walker.walk(current.withIndex(i), get(list1, i), get(list2, i))
     }
   }
+  
+  private def get(list: List[_], index: Int) =
+    if (list.size > index) list.get(index) else null
 }

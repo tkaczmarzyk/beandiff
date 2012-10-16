@@ -61,6 +61,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  test("should detect difference in lists of different size") {
+    new Collections {
+      val d = diff(jList1, new ArrayList)
+      assert(d.hasDifference("[0]"))
+      assert(d.hasDifference("[1]"))
+      assert(d.hasDifference("[2]"))
+    }
+  }
+  
   test("should detect difference in list of lists") {
     new Collections {
       val d = diff(Arrays.asList(jList1, jList2), Arrays.asList(jList2, jList1))
