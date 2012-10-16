@@ -50,6 +50,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     val jSet1 = new HashSet(Arrays.asList("aaa", "bbb"))
     val jSet2 = new HashSet(Arrays.asList("aaa", "bbb"))
+    val jSet3 = new HashSet(Arrays.asList("bbb", "ccc"))
   }
   
   
@@ -82,6 +83,12 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("should detect that hash sets have the same elements") {
     new Collections {
       assert(!diff(jSet1, jSet2).hasDifference)
+    }
+  }
+  
+  test("should detect difference in sets") {
+    new Collections {
+      assert(diff(jSet1, jSet3).hasDifference)
     }
   }
   
