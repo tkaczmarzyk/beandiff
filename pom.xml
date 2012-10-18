@@ -13,7 +13,7 @@
 	<licenses>
 		<license>
 			<name>LGPL</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<url>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</url>
 		</license>
 	</licenses>
 	<url>www.beandif.org</url>
@@ -123,6 +123,37 @@
 						</plugin>
 					</reportPlugins>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<header>src/etc/license_header.txt</header>
+					<quiet>false</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>false</aggregate>
+					<includes>
+						<include>src/main/scala/**</include>
+						<include>src/test/scala/**</include>
+					</includes>
+					<excludes>
+						<exclude>src/site</exclude>
+					</excludes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<useDefaultMapping>true</useDefaultMapping>
+					<properties>
+						<year>${project.inceptionYear}</year>
+					</properties>
+					<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>test</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 
