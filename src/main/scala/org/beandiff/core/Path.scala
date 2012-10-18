@@ -40,12 +40,11 @@ object Path {
 class Path(val head: Property, val tail: Path) {
 
   def this(head: Property) = {
-    this(head, null) // TODO EmptyPath instead of null?
+    this(head, EmptyPath)
   }
 
   def depth: Int = {
-    if (tail == null) 1
-    else 1 + tail.depth
+    { if (head != null) 1 else 0 } + tail.depth //TODO add ThisProperty class, avoid null
   }
 
   def withIndex(i: Int): Path = step(new IndexProperty(i))

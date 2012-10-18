@@ -14,6 +14,9 @@ import java.util.Arrays
 import java.util.HashSet
 import com.google.common.collect.Sets
 import java.util.IdentityHashMap
+import org.beandiff.core.Property
+import org.beandiff.core.IndexProperty
+import core.FieldProperty
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTest extends FunSuite with ShouldMatchers {
@@ -59,6 +62,27 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val d = diff(sList1, sList2)
       
       assert(d.hasDifference("[0]"))
+    }
+  }
+  
+  test("should add compared objects to all Diff instances") { // TODO concise version once more methods are implemented in Diff
+    new CollectionBeans {
+      val d = diff(beans1, beans2)
+      
+      d.o1 should not be === (null)
+      d.o2 should not be equal (null)
+      
+      val collectionDiff = d.diffs(new FieldProperty("collection"))
+      collectionDiff.o1 should not be === (null)
+      collectionDiff.o2 should not be === (null)
+      
+      val indexDiff1 = collectionDiff.diffs(new IndexProperty(0))
+      indexDiff1.o1 should not be === (null)
+      indexDiff1.o2 should not be === (null)
+      
+      val indexDiff2 = collectionDiff.diffs(new IndexProperty(1))
+      indexDiff1.o1 should not be === (null)
+      indexDiff2.o2 should not be === (null)
     }
   }
   

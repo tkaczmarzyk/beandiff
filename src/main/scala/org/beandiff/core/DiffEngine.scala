@@ -31,7 +31,7 @@ class DiffEngine(
 
     new ObjectWalker(new EndOnNullStrategy(descStrategy),
       (path, val1, val2, isLeaf) =>
-        if (!getEqInvestigator(val1, val2).areEqual(val1, val2)) {
+        if (path.depth != 0 && !getEqInvestigator(val1, val2).areEqual(val1, val2)) { // TODO check it for non-leaf? // FIXME 
           d(path) = if (isLeaf) new LeafDiff(val1, val2) else new Diff(val1, val2)
         }
     ).walk(o1, o2)

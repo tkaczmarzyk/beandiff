@@ -24,7 +24,9 @@ object EmptyPath extends Path(null, null) {
   
   override val depth = 0
   
-  override def step(p: Property) = new Path(p, null)
+  override def step(p: Property) = new Path(p)
   
   override def value(o: Any): Any = o
+  
+  override def toString = "" //FIXME separate toString for debug and for presentation
 }

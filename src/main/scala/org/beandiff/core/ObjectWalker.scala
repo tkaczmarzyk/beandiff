@@ -24,7 +24,10 @@ import ObjectWalker._
 
 object ObjectWalker {
   final val DefaultRoutePlanners: ClassDictionary[RoutePlanner] = new ClassDictionary(new FieldRoutePlanner,
-    (classOf[java.util.Collection[_]], new CollectionRoutePlanner))
+    (classOf[java.util.List[_]], new ListRoutePlanner))
+  
+  final val DefaultTransformers: ClassDictionary[ObjectTransformer] = new ClassDictionary(NoopTransformer,
+    (classOf[java.util.Collection[_]], new ToListTransformer()))
 }
 
 // TODO depth-first and breadth-first strategies
@@ -32,10 +35,11 @@ object ObjectWalker {
 class ObjectWalker(
   val descStrategy: DescendingStrategy,
   val routePlanners: ClassDictionary[RoutePlanner],
+  val transformers: ClassDictionary[ObjectTransformer],
   val callback: (Path, Any, Any, Boolean) => Unit) {
 
   def this(descStrategy: DescendingStrategy, callback: (Path, Any, Any, Boolean) => Unit) = {
-    this(descStrategy, DefaultRoutePlanners, callback)
+    this(descStrategy, DefaultRoutePlanners, DefaultTransformers, callback)
   }
 
   def walk(o1: Any, o2: Any): Unit = {
@@ -45,10 +49,13 @@ class ObjectWalker(
   def walk(current: Path, o1: Any, o2: Any): Unit = {
     val isLeaf = !descStrategy.shouldProceed(o1, o2)
 
+    val t1 = if (o1 != null) transformers(o1.getClass).transform(o1) else null
+    val t2 = if (o2 != null) transformers(o2.getClass).transform(o2) else null
+    
+    callback(current, t1, t2, isLeaf)
+    
     if (!isLeaf) {
-      routePlanners(o1.getClass()).guide(current, o1, o2, this)
-    } else {
-      callback(current, o1, o2, isLeaf)
+      routePlanners(t1.getClass()).guide(current, t1, t2, this)
     }
   }
 }

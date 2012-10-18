@@ -24,6 +24,8 @@ import org.beandiff.core.BreakCycleStrategy
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.core.ObjectWalker
 import org.beandiff.core.EndOnNullStrategy
+import org.beandiff.support.ClassDictionary
+import org.beandiff.core.NoopTransformer
 
 /**
  * <p>
@@ -97,7 +99,7 @@ import org.beandiff.core.EndOnNullStrategy
 class ReflectiveComparator extends Comparator[Any] {
 
   override def compare(o1: Any, o2: Any): Int = {
-    if (o1 == null && o2 == null)
+    if (o1 == null && o2 == null) //TODO move some of those to object walker's callback
       0
     else if (o1 == null && o2 != null)
       1
@@ -115,8 +117,9 @@ class ReflectiveComparator extends Comparator[Any] {
         
         new ObjectWalker(new EndOnNullStrategy(new BreakCycleStrategy(EndOnSimpleTypeStrategy)), //TODO add it as comparator's parameters?
             ObjectWalker.DefaultRoutePlanners.withDefault(FieldRoutePlannerWithCache),
+            new ClassDictionary(NoopTransformer),
           (path, val1, val2, isLeaf) =>
-            if (result == 0)
+            if (result == 0 && isLeaf) //FIXME change isLeaf to isComparable?
               result = compare(val1, val2)
             // TODO break otherwise
         ).walk(o1, o2)

@@ -19,39 +19,7 @@
  */
 package org.beandiff.core
 
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.Map
+object NoopTransformer extends ObjectTransformer {
 
-// TODO reduce mutability
-class Diff(
-    val o1: Any,
-    val o2: Any,
-    val diffs: Map[Property, Diff]) { // FIXME improve encapsulation
-
-  
-  def this(o1: Any, o2: Any) = this(o1, o2, new HashMap)
-
-  
-  def update(p: Path, d: Diff): Unit = {
-    if (p.depth == 1) {
-      diffs += (p.head -> d)
-    } else {
-      diffs(p.head).update(p.tail, d)
-    }
-  }
-  
-  def hasDifference() = !diffs.isEmpty
-  
-  def hasDifference(path: String): Boolean = hasDifference(Path.of(path))
-  
-  def hasDifference(p: Path): Boolean = {
-    if (p.depth == 0) 
-      hasDifference()
-    else if (!diffs.contains(p.head))
-      false
-    else
-      diffs(p.head).hasDifference(p.tail)
-  }
-  
-  override def toString() = "Diff[" + o1 + ", " + o2 + "]"
+  def transform(src: Any) = src
 }

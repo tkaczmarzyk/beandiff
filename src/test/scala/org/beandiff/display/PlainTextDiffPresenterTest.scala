@@ -20,6 +20,10 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   
   val diff1 = new Diff(bean1, bean2) // TODO reduce verbosity and dependency to other functionality
   diff1(Path.of("name")) = new LeafDiff(bean1.name, bean2.name)
+  // TODO ? consider using solution with stepBack to autopopulate intermediate paths {{
+  diff1(Path.of("values")) = new Diff(bean1.values, bean2.values)
+  diff1(Path.of("values[0]")) = new Diff(bean1.values.get(0), bean2.values.get(0))
+  //}}
   diff1(Path.of("values[0].id")) = new LeafDiff(bean1.values.get(0).id, bean2.values.get(0).id)
   
   
