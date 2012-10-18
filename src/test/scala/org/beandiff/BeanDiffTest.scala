@@ -50,6 +50,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   trait NestedBeans {
     val child1 = new SimpleJavaBean("bart", 10)
     val parent1 = new ParentBean("homer", child1)
+    val parent1clone = new ParentBean("homer", new SimpleJavaBean("bart", 10))
     
     val child2 = new SimpleJavaBean("lisa", 8)
     val parent2 = new ParentBean("homer", child2)
@@ -84,7 +85,19 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  test("should add compared objects to all Diff instances") { // TODO concise version once more methods are implemented in Diff
+  test("should detect difference of simple types") {
+    assert(diff(1, 2).hasDifference)
+    assert(diff("aa", "bb").hasDifference)
+  }
+  
+  test("should not show difference when all leaf properties are the same") {
+    new NestedBeans {
+      val d = diff(parent1, parent1clone)
+      assert(!d.hasDifference)
+    }
+  }
+  
+  test("should add compared objects to all Diff instances") { // TODO concise version once more methods are implemented in Diff (like getLeft, getRight(path))
     new CollectionBeans {
       val d = diff(beans1, beans2)
       

@@ -40,7 +40,7 @@ class Diff(
     }
   }
   
-  def hasDifference() = !diffs.isEmpty
+  def hasDifference(): Boolean = diffs.exists((x: (Property, Diff)) => {x._2.isInstanceOf[LeafDiff] || x._2.hasDifference}) //FIXME remove instanceOf check. Should a sub-Diff be created if no difference on the path?
   
   def hasDifference(path: String): Boolean = hasDifference(Path.of(path))
   
