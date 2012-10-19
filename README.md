@@ -1,7 +1,7 @@
 beandiff
 ========
 
-BeanDiff is a library for calculating differences of Java (or more generally JVM) objects. Main features of BeanDiff include, but are not limited to:
+BeanDiff is a library for calculating differences between Java (or more generally JVM) objects. Main features of BeanDiff include, but are not limited to:
 
 - generating diff for large object graphs (with cycle detection)
 - no impact on compared objects - you don't need to add any annotations to your objects nor prepare any other metadata to be able to calculate diff using BeanDiff
