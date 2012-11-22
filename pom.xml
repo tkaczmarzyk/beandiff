@@ -59,9 +59,17 @@
 				<version>${scala-maven-plugin.version}</version>
 				<executions>
 					<execution>
+						<id>scala-compile</id>
 						<goals>
 							<goal>compile</goal>
 							<goal>testCompile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>scala-docs</id>
+						<phase>package</phase>
+						<goals>
+							<goal>doc-jar</goal>
 						</goals>
 					</execution>
 				</executions>
