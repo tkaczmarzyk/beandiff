@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="Maven" xmlns="http://maven.apache.org/DECORATION/1.0.0"
+<project name="beandiff" xmlns="http://maven.apache.org/DECORATION/1.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
     
     <bannerLeft>
-        <name>bean diff</name>
+        <name>BeanDiff</name>
         <href>http://www.beandiff.org</href>
     </bannerLeft>
 
@@ -40,10 +40,9 @@
             <item name="source control" href="http://github.com/tkaczmarzyk/beandiff"/>
         </links>
 
-        <menu name="Regular Web Site">
-            <item name="APT Format" href="index.html"/>
-            <item name="Xdoc Example" href="xdoc.html"/>
-            <item name="FAQ" href="faq.html"/>
+        <menu name="Info &amp; guides">
+            <item name="Home" href="index.html"/>
+			<!--<item name="FAQ" href="faq.html"/>-->
         </menu>
 
         <menu ref="reports"/>
