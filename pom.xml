@@ -41,6 +41,7 @@
 		<url>scm:git:git@github.com:tkaczmarzyk/beandiff.git</url>
 		<developerConnection>scm:git:git@github.com:tkaczmarzyk/beandiff.git</developerConnection>
 	</scm>
+	<!--
 	<repositories>
 		<repository>
 			<id>scala-tools</id>
@@ -55,6 +56,7 @@
 			<url>https://oss.sonatype.org/content/groups/scala-tools/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	-->
 
 	<build>
 		<sourceDirectory>src/main/scala</sourceDirectory>
