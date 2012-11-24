@@ -23,8 +23,8 @@ class EndOnTypeStrategy(protected val leafClasses: Set[Class[_]]) extends Descen
 
   protected def this() = this(Set())
   
-  def shouldProceed(obj1: Any, ojb2: Any): Boolean = {
-    !leafClasses.exists(_.isAssignableFrom(obj1.getClass)) // TODO candidate for performance optimization
+  def shouldProceed(obj1: Any, ojb2: Any): Boolean = {//TODO use both obj1 and obj2 or refactor compeletely (1 param only?)
+    !leafClasses.exists(_.isAssignableFrom(obj1.getClass)) // TODO consider using ClassDictionary instead of Set
   }
   
   def withLeaf(clazz: Class[_]) = {

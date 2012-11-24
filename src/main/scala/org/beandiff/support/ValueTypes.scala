@@ -17,13 +17,13 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.support
 
-import org.beandiff.support.ValueTypes
+object ValueTypes {
 
-
-object EndOnSimpleTypeStrategy extends EndOnTypeStrategy {
-
-  protected override val leafClasses = ValueTypes.all
+  val all: Set[Class[_]] = Set(classOf[String], classOf[Boolean],
+    classOf[Int], classOf[Integer], classOf[Long], classOf[Double], classOf[Character],
+    classOf[java.lang.Long], classOf[java.lang.Float], classOf[java.lang.Double],
+    classOf[java.lang.Boolean], classOf[java.lang.Byte], classOf[java.lang.Enum[_]])
 
 }

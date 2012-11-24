@@ -19,20 +19,19 @@
  */
 package org.beandiff
 
+import java.io.PrintStream
+
+import org.beandiff.core.BreakCycleStrategy
 import org.beandiff.core.Diff
 import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
+import org.beandiff.display.PlainTextDiffPresenter
+import org.beandiff.equality.ComparableEqualityInvestigator
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
-import java.io.PrintStream
-import org.beandiff.display.PlainTextDiffPresenter
-import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.equality.StdEqualityInvestigator
-import org.beandiff.equality.ComparableEqualityInvestigator
-import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.display.PlainTextDiffPresenter
+import org.beandiff.support.ValueTypes
 
 /**
  * A container for syntactic sugar methods
@@ -48,8 +47,9 @@ object BeanDiff {
   
   final val DefaultPresenter = new PlainTextDiffPresenter
   
-  final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator,
-      classOf[jBigDecimal] -> new ComparableEqualityInvestigator)
+  final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator)
+    .withEntry(classOf[jBigDecimal] -> new ComparableEqualityInvestigator)
+  	.withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
   
   val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 

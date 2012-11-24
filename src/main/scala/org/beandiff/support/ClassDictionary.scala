@@ -48,7 +48,11 @@ class ClassDictionary[T](final val defaultValue: T) {
     new ClassDictionary[T](defaultValue, map)
   }
   
-  def withEntries[U >: T](entries: Iterable[Entry[U]]): ClassDictionary[U] = {
+  def withEntry[U >: T](entry: Entry[U]) = {
+    new ClassDictionary(defaultValue, map + entry)
+  }
+  
+  def withEntries[U >: T](entries: Iterable[Entry[U]]) = {
     new ClassDictionary(defaultValue, map ++ entries.toMap)
   }
   

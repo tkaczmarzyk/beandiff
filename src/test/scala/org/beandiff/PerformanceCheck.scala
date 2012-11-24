@@ -20,32 +20,41 @@
 package org.beandiff
 
 import java.util.ArrayList
+import java.util.Collection
+import java.util.Collections
+import java.util.List
+import org.beandiff.BeanDiff.diff
 import org.beandiff.beans.CollectionBean
-import org.beandiff.BeanDiff._
 import org.beandiff.beans.ParentBean
-import org.perf4j.StopWatch
 import org.beandiff.beans.SimpleJavaBean
+import org.perf4j.StopWatch
+import java.util.HashSet
+
 
 object PerformanceCheck extends App {
 
-  val bigBean = new CollectionBean[ParentBean](new ArrayList)
-  for (i <- 0 until 1024) {
-    val parentBean = new ParentBean(i.toString)
-    val colBean = new CollectionBean[SimpleJavaBean](new ArrayList);
-    parentBean.setChild(new ParentBean(i + " child"), colBean)
-    for (j <- 0 until 1024) {
-      colBean.collection.add(new SimpleJavaBean(i + "_" + j, i * j))
+  val numElems = 700
+  val bigBean1, bigBean2 = new CollectionBean[ParentBean](new ArrayList)
+  for (bigBean <- Vector(bigBean1, bigBean2)) {
+    for (i <- 0 until numElems) {
+      val parentBean = new ParentBean(i.toString)
+      val colBean = new CollectionBean[SimpleJavaBean](new ArrayList);
+      parentBean.setChild(new ParentBean(i + " child", colBean))
+      for (j <- 0 until numElems) {
+        colBean.collection.add(new SimpleJavaBean(i + "_" + j, i * j))
+      }
+      bigBean.collection.add(parentBean)
     }
-    bigBean.collection.add(parentBean)
   }
 
   val clock = new StopWatch
-
+  val iters = 10
+  
   clock.start()
-  val d = diff(bigBean, bigBean)
+  for (i <- 1 to iters) {
+    assert(!diff(bigBean1, bigBean2).hasDifference)
+  }
   clock.stop()
 
-  assert(!d.hasDifference)
-
-  println(clock.getElapsedTime() / 1000.0)
+  println(clock.getElapsedTime() / 1000.0 / iters)
 }
