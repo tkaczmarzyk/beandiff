@@ -16,6 +16,7 @@
 	</skin>
 	<custom>
 	    <fluidoSkin>
+			<googlePlusOne/>
 	    	<twitter>
         		<user>tkaczmarzyk</user>
         		<showUser>false</showUser>
