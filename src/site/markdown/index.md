@@ -38,7 +38,7 @@ Then you can use BeanDiff as follows:
 
 	Diff diff = BeanDiff.diff(parent1, parent2);
 
-That's it! Even though you can configure most of the aspects of the comparison, the BeanDiff class provides easy to use methods with common defaults. In most cases it's just what you expect.
+That's it! Even though you can configure most of the aspects of the comparison, the <tt>BeanDiff</tt> class provides easy to use methods with common defaults. In most cases it's just what you expect.
 
 Of course you need the possibility to inspect the result:
 
@@ -47,7 +47,7 @@ Of course you need the possibility to inspect the result:
 	diff.hasDifference("children[0].name"); // returns false
 	diff.hasDifference("children[1]"); // returns true
 
-If you want you can also print the diff in human-readable format using BeanDiff's method <tt>printDiff</tt>. For the case above it would yield something similar to:
+If you want you can also print the diff in human-readable format using <tt>BeanDiff</tt>'s method <tt>printDiff</tt>. For the case above it would yield something similar to:
 
 	name -- 'parent1' vs 'parent2'
 	children[1].name -- 'a' vs 'b'
