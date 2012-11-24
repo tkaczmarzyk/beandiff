@@ -32,6 +32,7 @@ import org.beandiff.core.BreakCycleStrategy
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.equality.ComparableEqualityInvestigator
 import org.beandiff.core.BreakCycleStrategy
+import org.beandiff.display.PlainTextDiffPresenter
 
 /**
  * A container for syntactic sugar methods
@@ -44,6 +45,8 @@ object BeanDiff {
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
   final val DefaultDescStrategy = new BreakCycleStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
+  
+  final val DefaultPresenter = new PlainTextDiffPresenter
   
   final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator,
       classOf[jBigDecimal] -> new ComparableEqualityInvestigator)
@@ -61,6 +64,12 @@ object BeanDiff {
     new DiffEngine(eqInvestigators, DefaultDescStrategy).calculateDiff(o1, o2)
   }
   
+  def print(diff: Diff): Unit = print(System.out, diff)
+  
+  def print(out: PrintStream, diff: Diff): Unit = {
+    out.println(DefaultPresenter.present(diff))
+  }
+  
   def printDiff(o1: Any, o2: Any): Unit = 
     printDiff(o1, o2, List() : _*)
   
@@ -70,10 +79,8 @@ object BeanDiff {
   def printDiff(out: PrintStream, o1: Any, o2: Any): Unit =
     printDiff(out, o1, o2, List() : _*)
     
-  def printDiff(out: PrintStream, o1: Any, o2: Any, modifiers: Any*) = {
-    val presenter = new PlainTextDiffPresenter
-    out.println(presenter.present(diff(o1, o2, modifiers : _*)))
-  }
+  def printDiff(out: PrintStream, o1: Any, o2: Any, modifiers: Any*) =
+    print(out, diff(o1, o2, modifiers : _*))
 
   private def getEqInvestigatorMappings(objects: List[_]) = {
     objects.filter(_.isInstanceOf[EqInvestigatorBinding])
