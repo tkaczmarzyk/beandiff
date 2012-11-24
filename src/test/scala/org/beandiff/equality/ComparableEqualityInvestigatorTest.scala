@@ -17,13 +17,21 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.equality
 
-object EndOnSimpleTypeStrategy extends EndOnTypeStrategy {
+import java.math.BigDecimal
 
-  protected override val leafClasses: Set[Class[_]] = Set(classOf[String], classOf[Boolean],
-    classOf[Int], classOf[Integer], classOf[Long], classOf[Double], classOf[Character],
-    classOf[java.lang.Long], classOf[java.lang.Float], classOf[java.lang.Double],
-    classOf[java.lang.Boolean], classOf[java.lang.Byte], classOf[java.lang.Enum[_]])
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
 
+@RunWith(classOf[JUnitRunner])
+class ComparableEqualityInvestigatorTest extends FunSuite with ShouldMatchers {
+
+  private val eq = new ComparableEqualityInvestigator();
+  
+  test("should ignore BigDecimal's scale if values are the same") {
+    eq.areEqual(new BigDecimal("1.5"), new BigDecimal("1.500")) should be === true
+  }
 }

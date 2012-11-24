@@ -29,6 +29,9 @@ import org.beandiff.support.ClassDictionary
 import java.io.PrintStream
 import org.beandiff.display.PlainTextDiffPresenter
 import org.beandiff.core.BreakCycleStrategy
+import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.equality.ComparableEqualityInvestigator
+import org.beandiff.core.BreakCycleStrategy
 
 /**
  * A container for syntactic sugar methods
@@ -37,10 +40,15 @@ import org.beandiff.core.BreakCycleStrategy
  */
 object BeanDiff {
 
-  val descStrategy = EndOnSimpleTypeStrategy
+  private type jBigDecimal = java.math.BigDecimal
+  private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
-  val ignoreCase =
-    (classOf[String], new IgnoreCaseStringEqualityInvestigator)
+  final val DefaultDescStrategy = new BreakCycleStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
+  
+  final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator,
+      classOf[jBigDecimal] -> new ComparableEqualityInvestigator)
+  
+  val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
     
   def diff(o1: Any, o2: Any): Diff = {
@@ -48,10 +56,9 @@ object BeanDiff {
   }
 
   def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
-    val eqInvestigators = new ClassDictionary[EqualityInvestigator](
-      new StdEqualityInvestigator, getEqInvestigatorMappings(modifiers.toList))
+    val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
-    new DiffEngine(eqInvestigators, new BreakCycleStrategy(EndOnSimpleTypeStrategy)).calculateDiff(o1, o2)
+    new DiffEngine(eqInvestigators, DefaultDescStrategy).calculateDiff(o1, o2)
   }
   
   def printDiff(o1: Any, o2: Any): Unit = 
@@ -69,7 +76,7 @@ object BeanDiff {
   }
 
   private def getEqInvestigatorMappings(objects: List[_]) = {
-    objects.filter(_.isInstanceOf[(Class[_], EqualityInvestigator)])
-      .asInstanceOf[Iterable[(Class[_], EqualityInvestigator)]]
+    objects.filter(_.isInstanceOf[EqInvestigatorBinding])
+      .asInstanceOf[Iterable[EqInvestigatorBinding]]
   }
 }

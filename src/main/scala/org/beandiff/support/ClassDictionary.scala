@@ -19,33 +19,43 @@
  */
 package org.beandiff.support
 
-import org.beandiff.support.ClassSupport._
-import scala.collection.mutable.HashMap
-import com.sun.org.apache.xerces.internal.jaxp.DefaultValidationErrorHandler
+import org.beandiff.support.ClassSupport.convert
+import org.beandiff.support.ClassDictionary.Entry
 
-class ClassDictionary[T](val defaultValue: T) {
 
-  private val map = new HashMap[Class[_], T]
+object ClassDictionary {
+  type Entry[T] = (Class[_], T)
+}
 
-  def this(defaultValue: T, values: Iterable[(Class[_], T)]) = {
+class ClassDictionary[T](final val defaultValue: T) {
+
+  private var map: Map[Class[_], T] = Map()
+
+  def this(defaultValue: T, content: Map[Class[_], T]) = {
     this(defaultValue)
-    values foreach {
-      map += _
-    }
+    this.map = content
+  }
+  
+  def this(defaultValue: T, entries: Iterable[Entry[T]]) = {
+    this(defaultValue, entries.toMap)
   }
 
-  def this(defaultValue: T, values: (Class[_], T)*) = {
-    this(defaultValue, values.toList)
+  def this(defaultValue: T, values: Entry[T]*) = {
+    this(defaultValue, values.toMap)
   }
   
   def withDefault(defaultValue: T): ClassDictionary[T] = {
-    new ClassDictionary[T](defaultValue, map.toIterable)
+    new ClassDictionary[T](defaultValue, map)
   }
-
+  
+  def withEntries[U >: T](entries: Iterable[Entry[U]]): ClassDictionary[U] = {
+    new ClassDictionary(defaultValue, map ++ entries.toMap)
+  }
+  
   def apply(c: Class[_]): T = {
     if (map.contains(c))
       map(c)
-    else {
+    else { // TODO candidate for performance optimization
       val supportedSuperTypes = c.allSuperTypes.filter(map.contains(_))
       if (!supportedSuperTypes.isEmpty)
         map(supportedSuperTypes.head)

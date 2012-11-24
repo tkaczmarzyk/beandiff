@@ -19,11 +19,15 @@
  */
 package org.beandiff.core
 
-object EndOnSimpleTypeStrategy extends EndOnTypeStrategy {
+class EndOnTypeStrategy(protected val leafClasses: Set[Class[_]]) extends DescendingStrategy {
 
-  protected override val leafClasses: Set[Class[_]] = Set(classOf[String], classOf[Boolean],
-    classOf[Int], classOf[Integer], classOf[Long], classOf[Double], classOf[Character],
-    classOf[java.lang.Long], classOf[java.lang.Float], classOf[java.lang.Double],
-    classOf[java.lang.Boolean], classOf[java.lang.Byte], classOf[java.lang.Enum[_]])
-
+  protected def this() = this(Set())
+  
+  def shouldProceed(obj1: Any, ojb2: Any): Boolean = {
+    !leafClasses.exists(_.isAssignableFrom(obj1.getClass)) // TODO candidate for performance optimization
+  }
+  
+  def withLeaf(clazz: Class[_]) = {
+    new EndOnTypeStrategy(leafClasses + clazz)
+  }
 }

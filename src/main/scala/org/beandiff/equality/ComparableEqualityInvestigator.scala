@@ -17,13 +17,12 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.equality
 
-object EndOnSimpleTypeStrategy extends EndOnTypeStrategy {
+// TODO better name
+class ComparableEqualityInvestigator extends EqualityInvestigator {
 
-  protected override val leafClasses: Set[Class[_]] = Set(classOf[String], classOf[Boolean],
-    classOf[Int], classOf[Integer], classOf[Long], classOf[Double], classOf[Character],
-    classOf[java.lang.Long], classOf[java.lang.Float], classOf[java.lang.Double],
-    classOf[java.lang.Boolean], classOf[java.lang.Byte], classOf[java.lang.Enum[_]])
-
+  def areEqual(obj1: Any, obj2: Any): Boolean = {
+    0 == obj1.asInstanceOf[Comparable[Any]].compareTo(obj2.asInstanceOf[Comparable[Any]]);
+  }
 }

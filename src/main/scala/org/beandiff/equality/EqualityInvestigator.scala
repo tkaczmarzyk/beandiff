@@ -19,6 +19,7 @@
  */
 package org.beandiff.equality
 
+// TODO type parameter, better name
 trait EqualityInvestigator {
 
   def areEqual(obj1: Any, obj2: Any): Boolean
