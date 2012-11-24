@@ -44,7 +44,7 @@ object BeanDiff {
   private type jBigDecimal = java.math.BigDecimal // TODO consider moving to common location?
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
-  final val DefaultDescStrategy = new BreakCycleStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
+  final val DefaultDescStrategy = EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal])
   
   final val DefaultPresenter = new PlainTextDiffPresenter
   
@@ -61,7 +61,7 @@ object BeanDiff {
   def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
     val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
-    new DiffEngine(eqInvestigators, DefaultDescStrategy).calculateDiff(o1, o2)
+    new DiffEngine(eqInvestigators, new BreakCycleStrategy(DefaultDescStrategy)).calculateDiff(o1, o2)
   }
   
   def print(diff: Diff): Unit = print(System.out, diff)
