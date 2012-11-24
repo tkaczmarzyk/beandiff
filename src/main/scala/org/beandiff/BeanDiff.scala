@@ -40,7 +40,7 @@ import org.beandiff.core.BreakCycleStrategy
  */
 object BeanDiff {
 
-  private type jBigDecimal = java.math.BigDecimal
+  private type jBigDecimal = java.math.BigDecimal // TODO consider moving to common location?
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
   final val DefaultDescStrategy = new BreakCycleStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
