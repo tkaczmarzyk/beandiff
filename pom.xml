@@ -9,6 +9,8 @@
 	<packaging>jar</packaging>
 	<version>0.0.2-SNAPSHOT</version>
 
+	<name>beandiff</name>
+	<description>A library for calculating differences between JVM objects</description>
 	<inceptionYear>2012</inceptionYear>
 	<licenses>
 		<license>
@@ -34,6 +36,11 @@
 		<wagon-ftp.version>2.2</wagon-ftp.version>
 	</properties>
 
+	<scm>
+		<connection>scm:git:git@github.com:tkaczmarzyk/beandiff.git</connection>
+		<url>scm:git:git@github.com:tkaczmarzyk/beandiff.git</url>
+		<developerConnection>scm:git:git@github.com:tkaczmarzyk/beandiff.git</developerConnection>
+	</scm>
 	<repositories>
 		<repository>
 			<id>scala-tools</id>
