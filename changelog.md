@@ -14,5 +14,6 @@
 * transforming unsorted collections to lists with reflection-based comparator
 * support for lists
 * support for case-insensitive `String` comparison
+* `PlainTextDiffPresenter` -- displaying differences in human-readable format
 * basic syntax sugar methods in `BeanDiff` class
 * basic cycle detection
