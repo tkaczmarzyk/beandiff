@@ -29,10 +29,12 @@ The following example will help you to start using BeanDiff. Consider the follow
 And the instances to be compared:
 
 	Node a = new Node("a");
+	Node a2 = new Node("a");
 	Node b = new Node("b");
+	Node b2 = new Node("b");
 
-	Node parent1 = new Node("parent1", a, a, b);
-	Node parent2 = new Node("parent2", a, b, b);
+	Node parent1 = new Node("parent1", a, a2, b);
+	Node parent2 = new Node("parent2", a, b, b2);
 
 Then you can use BeanDiff as follows:
 
