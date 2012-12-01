@@ -22,5 +22,5 @@ package org.beandiff.core.model
 
 trait Change {
 
-  def perform() // TODO consider perform(target: Any)
+  def updateTarget() // TODO better name // TODO consider perform(target: Any)
 }

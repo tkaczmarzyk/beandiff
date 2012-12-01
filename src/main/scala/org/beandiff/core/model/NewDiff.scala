@@ -20,13 +20,30 @@
 package org.beandiff.core.model
 
 
-class NewValue(
+class NewDiff(
+  private val path: Path,
   private val target: Any,
-  private val property: Property,
-  private val value: Any) extends Change {
+  private val propChanges: Map[Property, Change]) extends Change {
 
-  
-  override def updateTarget() =
-    property.setValue(target, value)
+  def this(target: Any, changes: Map[Property, Change]) =
+    this(EmptyPath, target, changes)
 
+    
+  def changes: Iterable[(Path, Change)] =
+    changes(EmptyPath)
+
+  private def changes(currentPath: Path): Iterable[(Path, Change)] = {
+    propChanges.toList.flatMap({
+      case (prop, change) => change match { //TODO avoid direct type checks
+        case diff: NewDiff => diff.changes(currentPath)
+        case _ => List((currentPath.step(prop), change))
+      }
+    })
+  }
+    
+  override def updateTarget() = {
+    propChanges.foreach({
+      case (prop, change) => change.updateTarget()
+    })
+  }
 }
