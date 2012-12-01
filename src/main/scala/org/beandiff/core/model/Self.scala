@@ -17,16 +17,9 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.model
 
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Property
+class Self extends Property {
 
-trait RoutePlanner {
-  
-  type Route = (Property, (Any, Any)) // FIXME generalize   
-
-  def guide(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit
-  
-  def routes(o1: Any, o2: Any): Iterable[Route]
+  def value(target: Any) = target
 }

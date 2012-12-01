@@ -19,16 +19,15 @@
  */
 package org.beandiff.core.model
 
-
 object Path {
 
   final val FieldSeparator = "."
-  
+
   /**
    * Parses path from string input. Example argument:
-   * 
+   *
    * {@code nicknames[0].shortVersion}
-   * 
+   *
    * @param pathStr string representation to be parsed
    * @return an instance of {@link Path}
    */
@@ -56,19 +55,25 @@ class Path(val head: Property, val tail: Path) {
     else
       tail.value(head.value(o))
   }
-  
+
   def stepBack: Path = {
     if (tail == null)
       EmptyPath
     else
       new Path(head, tail.stepBack)
   }
-  
+
   def step(p: Property): Path = {
     if (tail == null)
       new Path(head, new Path(p, null))
     else
       new Path(head, tail.step(p))
+  }
+
+  def ++(other: Path): Path = {
+    if (other == EmptyPath)
+      this
+    else this.step(other.head) ++ other.tail
   }
 
   def step(props: List[Property]): Path = {
@@ -96,7 +101,7 @@ class Path(val head: Property, val tail: Path) {
       if (tail != null)
         if (tail.head.isInstanceOf[FieldProperty]) // FIXME avoid type check
           Path.FieldSeparator + tail.toString
-        else 
+        else
           tail.toString
       else ""
     }

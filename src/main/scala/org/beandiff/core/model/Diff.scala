@@ -19,7 +19,7 @@
  */
 package org.beandiff.core.model
 
-
+// TODO factory for values such as EmptyDiff etc
 trait Diff extends Change {
 
   def hasDifference(): Boolean
@@ -29,4 +29,5 @@ trait Diff extends Change {
   def changes: Iterable[(Path, Change)]
   
   def perform(): Unit
+  def target: Any
 }

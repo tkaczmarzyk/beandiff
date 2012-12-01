@@ -21,14 +21,11 @@ package org.beandiff.core.model
 
 
 class NewValue(
-  private val parent: Any,
-  private val property: Property,
   private val value: Any) extends Change {
 
   
-  override def perform() =
-    property.setValue(parent, value)
+  override def perform(): Unit =
+    throw new UnsupportedOperationException("tbd")
 
-    
   override def newValue = value 
 }

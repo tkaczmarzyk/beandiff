@@ -26,7 +26,7 @@ class FieldRoutePlanner extends RoutePlanner {
 
   def guide(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {
     getDeclaredFields(o1.getClass) foreach {
-        f =>
+      f =>
         f.setAccessible(true)
 
         val val1 = f.get(o1)
@@ -36,7 +36,17 @@ class FieldRoutePlanner extends RoutePlanner {
         walker.walk(path, val1, val2)
     }
   }
-  
+
+  override def routes(o1: Any, o2: Any) = {
+    getDeclaredFields(o1.getClass) map {
+      f =>
+        {
+          f.setAccessible(true)
+          (new FieldProperty(f.getName), (f.get(o1), f.get(o2)))
+        }
+    }
+  }
+
   protected def getDeclaredFields(c: Class[_]) =
     c.getDeclaredFields()
 }

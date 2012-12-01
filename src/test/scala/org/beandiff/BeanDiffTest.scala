@@ -103,26 +103,27 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  test("should add compared objects to all Diff instances") { // TODO concise version once more methods are implemented in Diff (like getLeft, getRight(path))
-    new CollectionBeans {
-      val d = diff(beans1, beans2)
-      
-      d.o1 should not be === (null)
-      d.o2 should not be equal (null)
-      
-      val collectionDiff = d.diffs(new FieldProperty("collection"))
-      collectionDiff.o1 should not be === (null)
-      collectionDiff.o2 should not be === (null)
-      
-      val indexDiff1 = collectionDiff.diffs(new IndexProperty(0))
-      indexDiff1.o1 should not be === (null)
-      indexDiff1.o2 should not be === (null)
-      
-      val indexDiff2 = collectionDiff.diffs(new IndexProperty(1))
-      indexDiff1.o1 should not be === (null)
-      indexDiff2.o2 should not be === (null)
-    }
-  }
+  // FIXME remove
+//  test("should add compared objects to all Diff instances") { // TODO concise version once more methods are implemented in Diff (like getLeft, getRight(path))
+//    new CollectionBeans {
+//      val d = diff(beans1, beans2)
+//      
+//      d.o1 should not be === (null)
+//      d.o2 should not be equal (null)
+//      
+//      val collectionDiff = d.diffs(new FieldProperty("collection"))
+//      collectionDiff.o1 should not be === (null)
+//      collectionDiff.o2 should not be === (null)
+//      
+//      val indexDiff1 = collectionDiff.diffs(new IndexProperty(0))
+//      indexDiff1.o1 should not be === (null)
+//      indexDiff1.o2 should not be === (null)
+//      
+//      val indexDiff2 = collectionDiff.diffs(new IndexProperty(1))
+//      indexDiff1.o1 should not be === (null)
+//      indexDiff2.o2 should not be === (null)
+//    }
+//  }
   
   test("should detect difference in lists of different size") {
     new Collections {
@@ -253,7 +254,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  test("should show now difference if both properties are null") {
+  test("should show no difference if both properties are null") {
     new NestedBeans {
       parent1.setChild(null)
       parent2.setChild(null)

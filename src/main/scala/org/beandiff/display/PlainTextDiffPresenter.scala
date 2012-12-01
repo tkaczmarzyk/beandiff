@@ -19,11 +19,12 @@
  */
 package org.beandiff.display
 
-import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.model.EmptyPath
 import org.beandiff.core.model.LeafDiff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.Diff
+
 
 class PlainTextDiffPresenter(
   private val pathValueSeparator: String = " -- ",
@@ -31,7 +32,7 @@ class PlainTextDiffPresenter(
   private val valueQuote: String = "'",
   private val differenceSeparator: String = "\n") extends DiffPresenter {
 
-  def present(d: DiffOldImpl): String = {
+  override def present(d: Diff): String = {
     if (!d.hasDifference)
       ""
     else {

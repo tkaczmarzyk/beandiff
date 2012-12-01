@@ -20,11 +20,10 @@
 package org.beandiff
 
 import java.io.PrintStream
-
 import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
+import org.beandiff.core.model.Diff
 import org.beandiff.display.PlainTextDiffPresenter
 import org.beandiff.equality.ComparableEqualityInvestigator
 import org.beandiff.equality.EqualityInvestigator
@@ -32,6 +31,7 @@ import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
+import org.beandiff.core.EndOnNullStrategy
 
 /**
  * A container for syntactic sugar methods
@@ -43,7 +43,7 @@ object BeanDiff {
   private type jBigDecimal = java.math.BigDecimal // TODO consider moving to common location?
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
-  final val DefaultDescStrategy = EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal])
+  final val DefaultDescStrategy = new EndOnNullStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
   
   final val DefaultPresenter = new PlainTextDiffPresenter
   
@@ -54,19 +54,19 @@ object BeanDiff {
   val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
     
-  def diff(o1: Any, o2: Any): DiffOldImpl = {
+  def diff(o1: Any, o2: Any): Diff = {
     diff(o1, o2, List() : _*)
   }
 
-  def diff(o1: Any, o2: Any, modifiers: Any*): DiffOldImpl = {
+  def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
     val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
     new DiffEngine(eqInvestigators, new BreakCycleStrategy(DefaultDescStrategy)).calculateDiff(o1, o2)
   }
   
-  def print(diff: DiffOldImpl): Unit = print(System.out, diff)
+  def print(diff: Diff): Unit = print(System.out, diff)
   
-  def print(out: PrintStream, diff: DiffOldImpl): Unit = {
+  def print(out: PrintStream, diff: Diff): Unit = {
     out.println(DefaultPresenter.present(diff))
   }
   

@@ -23,26 +23,49 @@ import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.model.LeafDiff
+import org.beandiff.core.model.DiffNewImpl
+import org.beandiff.core.model.EmptyPath
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffNewImpl
+import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.Self
 
 class DiffEngine(
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) {
 
-  def calculateDiff(o1: Any, o2: Any) = {
-    var d = new DiffOldImpl(o1, o2) //FIXME nicer solution
+  private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
+  private val transformers = ObjectWalker.DefaultTransformers // TODO
 
-    new ObjectWalker(new EndOnNullStrategy(descStrategy), // FIXME reduce if/else complexity. // TODO should Diff be created for paths withoudt difference?
-      (path, val1, val2, isLeaf) =>
-        if (path.depth == 0 && isLeaf && !getEqInvestigator(val1, val2).areEqual(val1, val2))
-          d = new LeafDiff(o1, o2)
-        else if ((path.depth != 0)) {
-          d(path) = 
-            if (isLeaf && !getEqInvestigator(val1, val2).areEqual(val1, val2)) new LeafDiff(val1, val2)
-            else new DiffOldImpl(val1, val2)
+  
+  def calculateDiff(o1: Any, o2: Any): DiffNewImpl = {
+    def calculateDiff0(currentPath: Path): DiffNewImpl = {
+      if (!descStrategy.shouldProceed(o1, o2)) {
+        if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
+          new DiffNewImpl(currentPath, o1, Map(new Self -> new NewValue(o2)))
+        } else {
+          new DiffNewImpl(currentPath, o1, Map())
         }
-    ).walk(o1, o2)
+      } else {
+        val t1 = transformers(o1.getClass).transform(o1) // TODO get rid of transformation here, hide in specific Diff-algorithm
+        val t2 = transformers(o2.getClass).transform(o2)
+        val routes = routePlanners(t1.getClass).routes(t1, t2)
 
-    d
+        val diffs = routes.map({
+          case (prop, (obj1, obj2)) => (prop, calculateDiff(obj1, obj2))
+        })
+
+        diffs.foldLeft(new DiffNewImpl(currentPath, o1, Map()))(
+          (acc, propDiff) =>
+            if (propDiff._2.hasDifference)
+              acc.withSubDiff(propDiff._1, propDiff._2)
+            else acc
+        )
+      }
+    }
+
+    calculateDiff0(EmptyPath)
   }
 
   private def getEqInvestigator(val1: Any, val2: Any) = {

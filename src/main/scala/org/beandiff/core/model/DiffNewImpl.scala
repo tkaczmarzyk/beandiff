@@ -22,7 +22,7 @@ package org.beandiff.core.model
 
 class DiffNewImpl(
   private val path: Path, 
-  private val target: Any, 
+  val target: Any, 
   private val propChanges: Map[Property, Change]) extends Diff {
 
   def this(target: Any, changes: Map[Property, Change]) =
@@ -41,16 +41,33 @@ class DiffNewImpl(
     })
   }
   
-  def hasDifference(): Boolean =
+  def withSubDiff(property: Property, subDiff: DiffNewImpl): DiffNewImpl = { // TODO interface-based arg/return
+    new DiffNewImpl(path, target, propChanges + (property -> subDiff))
+  }
+  
+  override def hasDifference(): Boolean =
     !propChanges.isEmpty
     
-  def hasDifference(pathStr: String): Boolean =
+  override def hasDifference(pathStr: String): Boolean =
     hasDifference(Path.of(pathStr))
   
-  def hasDifference(pathToFind: Path): Boolean =
-    changes.exists({
-      case (path, change) => path == pathToFind
-    })
+  override def hasDifference(pathToFind: Path): Boolean = { // FIXME tmp, refactor!!
+    if (pathToFind == null || pathToFind == EmptyPath) {
+      return hasDifference
+    }
+    if (pathToFind.depth == 1) {
+      propChanges.contains(pathToFind.head)
+    } else {
+      if (propChanges.contains(pathToFind.head)) {
+        val change = propChanges(pathToFind.head)
+        if (change.isInstanceOf[Diff]) {
+          change.asInstanceOf[Diff].hasDifference(pathToFind.tail)
+        } else {
+          pathToFind.tail == null || pathToFind.tail == EmptyPath
+        }
+      } else false
+    }
+  }
   
   override def newValue() = throw new UnsupportedOperationException("tmp")
     

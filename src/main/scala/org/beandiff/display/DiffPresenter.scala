@@ -19,10 +19,10 @@
  */
 package org.beandiff.display
 
-import org.beandiff.core.model.DiffOldImpl
+import org.beandiff.core.model.Diff
 
 
 trait DiffPresenter {
 
-  def present(d: DiffOldImpl): String
+  def present(d: Diff): String
 }

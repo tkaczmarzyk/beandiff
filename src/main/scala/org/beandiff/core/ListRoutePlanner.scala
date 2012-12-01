@@ -21,6 +21,7 @@ package org.beandiff.core
 
 import java.util.List
 import org.beandiff.core.model.Path
+import org.beandiff.core.model.IndexProperty
 
 class ListRoutePlanner extends RoutePlanner {
 
@@ -31,6 +32,14 @@ class ListRoutePlanner extends RoutePlanner {
     for (i <- 0 until (list1.size max list2.size)) {
       walker.walk(current.withIndex(i), get(list1, i), get(list2, i))
     }
+  }
+  
+  override def routes(o1: Any, o2: Any) = {
+    val list1 = o1.asInstanceOf[List[_]]
+    val list2 = o2.asInstanceOf[List[_]]
+    
+    for (i <- 0 until (list1.size max list2.size)) 
+    	yield (new IndexProperty(i), (get(list1, i), get(list2, i)))
   }
   
   private def get(list: List[_], index: Int) =

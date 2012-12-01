@@ -24,5 +24,6 @@ trait Change {
 
   def perform(): Unit // TODO better name // TODO consider perform(target: Any)
   
+  @deprecated
   def newValue: Any // FIXME tmp
 }
