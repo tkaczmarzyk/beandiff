@@ -23,10 +23,11 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
 
 // TODO reduce mutability
-class DiffOldImpl(
+@deprecated
+class DiffOldImpl (
     val o1: Any, 
     val o2: Any, 
-    val diffs: Map[Property, DiffOldImpl]) { // FIXME improve encapsulation
+    val diffs: Map[Property, DiffOldImpl]) extends Diff { // FIXME improve encapsulation
 
   
   def this(o1: Any, o2: Any) = this(o1, o2, new HashMap)
@@ -52,6 +53,21 @@ class DiffOldImpl(
     else
       diffs(p.head).hasDifference(p.tail)
   }
+  
+  override def changes: Iterable[(Path, Change)] = {
+    changes(EmptyPath)
+  }
+  
+  private def changes(current: Path): Iterable[(Path, Change)] = {
+    diffs.toList.flatMap({
+      case (prop, change) => change match {
+        case diff: LeafDiff => List((current.step(prop), change))
+        case diff: DiffNewImpl => diff.changes(current.step(prop))
+      }
+    })
+  }
+  
+  override def updateTarget() = {}
   
   override def toString() = "Diff[" + o1 + ", " + o2 + "]"
 }

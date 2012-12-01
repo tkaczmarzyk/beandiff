@@ -20,30 +20,13 @@
 package org.beandiff.core.model
 
 
-class DiffNewImpl(
-  private val path: Path, 
-  private val target: Any, 
-  private val propChanges: Map[Property, Change]) extends Change {
+trait Diff extends Change {
 
-  def this(target: Any, changes: Map[Property, Change]) =
-    this(EmptyPath, target, changes)
-
-    
-  def changes: Iterable[(Path, Change)] =
-    changes(EmptyPath)
-
-  private def changes(currentPath: Path): Iterable[(Path, Change)] = {
-    propChanges.toList.flatMap({
-      case (prop, change) => change match { //TODO avoid direct type checks
-        case diff: DiffNewImpl => diff.changes(currentPath.step(prop))
-        case _ => List((currentPath.step(prop), change))
-      }
-    })
-  }
-    
-  override def updateTarget() = {
-    propChanges.foreach({
-      case (prop, change) => change.updateTarget()
-    })
-  }
+  def hasDifference(): Boolean
+  def hasDifference(path: String): Boolean
+  def hasDifference(p: Path): Boolean
+  
+  def changes: Iterable[(Path, Change)]
+  
+  def updateTarget(): Unit
 }
