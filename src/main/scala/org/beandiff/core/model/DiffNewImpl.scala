@@ -47,14 +47,16 @@ class DiffNewImpl(
   def hasDifference(pathStr: String): Boolean =
     hasDifference(Path.of(pathStr))
   
-  def hasDifference(p: Path): Boolean =
+  def hasDifference(pathToFind: Path): Boolean =
     changes.exists({
-      case (path, change) => path == p
+      case (path, change) => path == pathToFind
     })
   
-  override def updateTarget() = {
+  override def newValue() = throw new UnsupportedOperationException("tmp")
+    
+  override def perform() = {
     propChanges.foreach({
-      case (prop, change) => change.updateTarget()
+      case (prop, change) => change.perform()
     })
   }
 }

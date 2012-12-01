@@ -23,35 +23,28 @@ import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.model.EmptyPath
 import org.beandiff.core.model.LeafDiff
 import org.beandiff.core.model.Path
-
+import org.beandiff.core.model.NewValue
 
 class PlainTextDiffPresenter(
-    private val pathValueSeparator: String = " -- ",
-    private val valuesSeparator: String = " vs ",
-    private val valueQuote: String = "'",
-    private val differenceSeparator: String = "\n") extends DiffPresenter {
+  private val pathValueSeparator: String = " -- ",
+  private val valuesSeparator: String = " vs ",
+  private val valueQuote: String = "'",
+  private val differenceSeparator: String = "\n") extends DiffPresenter {
 
-  
-  def present(d: DiffOldImpl): String = present(EmptyPath, d)
-  
-  private def present(currentPath: Path, d: DiffOldImpl): String = {
+  def present(d: DiffOldImpl): String = {
     if (!d.hasDifference)
       ""
     else {
       val result = new StringBuilder
-      
-      for ((property, diff) <- d.diffs) {
-        if (diff.isInstanceOf[LeafDiff]) { //FIXME avoid direct type-checking!
-          result.append(currentPath.step(property)).append(pathValueSeparator)
-          result.append(valueQuote).append(diff.o1).append(valueQuote)
-          result.append(valuesSeparator)
-          result.append(valueQuote).append(diff.o2).append(valueQuote)
-          result.append(differenceSeparator)
-        } else {
-          result.append(present(currentPath.step(property), diff))
-        }
+
+      for ((path, change) <- d.changes) {
+        result.append(path).append(pathValueSeparator)
+        result.append(valueQuote).append(path.value(d.target)).append(valueQuote)
+        result.append(valuesSeparator)
+        result.append(valueQuote).append(change.newValue).append(valueQuote)
+        result.append(differenceSeparator)
       }
-      
+
       result.toString
     }
   }

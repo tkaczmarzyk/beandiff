@@ -30,7 +30,7 @@ object ObjectSupport {
 class ObjectSupport(val target: Any) {
   
   def hasField(name: String) = {
-    target.getClass.getDeclaredFields().contains((f: Field) => f.getName == name)
+    target.getClass.getDeclaredFields().exists((f: Field) => f.getName == name)
   }
   
   def getFieldVal(name: String) = {

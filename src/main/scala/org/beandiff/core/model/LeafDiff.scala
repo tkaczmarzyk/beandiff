@@ -23,4 +23,6 @@ package org.beandiff.core.model
 class LeafDiff(o1: Any, o2: Any) extends DiffOldImpl(o1, o2, null) {
 
   override val hasDifference = true
+  
+  override val newValue = o2
 }

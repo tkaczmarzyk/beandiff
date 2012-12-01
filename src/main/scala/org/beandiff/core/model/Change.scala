@@ -22,5 +22,7 @@ package org.beandiff.core.model
 
 trait Change {
 
-  def updateTarget() // TODO better name // TODO consider perform(target: Any)
+  def perform(): Unit // TODO better name // TODO consider perform(target: Any)
+  
+  def newValue: Any // FIXME tmp
 }

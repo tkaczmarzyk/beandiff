@@ -21,12 +21,14 @@ package org.beandiff.core.model
 
 
 class NewValue(
-  private val target: Any,
+  private val parent: Any,
   private val property: Property,
   private val value: Any) extends Change {
 
   
-  override def updateTarget() =
-    property.setValue(target, value)
+  override def perform() =
+    property.setValue(parent, value)
 
+    
+  override def newValue = value 
 }

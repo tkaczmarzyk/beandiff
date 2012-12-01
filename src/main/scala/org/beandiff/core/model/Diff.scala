@@ -28,5 +28,5 @@ trait Diff extends Change {
   
   def changes: Iterable[(Path, Change)]
   
-  def updateTarget(): Unit
+  def perform(): Unit
 }

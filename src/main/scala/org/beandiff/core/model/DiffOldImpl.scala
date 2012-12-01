@@ -62,12 +62,15 @@ class DiffOldImpl (
     diffs.toList.flatMap({
       case (prop, change) => change match {
         case diff: LeafDiff => List((current.step(prop), change))
-        case diff: DiffNewImpl => diff.changes(current.step(prop))
+        case diff: DiffOldImpl => diff.changes(current.step(prop))
       }
     })
   }
   
-  override def updateTarget() = {}
+  def target = o1
+  
+  override def perform() = throw new UnsupportedOperationException("tmp")
+  override def newValue(): Any = throw new UnsupportedOperationException("tmp")
   
   override def toString() = "Diff[" + o1 + ", " + o2 + "]"
 }
