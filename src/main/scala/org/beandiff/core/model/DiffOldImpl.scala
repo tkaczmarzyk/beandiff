@@ -23,16 +23,16 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
 
 // TODO reduce mutability
-class Diff(
-    val o1: Any,
-    val o2: Any,
-    val diffs: Map[Property, Diff]) { // FIXME improve encapsulation
+class DiffOldImpl(
+    val o1: Any, 
+    val o2: Any, 
+    val diffs: Map[Property, DiffOldImpl]) { // FIXME improve encapsulation
 
   
   def this(o1: Any, o2: Any) = this(o1, o2, new HashMap)
 
   
-  def update(p: Path, d: Diff): Unit = {
+  def update(p: Path, d: DiffOldImpl): Unit = {
     if (p.depth == 1) {
       diffs += (p.head -> d)
     } else {
@@ -40,7 +40,7 @@ class Diff(
     }
   }
   
-  def hasDifference(): Boolean = diffs.exists((x: (Property, Diff)) => {x._2.isInstanceOf[LeafDiff] || x._2.hasDifference}) //FIXME remove instanceOf check. Should a sub-Diff be created if no difference on the path?
+  def hasDifference(): Boolean = diffs.exists((x: (Property, DiffOldImpl)) => {x._2.isInstanceOf[LeafDiff] || x._2.hasDifference}) //FIXME remove instanceOf check. Should a sub-Diff be created if no difference on the path?
   
   def hasDifference(path: String): Boolean = hasDifference(Path.of(path))
   

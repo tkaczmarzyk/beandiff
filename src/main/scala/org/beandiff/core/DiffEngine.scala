@@ -21,7 +21,7 @@ package org.beandiff.core
 
 import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.model.LeafDiff
 
 class DiffEngine(
@@ -29,7 +29,7 @@ class DiffEngine(
   private val descStrategy: DescendingStrategy) {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    var d = new Diff(o1, o2) //FIXME nicer solution
+    var d = new DiffOldImpl(o1, o2) //FIXME nicer solution
 
     new ObjectWalker(new EndOnNullStrategy(descStrategy), // FIXME reduce if/else complexity. // TODO should Diff be created for paths withoudt difference?
       (path, val1, val2, isLeaf) =>
@@ -38,7 +38,7 @@ class DiffEngine(
         else if ((path.depth != 0)) {
           d(path) = 
             if (isLeaf && !getEqInvestigator(val1, val2).areEqual(val1, val2)) new LeafDiff(val1, val2)
-            else new Diff(val1, val2)
+            else new DiffOldImpl(val1, val2)
         }
     ).walk(o1, o2)
 

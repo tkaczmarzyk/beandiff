@@ -22,7 +22,7 @@ package org.beandiff
 import java.io.PrintStream
 
 import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffOldImpl
 import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.display.PlainTextDiffPresenter
@@ -54,19 +54,19 @@ object BeanDiff {
   val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
     
-  def diff(o1: Any, o2: Any): Diff = {
+  def diff(o1: Any, o2: Any): DiffOldImpl = {
     diff(o1, o2, List() : _*)
   }
 
-  def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
+  def diff(o1: Any, o2: Any, modifiers: Any*): DiffOldImpl = {
     val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
     new DiffEngine(eqInvestigators, new BreakCycleStrategy(DefaultDescStrategy)).calculateDiff(o1, o2)
   }
   
-  def print(diff: Diff): Unit = print(System.out, diff)
+  def print(diff: DiffOldImpl): Unit = print(System.out, diff)
   
-  def print(out: PrintStream, diff: Diff): Unit = {
+  def print(out: PrintStream, diff: DiffOldImpl): Unit = {
     out.println(DefaultPresenter.present(diff))
   }
   
