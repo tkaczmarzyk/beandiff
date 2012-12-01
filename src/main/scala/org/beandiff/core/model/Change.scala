@@ -20,9 +20,7 @@
 package org.beandiff.core.model
 
 
-trait Property {
-  
-  def value(target: Any): Any
-  
-  def setValue(target: Any, value: Any) = null // TODO TMP
+trait Change {
+
+  def perform() // TODO consider perform(target: Any)
 }
