@@ -21,8 +21,6 @@ package org.beandiff.core
 
 import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.model.DiffOldImpl
-import org.beandiff.core.model.LeafDiff
 import org.beandiff.core.model.DiffNewImpl
 import org.beandiff.core.model.EmptyPath
 import org.beandiff.core.model.Path

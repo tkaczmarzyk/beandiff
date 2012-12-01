@@ -20,7 +20,6 @@
 package org.beandiff.display
 
 import org.beandiff.core.model.EmptyPath
-import org.beandiff.core.model.LeafDiff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.Diff
