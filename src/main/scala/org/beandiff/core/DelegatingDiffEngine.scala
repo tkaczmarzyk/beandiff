@@ -29,14 +29,13 @@ import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.Self
 
-class DiffDelegator(
+class DelegatingDiffEngine(
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
-  private val engines = new ClassDictionary(new LeafDiffEngine(this, eqInvestigators, descStrategy))
-  	.withEntry(classOf[java.util.Set[_]] -> new TransformingDiffEngine(this, new ToListTransformer))
-  
-  
+  private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators, descStrategy)))
+    .withEntry(classOf[java.util.Set[_]] -> new TransformingDiffEngine(DelegatingDiffEngine.this, new ToListTransformer))
+
   def calculateDiff(o1: Any, o2: Any): Diff = {
     val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
     engine.calculateDiff(o1, o2)

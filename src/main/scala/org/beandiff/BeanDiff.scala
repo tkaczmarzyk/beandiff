@@ -21,7 +21,7 @@ package org.beandiff
 
 import java.io.PrintStream
 import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.core.DiffDelegator
+import org.beandiff.core.DelegatingDiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.core.model.Diff
 import org.beandiff.display.PlainTextDiffPresenter
@@ -62,7 +62,7 @@ object BeanDiff {
   def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
     val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
-    new DiffDelegator(eqInvestigators, new BreakCycleStrategy(DefaultDescStrategy)).calculateDiff(o1, o2)
+    new DelegatingDiffEngine(eqInvestigators, new BreakCycleStrategy(DefaultDescStrategy)).calculateDiff(o1, o2)
   }
   
   def print(diff: Diff): Unit = print(new PrintWriter(System.out), diff)
