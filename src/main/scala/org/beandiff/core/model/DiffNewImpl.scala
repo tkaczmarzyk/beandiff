@@ -20,9 +20,9 @@
 package org.beandiff.core.model
 
 
-class NewDiff(
-  private val path: Path,
-  private val target: Any,
+class DiffNewImpl(
+  private val path: Path, 
+  private val target: Any, 
   private val propChanges: Map[Property, Change]) extends Change {
 
   def this(target: Any, changes: Map[Property, Change]) =
@@ -35,7 +35,7 @@ class NewDiff(
   private def changes(currentPath: Path): Iterable[(Path, Change)] = {
     propChanges.toList.flatMap({
       case (prop, change) => change match { //TODO avoid direct type checks
-        case diff: NewDiff => diff.changes(currentPath)
+        case diff: DiffNewImpl => diff.changes(currentPath)
         case _ => List((currentPath.step(prop), change))
       }
     })
