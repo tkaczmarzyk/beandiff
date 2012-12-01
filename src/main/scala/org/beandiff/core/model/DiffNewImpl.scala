@@ -41,7 +41,7 @@ class DiffNewImpl(
     })
   }
   
-  def withSubDiff(property: Property, subDiff: DiffNewImpl): DiffNewImpl = { // TODO interface-based arg/return
+  def withSubDiff(property: Property, subDiff: Diff): DiffNewImpl = { // TODO interface-based arg/return
     new DiffNewImpl(path, target, propChanges + (property -> subDiff))
   }
   

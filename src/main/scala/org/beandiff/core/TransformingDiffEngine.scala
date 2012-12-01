@@ -21,7 +21,14 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Diff
 
-trait DiffEngine {
+class TransformingDiffEngine(
+    private val parent: DiffEngine,
+    private val transformer: ObjectTransformer) extends DiffEngine {
 
-  def calculateDiff(o1: Any, o2: Any): Diff
+  override def calculateDiff(o1: Any, o2: Any): Diff = {
+    val t1 = transformer.transform(o1)
+    val t2 = transformer.transform(o2)
+    
+    parent.calculateDiff(t1, t2)
+  }
 }

@@ -22,8 +22,8 @@ package org.beandiff
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
-
 import org.beandiff.BeanDiff.diff
+import org.beandiff.BeanDiff.printDiff
 import org.beandiff.BeanDiff.ignoreCase
 import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
@@ -34,6 +34,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import java.io.StringWriter
+import java.io.PrintWriter
 
 
 @RunWith(classOf[JUnitRunner])
@@ -259,6 +261,14 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       parent1.setChild(null)
       parent2.setChild(null)
       assert(!diff(parent1, parent2).hasDifference)
+    }
+  }
+  
+  test("should correctly present difference between sets") {
+    new Collections {
+      val writer = new StringWriter
+      printDiff(new PrintWriter(writer), jSet1, jSet3)
+      writer.toString() should startWith("[0] -- 'aaa' vs 'bbb'\n[1] -- 'bbb' vs 'ccc'")
     }
   }
 }

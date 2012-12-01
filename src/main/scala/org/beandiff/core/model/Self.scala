@@ -22,4 +22,6 @@ package org.beandiff.core.model
 class Self extends Property {
 
   def value(target: Any) = target
+  
+  override def toString = ""
 }
