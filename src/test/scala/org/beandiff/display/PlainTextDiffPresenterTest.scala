@@ -21,7 +21,7 @@ package org.beandiff.display
 
 import org.beandiff.beans.IdBean
 import org.beandiff.beans.ValueBean
-import org.beandiff.core.model.DiffNewImpl
+import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.EmptyPath
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.IndexProperty
@@ -40,13 +40,13 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean1 = new ValueBean[IdBean]("Aaa", new IdBean(17))
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
-  val valueDiff = new DiffNewImpl(EmptyPath, null, Map(
+  val valueDiff = new DiffImpl(EmptyPath, null, Map(
       new FieldProperty("id") -> new NewValue(8)))
   
-  val valuesDiff = new DiffNewImpl(EmptyPath, bean1.values, Map(
+  val valuesDiff = new DiffImpl(EmptyPath, bean1.values, Map(
       new IndexProperty(0) -> valueDiff))
   
-  val diff1 = new DiffNewImpl(EmptyPath, bean1, Map( // TODO reduce verbosity and dependency to other functionality
+  val diff1 = new DiffImpl(EmptyPath, bean1, Map( // TODO reduce verbosity and dependency to other functionality
       new FieldProperty("name") -> new NewValue("Bbb"),
       new FieldProperty("values") -> valuesDiff))
   

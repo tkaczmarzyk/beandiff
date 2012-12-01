@@ -20,7 +20,7 @@
 package org.beandiff.core.model
 
 
-class DiffNewImpl(
+class DiffImpl(
   private val path: Path, 
   val target: Any, 
   private val propChanges: Map[Property, Change]) extends Diff {
@@ -35,14 +35,14 @@ class DiffNewImpl(
   private def changes(currentPath: Path): Iterable[(Path, Change)] = { // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
       case (prop, change) => change match { //TODO avoid direct type checks
-        case diff: DiffNewImpl => diff.changes(currentPath.step(prop))
+        case diff: DiffImpl => diff.changes(currentPath.step(prop))
         case _ => List((currentPath.step(prop), change))
       }
     })
   }
   
-  def withSubDiff(property: Property, subDiff: Diff): DiffNewImpl = { // TODO interface-based arg/return
-    new DiffNewImpl(path, target, propChanges + (property -> subDiff))
+  def withSubDiff(property: Property, subDiff: Diff): DiffImpl = { // TODO interface-based arg/return
+    new DiffImpl(path, target, propChanges + (property -> subDiff))
   }
   
   override def hasDifference(): Boolean =

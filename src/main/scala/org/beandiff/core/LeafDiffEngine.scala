@@ -22,7 +22,7 @@ package org.beandiff.core
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.EmptyPath
-import org.beandiff.core.model.DiffNewImpl
+import org.beandiff.core.model.DiffImpl
 import org.beandiff.support.ClassDictionary
 import org.beandiff.core.model.Path
 import org.beandiff.equality.EqualityInvestigator
@@ -36,13 +36,13 @@ private class LeafDiffEngine(
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
   
-  def calculateDiff(o1: Any, o2: Any): DiffNewImpl = {
-    def calculateDiff0(currentPath: Path): DiffNewImpl = {
+  def calculateDiff(o1: Any, o2: Any): DiffImpl = {
+    def calculateDiff0(currentPath: Path): DiffImpl = {
       if (!descStrategy.shouldProceed(o1, o2)) {
         if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
-          new DiffNewImpl(currentPath, o1, Map(new Self -> new NewValue(o2)))
+          new DiffImpl(currentPath, o1, Map(new Self -> new NewValue(o2)))
         } else {
-          new DiffNewImpl(currentPath, o1, Map())
+          new DiffImpl(currentPath, o1, Map())
         }
       } else {
         val routes = routePlanners(o1.getClass).routes(o1, o2)
@@ -51,7 +51,7 @@ private class LeafDiffEngine(
           case (prop, (obj1, obj2)) => (prop, parent.calculateDiff(obj1, obj2))
         })
 
-        diffs.foldLeft(new DiffNewImpl(currentPath, o1, Map()))(
+        diffs.foldLeft(new DiffImpl(currentPath, o1, Map()))(
           (acc, propDiff) =>
             if (propDiff._2.hasDifference)
               acc.withSubDiff(propDiff._1, propDiff._2)
