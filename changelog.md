@@ -1,4 +1,4 @@
-## 0.0.2 (2012-11-XX)
+## 0.0.2 (2012-12-01)
 
 * better default support for `BigDecimal`
 * equality investigator for Comparables
