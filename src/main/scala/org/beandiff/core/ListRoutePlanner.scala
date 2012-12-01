@@ -20,6 +20,7 @@
 package org.beandiff.core
 
 import java.util.List
+import org.beandiff.core.model.Path
 
 class ListRoutePlanner extends RoutePlanner {
 

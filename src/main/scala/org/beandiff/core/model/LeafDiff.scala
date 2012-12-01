@@ -17,30 +17,10 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.model
 
-import org.beandiff.support.ObjectSupport._
 
-class FieldProperty(val name: String) extends Property {
+class LeafDiff(o1: Any, o2: Any) extends Diff(o1, o2, null) {
 
-  override def value(o: Any): Any = {
-    if (o hasField name)
-      o getFieldVal name
-    else null
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: FieldProperty => name == that.name
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    name.hashCode
-  }
-  
-  override def toString() = {
-    name
-  }
+  override val hasDifference = true
 }

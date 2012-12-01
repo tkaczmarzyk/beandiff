@@ -19,10 +19,11 @@
  */
 package org.beandiff.display
 
-import org.beandiff.core.Diff
-import org.beandiff.core.EmptyPath
-import org.beandiff.core.LeafDiff
-import org.beandiff.core.Path
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.EmptyPath
+import org.beandiff.core.model.LeafDiff
+import org.beandiff.core.model.Path
+
 
 class PlainTextDiffPresenter(
     private val pathValueSeparator: String = " -- ",

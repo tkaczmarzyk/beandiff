@@ -19,6 +19,9 @@
  */
 package org.beandiff.core
 
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.FieldProperty
+
 class FieldRoutePlanner extends RoutePlanner {
 
   def guide(current: Path, o1: Any, o2: Any, walker: ObjectWalker): Unit = {

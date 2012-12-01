@@ -22,7 +22,7 @@ package org.beandiff
 import java.io.PrintStream
 
 import org.beandiff.core.BreakCycleStrategy
-import org.beandiff.core.Diff
+import org.beandiff.core.model.Diff
 import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.display.PlainTextDiffPresenter

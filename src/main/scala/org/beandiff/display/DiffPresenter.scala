@@ -19,7 +19,8 @@
  */
 package org.beandiff.display
 
-import org.beandiff.core.Diff
+import org.beandiff.core.model.Diff
+
 
 trait DiffPresenter {
 

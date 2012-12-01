@@ -22,6 +22,9 @@ package org.beandiff.core
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.IndexProperty
 
 @RunWith(classOf[JUnitRunner])
 class PathTest extends FunSuite {

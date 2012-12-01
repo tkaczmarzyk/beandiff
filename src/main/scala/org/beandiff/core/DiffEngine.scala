@@ -21,6 +21,8 @@ package org.beandiff.core
 
 import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.LeafDiff
 
 class DiffEngine(
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],

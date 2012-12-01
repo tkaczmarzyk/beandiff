@@ -19,23 +19,22 @@
  */
 package org.beandiff
 
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.HashSet
+
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.ignoreCase
+import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.IndexProperty
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.beans.CollectionBean
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.HashSet
-import com.google.common.collect.Sets
-import java.util.IdentityHashMap
-import org.beandiff.core.Property
-import org.beandiff.core.IndexProperty
-import core.FieldProperty
+
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTest extends FunSuite with ShouldMatchers {

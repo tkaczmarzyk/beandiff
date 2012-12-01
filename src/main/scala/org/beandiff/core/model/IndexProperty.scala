@@ -17,16 +17,32 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.model
 
-//TODO reorganize path hierarchy
-object EmptyPath extends Path(null, null) {
+import java.util.List
+import org.beandiff.support.ObjectSupport._
+
+
+class IndexProperty(val index: Int) extends Property {
   
-  override val depth = 0
+  override def value(o: Any) = {
+    if (o.isInstanceOf[List[_]])
+      o(index)
+    else null
+  }
   
-  override def step(p: Property) = new Path(p)
+  override def equals(other: Any) = {
+    other match {
+      case that: IndexProperty => index == that.index
+      case _ => false
+    }
+  }
   
-  override def value(o: Any): Any = o
+  override def hashCode() = {
+    index.hashCode
+  }
   
-  override def toString = "" //FIXME separate toString for debug and for presentation
+  override def toString() = {
+    "[" + index + "]"
+  }
 }

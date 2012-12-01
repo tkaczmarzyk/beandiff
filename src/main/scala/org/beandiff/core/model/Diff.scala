@@ -17,7 +17,7 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.model
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map

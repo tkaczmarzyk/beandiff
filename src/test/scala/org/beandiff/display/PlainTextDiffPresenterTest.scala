@@ -22,9 +22,9 @@ package org.beandiff.display
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSuite
-import org.beandiff.core.Diff
-import org.beandiff.core.LeafDiff
-import org.beandiff.core.Path
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.LeafDiff
+import org.beandiff.core.model.Path
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.ValueBean
 import org.beandiff.beans.IdBean
