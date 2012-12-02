@@ -25,28 +25,29 @@ import org.scalatest.junit.JUnitRunner
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.NonEmptyPath
 
 @RunWith(classOf[JUnitRunner])
 class PathTest extends FunSuite {
 
   test("should parse index property followed by field property") {
-    assert(Path.of("[1].name") === new Path(new IndexProperty(1), new Path(new FieldProperty("name"))))
+    assert(Path.of("[1].name") === new NonEmptyPath(Vector(new IndexProperty(1), new FieldProperty("name"))))
   }
   
   test("should parse single index property") {
-    assert(Path.of("[19]") === new Path(new IndexProperty(19)))
+    assert(Path.of("[19]") === new NonEmptyPath(new IndexProperty(19)))
   }
   
   test("should parse a sequence of indexes") {
-    assert(Path.of("a[1][0]") === new Path(new FieldProperty("a"), new Path(new IndexProperty(1), new Path(new IndexProperty(0)))))
+    assert(Path.of("a[1][0]") === new NonEmptyPath(Vector(new FieldProperty("a"), new IndexProperty(1), new IndexProperty(0))))
   }
   
   test("should parse index property") {
-    assert(Path.of("a[1]") === new Path(new FieldProperty("a"), new Path(new IndexProperty(1))))
+    assert(Path.of("a[1]") === new NonEmptyPath(Vector(new FieldProperty("a"), new IndexProperty(1))))
   }
   
   test("should parse chain of property names") {
-    assert(Path.of("a.b") === new Path(new FieldProperty("a"), new Path(new FieldProperty("b"))))
+    assert(Path.of("a.b") === new NonEmptyPath(Vector(new FieldProperty("a"), new FieldProperty("b"))))
   }
   
   test("toString should return parseable representation") {

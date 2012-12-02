@@ -52,7 +52,7 @@ class PathParser extends RegexParsers with JavaTokenParsers {
   def path: Parser[Path] = {
     (property) ~ rep(nestedProperty) ^^ {
       x =>
-        new Path(x._1).step(x._2)
+        new NonEmptyPath(x._1).step(x._2)
     }
   }
   

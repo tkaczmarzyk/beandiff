@@ -21,13 +21,25 @@ package org.beandiff.core.model
 
 
 //TODO reorganize path hierarchy
-object EmptyPath extends Path(null, null) {
+object EmptyPath extends Path {
   
-  override val depth = 0
+  override def depth = 0
+
+  override def withIndex(i: Int): Path = step(new IndexProperty(i))
+
+  override def value(o: Any) = o
+
+  override def step(p: Property) = new NonEmptyPath(p)
+
+  override def ++(other: Path) = other
+
+  override def props = List[Property]()
   
-  override def step(p: Property) = new Path(p)
+  override def head = new Self
   
-  override def value(o: Any): Any = o
+  override def last = new Self
+  
+  override def tail = throw new UnsupportedOperationException("EmptyPath.tail")
   
   override def toString = "" //FIXME separate toString for debug and for presentation
 }

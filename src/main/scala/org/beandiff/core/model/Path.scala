@@ -19,6 +19,7 @@
  */
 package org.beandiff.core.model
 
+
 object Path {
 
   final val FieldSeparator = "."
@@ -37,44 +38,19 @@ object Path {
 
 }
 
-class Path(val head: Property, val tail: Path) {
+abstract class Path {
 
-  def this(head: Property) = {
-    this(head, EmptyPath)
-  }
-
-  def depth: Int = {
-    { if (head != null) 1 else 0 } + tail.depth //TODO add ThisProperty class, avoid null
-  }
+  def depth: Int
 
   def withIndex(i: Int): Path = step(new IndexProperty(i))
 
-  def value(o: Any): Any = {
-    if (tail == null)
-      head.value(o)
-    else
-      tail.value(head.value(o))
-  }
+  def value(o: Any): Any
 
-  def stepBack: Path = {
-    if (tail == null)
-      EmptyPath
-    else
-      new Path(head, tail.stepBack)
-  }
+  def step(p: Property): Path
 
-  def step(p: Property): Path = {
-    if (tail == null)
-      new Path(head, new Path(p, null))
-    else
-      new Path(head, tail.step(p))
-  }
-
-  def ++(other: Path): Path = {
-    if (other == EmptyPath)
-      this
-    else this.step(other.head) ++ other.tail
-  }
+  def props: Iterable[Property]
+  
+  def ++(other: Path): Path
 
   def step(props: List[Property]): Path = {
     if (props.isEmpty)
@@ -83,27 +59,10 @@ class Path(val head: Property, val tail: Path) {
       this.step(props.head).step(props.tail)
   }
 
-  def last: Property = {
-    if (tail == null || tail.depth == 0)
-      head
-    else tail.last
-  }
-
-  override def equals(o: Any): Boolean = {
-    o match {
-      case that: Path => this.head == that.head && this.tail == that.tail
-      case _ => false
-    }
-  }
-
-  override def toString() = {
-    head.toString + {
-      if (tail != null)
-        if (tail.head.isInstanceOf[FieldProperty]) // FIXME avoid type check
-          Path.FieldSeparator + tail.toString
-        else
-          tail.toString
-      else ""
-    }
-  }
+  def head: Property
+  
+  def last: Property
+  
+  def tail: Path
+  
 }
