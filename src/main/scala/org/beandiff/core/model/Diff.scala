@@ -26,8 +26,12 @@ trait Diff extends Change {
   def hasDifference(path: String): Boolean
   def hasDifference(p: Path): Boolean
   
-  def changes: Iterable[(Path, Change)]
+  def leafChanges: Iterable[(Path, Change)]
+  def changes: Iterable[(Property, Change)]
   
-  def perform(): Unit
+  def withChange(property: Property, change: Change): Diff
+  def withChange(path: Path, change: Change): Diff
+  
+  def transformTarget(): Unit
   def target: Any
 }

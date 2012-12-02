@@ -27,6 +27,8 @@ import org.beandiff.support.ClassDictionary
 import org.beandiff.core.model.Path
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.DiffImpl
 
 private class LeafDiffEngine(
   private val parent: DiffEngine,
@@ -35,32 +37,26 @@ private class LeafDiffEngine(
 
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
-  
-  def calculateDiff(o1: Any, o2: Any): DiffImpl = {
-    def calculateDiff0(currentPath: Path): DiffImpl = {
-      if (!descStrategy.shouldProceed(o1, o2)) {
-        if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
-          new DiffImpl(currentPath, o1, Map(new Self -> new NewValue(o2)))
-        } else {
-          new DiffImpl(currentPath, o1, Map())
-        }
+  def calculateDiff(o1: Any, o2: Any): Diff = {
+    val zero = new DiffImpl(EmptyPath, o1, Map())
+    calculateDiff0(zero, EmptyPath, o1, o2)
+  }
+
+  private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
+    if (!descStrategy.shouldProceed(o1, o2)) {
+      if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
+        zero.withChange(location, new NewValue(location.last, o1, o2))
       } else {
-        val routes = routePlanners(o1.getClass).routes(o1, o2)
-
-        val diffs = routes.map({
-          case (prop, (obj1, obj2)) => (prop, parent.calculateDiff(obj1, obj2))
-        })
-
-        diffs.foldLeft(new DiffImpl(currentPath, o1, Map()))(
-          (acc, propDiff) =>
-            if (propDiff._2.hasDifference)
-              acc.withSubDiff(propDiff._1, propDiff._2)
-            else acc
-        )
+        zero
       }
-    }
+    } else {
+      val routes = routePlanners(o1.getClass).routes(o1, o2)
 
-    calculateDiff0(EmptyPath)
+      routes.foldLeft(zero)(
+        (accDiff, route) => route match {
+          case (prop, (obj1, obj2)) => parent.calculateDiff0(accDiff, location.step(prop), obj1, obj2)
+        })
+    }
   }
 
   private def getEqInvestigator(val1: Any, val2: Any) = {

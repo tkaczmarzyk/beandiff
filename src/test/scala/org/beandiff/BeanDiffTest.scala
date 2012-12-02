@@ -244,6 +244,8 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should correctly present difference between sets") {
     new Collections {
+      val tmp = diff(jSet1, jSet3)
+      
       val writer = new StringWriter
       printDiff(new PrintWriter(writer), jSet1, jSet3)
       writer.toString() should startWith("[0] -- 'aaa' vs 'bbb'\n[1] -- 'bbb' vs 'ccc'")

@@ -34,11 +34,15 @@ class DelegatingDiffEngine(
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators, descStrategy)))
-    .withEntry(classOf[java.util.Set[_]] -> new TransformingDiffEngine(DelegatingDiffEngine.this, new ToListTransformer))
+    .withEntry(classOf[java.util.Set[_]] ->
+      new TransformingDiffEngine(DelegatingDiffEngine.this, new ToListTransformer, Map(classOf[NewValue] -> new IndexPropChangeTranslator)))
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
-    engine.calculateDiff(o1, o2)
+    calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)
   }
 
+  private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
+    val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
+    engine.calculateDiff0(zero, location, o1, o2)
+  }
 }

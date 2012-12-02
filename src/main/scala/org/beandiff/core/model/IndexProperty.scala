@@ -31,6 +31,14 @@ class IndexProperty(val index: Int) extends Property {
     else null
   }
   
+  override def setValue(target: Any, value: Any) = {
+    if (target.isInstanceOf[List[_]]) {
+      target.asInstanceOf[List[Any]].set(index, value)
+    } else {
+      throw new IllegalArgumentException("expected List but was: " + target)
+    }
+  }
+  
   override def equals(other: Any) = {
     other match {
       case that: IndexProperty => index == that.index

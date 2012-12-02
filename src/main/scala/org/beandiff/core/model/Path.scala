@@ -84,7 +84,7 @@ class Path(val head: Property, val tail: Path) {
   }
 
   def last: Property = {
-    if (tail == null)
+    if (tail == null || tail.depth == 0)
       head
     else tail.last
   }

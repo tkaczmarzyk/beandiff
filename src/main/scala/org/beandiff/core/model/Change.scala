@@ -22,8 +22,11 @@ package org.beandiff.core.model
 
 trait Change {
 
-  def perform(): Unit // TODO better name // TODO consider perform(target: Any)
+  def perform(target: Any): Unit // TODO better name
   
   @deprecated
   def newValue: Any // FIXME tmp
+  
+  @deprecated
+  def oldValue: Any //FIXME tmp
 }

@@ -19,12 +19,20 @@
  */
 package org.beandiff.core.model
 
-class Self extends Property {
+class Insertion(
+    private val index: Int,
+    private val element: Any) extends Change {
 
-  def value(target: Any) = target
+  type jList = java.util.List[Any]
   
-  def setValue(target: Any, value: Any) =
-    throw new UnsupportedOperationException("Self.setValue")
-  
-  override def toString = ""
+  override def perform(target: Any): Unit = {
+    require(target.isInstanceOf[jList])
+    val list = target.asInstanceOf[jList]
+    list.add(index, element)
+  }
+
+  override def newValue =
+    throw new UnsupportedOperationException
+    
+  override def oldValue() = throw new UnsupportedOperationException("tmp")
 }

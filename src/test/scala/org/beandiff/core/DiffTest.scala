@@ -17,41 +17,36 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.display
+package org.beandiff.core
 
-import org.beandiff.beans.IdBean
-import org.beandiff.beans.ValueBean
+import org.beandiff.BeanDiff
+import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.EmptyPath
-import org.beandiff.core.model.FieldProperty
-import org.beandiff.core.model.IndexProperty
-import org.beandiff.core.model.NewValue
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.FieldProperty
 
 @RunWith(classOf[JUnitRunner])
-class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
+class DiffTest extends FunSuite with ShouldMatchers {
 
-  val presenter = new PlainTextDiffPresenter
-  
-  val bean1 = new ValueBean[IdBean]("Aaa", new IdBean(17))
-  val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
-  
-  val valueDiff = new DiffImpl(EmptyPath, null, Map(
-      new FieldProperty("id") -> new NewValue(new FieldProperty("id"), 17, 8)))
-  
-  val valuesDiff = new DiffImpl(EmptyPath, bean1.values, Map(
-      new IndexProperty(0) -> valueDiff))
-  
-  val diff1 = new DiffImpl(EmptyPath, bean1, Map( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> new NewValue(new FieldProperty("name"), "Aaa", "Bbb"),
-      new FieldProperty("values") -> valuesDiff))
+  val simpleBean1 = new SimpleJavaBean("aa", 1)
+  val simpleDiff = BeanDiff.diff(simpleBean1, new SimpleJavaBean("bb", 1))
   
   
-  test("should display simple properties") {
-    presenter.present(diff1) should be === "name -- 'Aaa' vs 'Bbb'\n" + "values[0].id -- '17' vs '8'\n"
+  test("should add change at the path") {
+    val diff = new DiffImpl(EmptyPath, null, Map())
+    val updated = diff.withChange(Path.of("aa.bb"), new NewValue(new FieldProperty("bb"), ":(", ":)"))
+    
+    assert(updated.leafChanges.exists(_._1 == Path.of("aa.bb")))
+  }
+  
+  test("there should be no difference in simple property after transformation") {
+    simpleDiff.transformTarget()
+    simpleBean1.getName() should be === "bb"
   }
 }

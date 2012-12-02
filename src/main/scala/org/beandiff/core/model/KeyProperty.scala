@@ -26,6 +26,10 @@ class KeyProperty(val key: String) extends Property {
     throw new IllegalStateException("not implemented yet")
   }
   
+  def setValue(target: Any, value: Any) = {
+    throw new IllegalStateException("not implemented yet")
+  }
+  
   override def equals(other: Any) = {
     other match {
       case that: KeyProperty => key == that.key

@@ -30,6 +30,14 @@ class FieldProperty(val name: String) extends Property {
     else null
   }
   
+  override def setValue(target: Any, value: Any) = {
+    if (target hasField name)
+      target.setFieldVal(name, value)
+    else {
+      throw new IllegalArgumentException(target + " doesn't have field " + name)
+    }
+  }
+  
   override def equals(other: Any) = {
     other match {
       case that: FieldProperty => name == that.name

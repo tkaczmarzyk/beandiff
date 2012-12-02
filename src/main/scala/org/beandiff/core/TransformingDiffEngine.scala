@@ -20,15 +20,35 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.EmptyPath
+import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.Change
 
 class TransformingDiffEngine(
     private val parent: DiffEngine,
-    private val transformer: ObjectTransformer) extends DiffEngine {
+    private val transformer: ObjectTransformer,
+    private val translators: Map[Class[_ <: Change], ChangeTranslator]) extends DiffEngine {
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
+    calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)
+  }
+  
+  private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any) = {
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
     
-    parent.calculateDiff(t1, t2)
+    val diff = parent.calculateDiff0(zero, location, t1, t2)
+    
+    diff.changes.foldLeft(diff)(
+        (diff, propChange) => diff.withChange(propChange._1, transform(propChange._2))) //TODO test withChange(emptyDiff)
+  }
+  
+  private def transform(change: Change) = {
+    translators.get(change.getClass) match {
+      case Some(t) => t.translate(change)
+      case None => change
+    }
   }
 }

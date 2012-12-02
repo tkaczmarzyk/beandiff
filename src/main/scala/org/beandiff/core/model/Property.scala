@@ -24,5 +24,5 @@ trait Property {
   
   def value(target: Any): Any
   
-  def setValue(target: Any, value: Any) = null // TODO TMP
+  def setValue(target: Any, value: Any)
 }

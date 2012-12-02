@@ -29,20 +29,38 @@ class DiffImpl(
     this(EmptyPath, target, changes)
 
     
-  def changes: Iterable[(Path, Change)] =
-    changes(EmptyPath)
+  override def leafChanges: Iterable[(Path, Change)] =
+    leafChanges(EmptyPath)
 
-  private def changes(currentPath: Path): Iterable[(Path, Change)] = { // TODO generic method for traversation (with break option)
+  private def leafChanges(currentPath: Path): Iterable[(Path, Change)] = { // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
       case (prop, change) => change match { //TODO avoid direct type checks
-        case diff: DiffImpl => diff.changes(currentPath.step(prop))
+        case diff: DiffImpl => diff.leafChanges(currentPath.step(prop))
         case _ => List((currentPath.step(prop), change))
       }
     })
   }
   
-  def withSubDiff(property: Property, subDiff: Diff): DiffImpl = { // TODO interface-based arg/return
-    new DiffImpl(path, target, propChanges + (property -> subDiff))
+  override def changes: Iterable[(Property, Change)] = 
+    propChanges.toList
+  
+  override def withChange(property: Property, change: Change): DiffImpl = {
+    new DiffImpl(path, target, propChanges + (property -> change))
+  }
+  
+  override def withChange(path: Path, change: Change): Diff = {
+    if (path == null || path.depth == 0) {
+      withChange(new Self, change)
+    } else if (path.depth == 1) {
+      withChange(path.head, change)
+    } else {
+      val interDiff =
+        if (propChanges.contains(path.head))
+          propChanges(path.head).asInstanceOf[Diff] //TODO
+        else new DiffImpl(this.path.step(path.head), null, Map())
+      
+      withChange(path.head, interDiff.withChange(path.tail, change))
+    }
   }
   
   override def hasDifference(): Boolean =
@@ -69,11 +87,14 @@ class DiffImpl(
     }
   }
   
+  override def transformTarget() = perform(null, null)
+  
   override def newValue() = throw new UnsupportedOperationException("tmp")
+  override def oldValue() = throw new UnsupportedOperationException("tmp")
     
-  override def perform() = {
+  override def perform(parent: Any) = {
     propChanges.foreach({
-      case (prop, change) => change.perform()
+      case (prop, change) => change.perform(target) 
     })
   }
 }

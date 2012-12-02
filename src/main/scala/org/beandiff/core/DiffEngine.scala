@@ -20,8 +20,12 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.Path
 
 trait DiffEngine {
 
-  def calculateDiff(o1: Any, o2: Any): Diff
+  def calculateDiff(o1: Any, o2: Any): Diff // TODO refactor: seems to be implemented the same way in all concrete classes
+  
+  private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff
 }

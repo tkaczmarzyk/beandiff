@@ -34,9 +34,17 @@ class ObjectSupport(val target: Any) {
   }
   
   def getFieldVal(name: String) = {
+    getField(name).get(target)
+  }
+  
+  def getField(name: String) = {
     val f = target.getClass.getDeclaredField(name)
     f.setAccessible(true)
-    f.get(target)
+    f
+  }
+  
+  def setFieldVal(fieldName: String, value: Any) = {
+    getField(fieldName).set(target, value)
   }
   
   def apply(index: Int) = target.asInstanceOf[java.util.List[_]].get(index).asInstanceOf[Object]

@@ -37,9 +37,9 @@ class PlainTextDiffPresenter(
     else {
       val result = new StringBuilder
 
-      for ((path, change) <- d.changes) {
+      for ((path, change) <- d.leafChanges) {
         result.append(path).append(pathValueSeparator)
-        result.append(valueQuote).append(path.value(d.target)).append(valueQuote)
+        result.append(valueQuote).append(change.oldValue).append(valueQuote)
         result.append(valuesSeparator)
         result.append(valueQuote).append(change.newValue).append(valueQuote)
         result.append(differenceSeparator)

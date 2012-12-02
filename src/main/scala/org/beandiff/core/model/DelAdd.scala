@@ -19,12 +19,20 @@
  */
 package org.beandiff.core.model
 
-class Self extends Property {
 
-  def value(target: Any) = target
+class DelAdd(
+    private val deleted: Any,
+    private val added: Any) extends Change {
+
+  def perform(target: Any): Unit = {
+    val collection = target.asInstanceOf[java.util.Collection[Any]]
+    collection.remove(deleted)
+    collection.add(added)
+  }
   
-  def setValue(target: Any, value: Any) =
-    throw new UnsupportedOperationException("Self.setValue")
+  @deprecated
+  def newValue: Any = added
   
-  override def toString = ""
+  @deprecated
+  def oldValue: Any = deleted
 }

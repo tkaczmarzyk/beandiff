@@ -17,14 +17,20 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.core
 
-class Self extends Property {
+import org.beandiff.core.model.Change
+import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.DelAdd
 
-  def value(target: Any) = target
-  
-  def setValue(target: Any, value: Any) =
-    throw new UnsupportedOperationException("Self.setValue")
-  
-  override def toString = ""
+
+class IndexPropChangeTranslator extends ChangeTranslator {
+
+  override def translate(change: Change) = {
+    if (change.isInstanceOf[NewValue]) {
+      new DelAdd(change.oldValue, change.newValue) // TODO verify that property is IndexProperty
+    } else {
+      change
+    }
+  }
 }
