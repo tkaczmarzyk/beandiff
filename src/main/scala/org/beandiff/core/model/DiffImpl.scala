@@ -50,15 +50,14 @@ class DiffImpl(
   }
   
   override def withChange(path: Path, change: Change): Diff = {
-    if (path == null || path.depth == 0) {
-      withChange(new Self, change)
-    } else if (path.depth == 1) {
+    if (path.depth <= 1) {
       withChange(path.head, change)
     } else {
       val interDiff =
         if (propChanges.contains(path.head))
           propChanges(path.head).asInstanceOf[Diff] //TODO
-        else new DiffImpl(this.path.step(path.head), null, Map())
+        else
+          new DiffImpl(this.path.step(path.head), null, Map())
       
       withChange(path.head, interDiff.withChange(path.tail, change))
     }
@@ -71,7 +70,7 @@ class DiffImpl(
     hasDifference(Path.of(pathStr))
   
   override def hasDifference(pathToFind: Path): Boolean = { // FIXME tmp, refactor!!
-    if (pathToFind == null || pathToFind == EmptyPath) {
+    if (pathToFind == EmptyPath) {
       return hasDifference
     }
     if (pathToFind.depth == 1) {
