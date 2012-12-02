@@ -19,6 +19,7 @@
  */
 package org.beandiff.core.model
 
+import Path.EmptyPath
 
 class DiffImpl(
   private val path: Path, 

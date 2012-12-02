@@ -22,13 +22,13 @@ package org.beandiff.core
 import org.beandiff.BeanDiff
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.DiffImpl
-import org.beandiff.core.model.EmptyPath
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.FieldProperty
 
 @RunWith(classOf[JUnitRunner])

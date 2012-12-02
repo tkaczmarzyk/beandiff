@@ -36,6 +36,7 @@ object Path {
     new PathParser().parsePath(pathStr)
   }
 
+  val EmptyPath = new PathImpl(Vector())
 }
 
 abstract class Path {

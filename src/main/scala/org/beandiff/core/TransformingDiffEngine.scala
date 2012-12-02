@@ -22,9 +22,9 @@ package org.beandiff.core
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.Path
-import org.beandiff.core.model.EmptyPath
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Change
+
 
 class TransformingDiffEngine(
     private val parent: DiffEngine,

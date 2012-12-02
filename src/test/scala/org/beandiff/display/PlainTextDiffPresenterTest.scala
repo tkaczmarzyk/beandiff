@@ -22,7 +22,6 @@ package org.beandiff.display
 import org.beandiff.beans.IdBean
 import org.beandiff.beans.ValueBean
 import org.beandiff.core.model.DiffImpl
-import org.beandiff.core.model.EmptyPath
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.NewValue
@@ -31,6 +30,8 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {

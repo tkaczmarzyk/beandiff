@@ -22,7 +22,7 @@ package org.beandiff.core
 import org.beandiff.support.ClassDictionary
 import ObjectWalker._
 import org.beandiff.core.model.Path
-import org.beandiff.core.model.EmptyPath
+import org.beandiff.core.model.Path.EmptyPath
 
 object ObjectWalker {
   final val DefaultRoutePlanners: ClassDictionary[RoutePlanner] = new ClassDictionary(new FieldRoutePlanner,
