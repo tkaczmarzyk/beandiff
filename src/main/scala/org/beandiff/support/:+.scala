@@ -17,11 +17,14 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.support
 
-object TypeDefs {
+object :+ {
 
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[_]
-  
+  def unapply[A](l: Seq[A]): Option[(Seq[A], A)] = {
+    if (l.isEmpty)
+      None
+    else
+      Some(l.init, l.last)
+  }
 }

@@ -17,11 +17,29 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.core
 
-object TypeDefs {
+import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.TypeDefs._
 
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[_]
-  
+
+class LcsDiffEngine(
+    private val delegate: DiffEngine,
+    private val idComparator: EqualityInvestigator) extends DiffEngine { // TODO consider new interface for ID comparing
+
+  def calculateDiff(o1: Any, o2: Any) = {
+    val zero = new DiffImpl(EmptyPath, o1, Map())
+    calculateDiff0(zero, EmptyPath, o1, o2)
+  }
+
+  private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
+    val l1 = o1.asInstanceOf[JList]
+    val l2 = o2.asInstanceOf[JList]
+    
+    null //TODO
+  }
 }

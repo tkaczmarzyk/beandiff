@@ -17,11 +17,9 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.core.lcs
 
-object TypeDefs {
-
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[_]
-  
-}
+case class Occurence(
+    value: Any,
+    index1: Int,
+    index2: Int)

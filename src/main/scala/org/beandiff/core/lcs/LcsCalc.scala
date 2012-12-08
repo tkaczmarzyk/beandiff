@@ -17,11 +17,12 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.core.lcs
 
-object TypeDefs {
+import org.beandiff.TypeDefs.JList
 
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[_]
-  
+
+trait LcsCalc {
+
+  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
 }
