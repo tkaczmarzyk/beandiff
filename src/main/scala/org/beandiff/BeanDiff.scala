@@ -19,9 +19,12 @@
  */
 package org.beandiff
 
-import java.io.PrintStream
+import java.io.PrintWriter
+
+import org.beandiff.TypeDefs.JBigDecimal
 import org.beandiff.core.BreakCycleStrategy
 import org.beandiff.core.DelegatingDiffEngine
+import org.beandiff.core.EndOnNullStrategy
 import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.core.model.Diff
 import org.beandiff.display.PlainTextDiffPresenter
@@ -31,8 +34,6 @@ import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
-import org.beandiff.core.EndOnNullStrategy
-import java.io.PrintWriter
 
 /**
  * A container for syntactic sugar methods
@@ -41,15 +42,14 @@ import java.io.PrintWriter
  */
 object BeanDiff {
 
-  private type jBigDecimal = java.math.BigDecimal // TODO consider moving to common location?
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
   
-  final val DefaultDescStrategy = new EndOnNullStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[jBigDecimal]))
+  final val DefaultDescStrategy = new EndOnNullStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal]))
   
   final val DefaultPresenter = new PlainTextDiffPresenter
   
   final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator)
-    .withEntry(classOf[jBigDecimal] -> new ComparableEqualityInvestigator)
+    .withEntry(classOf[JBigDecimal] -> new ComparableEqualityInvestigator)
   	.withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
   
   val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
