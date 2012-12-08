@@ -19,8 +19,6 @@
  */
 package org.beandiff.lcs
 
-import org.beandiff.TypeDefs.JList
-
 
 trait LcsCalc {
 
