@@ -17,12 +17,27 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.lcs
+package org.beandiff.lcs
 
 import org.beandiff.TypeDefs.JList
+import org.beandiff.support.:+
 
+class NaiveLcsCalc extends LcsCalc {
 
-trait LcsCalc {
-
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
+  override def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence] = {
+    if (xs.isEmpty || ys.isEmpty)
+      Vector()
+    else (xs, ys) match {
+      case (xs1 :+ x, ys1 :+ y) =>
+        if (x == y)
+          lcs(xs1, ys1) :+ Occurence(x, xs.length - 1, ys.length - 1)
+        else {
+          val lcs1 = lcs(xs1, ys)
+          val lcs2 = lcs(xs, ys1)
+          
+          if (lcs1.length > lcs2.length) lcs1
+          else lcs2
+        }
+    }
+  }
 }

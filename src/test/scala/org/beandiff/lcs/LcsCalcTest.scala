@@ -17,12 +17,12 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.lcs
+package org.beandiff.lcs
 
-import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
 
 
 @RunWith(classOf[JUnitRunner])
