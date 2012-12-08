@@ -21,15 +21,17 @@ package org.beandiff.lcs
 
 import org.beandiff.TypeDefs.JList
 import org.beandiff.support.:+
+import org.beandiff.equality.EqualityInvestigator
 
-class NaiveLcsCalc extends LcsCalc {
+class NaiveLcsCalc(
+    private val id: EqualityInvestigator) extends LcsCalc {
 
   override def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence] = {
     if (xs.isEmpty || ys.isEmpty)
       Vector()
     else (xs, ys) match {
       case (xs1 :+ x, ys1 :+ y) =>
-        if (x == y)
+        if (id.areEqual(x, y))
           lcs(xs1, ys1) :+ Occurence(x, xs.length - 1, ys.length - 1)
         else {
           val lcs1 = lcs(xs1, ys)

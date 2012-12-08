@@ -23,12 +23,13 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.equality.StdEqualityInvestigator
 
 
 @RunWith(classOf[JUnitRunner])
 class LcsCalcTest extends FunSuite with ShouldMatchers {
 
-  private val calc = new NaiveLcsCalc
+  private val calc = new NaiveLcsCalc(new StdEqualityInvestigator)
   
 
   test("lcs of empty lists should be empty") {
