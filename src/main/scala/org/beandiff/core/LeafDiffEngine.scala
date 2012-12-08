@@ -31,7 +31,7 @@ import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.DiffImpl
 
 private class LeafDiffEngine(
-  private val parent: DiffEngine,
+  private val delegate: DiffEngine,
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
@@ -54,7 +54,7 @@ private class LeafDiffEngine(
 
       routes.foldLeft(zero)(
         (accDiff, route) => route match {
-          case (prop, (obj1, obj2)) => parent.calculateDiff0(accDiff, location.step(prop), obj1, obj2)
+          case (prop, (obj1, obj2)) => delegate.calculateDiff0(accDiff, location.step(prop), obj1, obj2)
         })
     }
   }

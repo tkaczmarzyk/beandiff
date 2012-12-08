@@ -27,7 +27,7 @@ import org.beandiff.core.model.Change
 
 
 class TransformingDiffEngine(
-    private val parent: DiffEngine,
+    private val delegate: DiffEngine,
     private val transformer: ObjectTransformer,
     private val translators: Map[Class[_ <: Change], ChangeTranslator]) extends DiffEngine {
 
@@ -39,7 +39,7 @@ class TransformingDiffEngine(
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
     
-    val diff = parent.calculateDiff0(zero, location, t1, t2)
+    val diff = delegate.calculateDiff0(zero, location, t1, t2)
     
     diff.changes.foldLeft(diff)(
         (diff, propChange) => diff.withChange(propChange._1, transform(propChange._2))) //TODO test withChange(emptyDiff)
