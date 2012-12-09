@@ -19,17 +19,23 @@
  */
 package org.beandiff.core
 
-import org.beandiff.core.model.DiffImpl
+import scala.collection.JavaConversions.asScalaBuffer
+import org.beandiff.TypeDefs.JList
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.TypeDefs._
+import org.beandiff.lcs.LcsCalc
+import org.beandiff.support.CollectionSupport.convert
+import org.beandiff.core.model.Deletion
+import org.beandiff.core.model.Change
+import org.beandiff.core.model.Deletion
+import org.beandiff.core.model.Insertion
 
 
 class LcsDiffEngine(
-    private val delegate: DiffEngine,
-    private val idComparator: EqualityInvestigator) extends DiffEngine { // TODO consider new interface for ID comparing
+  private val delegate: DiffEngine,
+  private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
     val zero = new DiffImpl(EmptyPath, o1, Map())
@@ -37,9 +43,30 @@ class LcsDiffEngine(
   }
 
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
-    val l1 = o1.asInstanceOf[JList]
-    val l2 = o2.asInstanceOf[JList]
+    val xs = o1.asInstanceOf[JList]
+    val ys = o2.asInstanceOf[JList]
+
+    val lcs = lcsCalc.lcs(xs, ys)
+
+    val deleted = xs.dropIndices(lcs.map(_.index1))
+    val inserted = ys.dropIndices(lcs.map(_.index2))
+
+    val dels = deleted.foldLeft(zero)(withChange(location, zero, new Deletion(_, _)))
+    val delsAndInserts = inserted.foldLeft(dels)(withChange(location, zero, new Insertion(_, _)))
     
-    null //TODO
+    lcs.foldLeft(delsAndInserts)(
+        (accDiff, occurence) => {
+          val ver1 = xs.get(occurence.index1)
+          val ver2 = ys.get(occurence.index2)
+          delegate.calculateDiff0(accDiff, location.withIndex(occurence.index1), ver1, ver2)
+        }
+    )
   }
+
+  private def withChange(location: Path, acc: Diff, changeGen: (Any, Int) => Change)(accDiff: Diff, elemWithIndex: (Any, Int)) = {
+    elemWithIndex match {
+      case (elem, index) => accDiff.withChange(location, changeGen(elem, index)) // TODO or: location.withIndex(index)
+    }
+  }
+
 }

@@ -19,30 +19,24 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.core.model.Path.EmptyPath
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
+class FlatChangeSet(
+    private val path: Path, // FIXME now it's rather a Property: either change field type or fix the impl
+    private val selfChanges: List[Change]) extends ChangeSet {
+
   
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
+  def this(path: Path, changes: Change*) {
+    this(path, List(changes:_*))
   }
   
-  override def equals(other: Any) = {
-    other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
-    }
-  }
   
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
-  }
-
+  override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (path, ch))
+  
+  override def withChange(change: Change) = new FlatChangeSet(path, selfChanges :+ change)
+  
+  override def withChange(path: Path, change: Change): ChangeSet = this.toDiff.withChange(path, change)
+  
+  private def toDiff = new DiffImpl(path, null, Map(Self -> this)) // FIXME nulls
 }

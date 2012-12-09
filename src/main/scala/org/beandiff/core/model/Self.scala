@@ -19,7 +19,7 @@
  */
 package org.beandiff.core.model
 
-class Self extends Property {
+object Self extends Property {
 
   def value(target: Any) = target
   
@@ -27,4 +27,5 @@ class Self extends Property {
     throw new UnsupportedOperationException("Self.setValue")
   
   override def toString = ""
+  
 }

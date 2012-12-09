@@ -20,17 +20,18 @@
 package org.beandiff.core.model
 
 // TODO factory for values such as EmptyDiff etc
-trait Diff extends Change {
+trait Diff extends ChangeSet {
 
   def hasDifference(): Boolean
   def hasDifference(path: String): Boolean
   def hasDifference(p: Path): Boolean
   
-  def leafChanges: Iterable[(Path, Change)]
-  def changes: Iterable[(Property, Change)]
+  def leafChanges: Traversable[(Path, Change)]
+  def changes: Traversable[(Property, ChangeSet)] // TODO
   
-  def withChange(property: Property, change: Change): Diff
+  def withChanges(property: Property, change: ChangeSet): Diff
   def withChange(path: Path, change: Change): Diff
+  def withChange(property: Property, change: Change): Diff
   
   def transformTarget(): Unit
   def target: Any

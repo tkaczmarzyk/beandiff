@@ -19,30 +19,38 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.TypeDefs._
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
+class Deletion(
+  private val deleted: Any, // TODO it's only for presentation -- eliminat, 
+  private val index: Int) extends Change with Equals {
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
-  
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
+  override def perform(target: Any): Unit = {
+    target.asInstanceOf[JList].remove(index)
   }
+
+  @deprecated
+  override def newValue: Any = null
+
+  @deprecated
+  override def oldValue: Any = deleted
+
   
+  override def toString = "Deletion[" + deleted + ", " + index + "]"
+
+  override def canEqual(other: Any) = {
+    other.isInstanceOf[org.beandiff.core.model.Deletion]
+  }
+
   override def equals(other: Any) = {
     other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
+      case that: org.beandiff.core.model.Deletion => that.canEqual(Deletion.this) && deleted == that.deleted && index == that.index
       case _ => false
     }
   }
-  
+
   override def hashCode() = {
     val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
+    prime * (prime + deleted.hashCode) + index.hashCode
   }
-
 }

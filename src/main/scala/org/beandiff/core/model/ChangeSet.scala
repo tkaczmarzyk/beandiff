@@ -20,29 +20,19 @@
 package org.beandiff.core.model
 
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
+object ChangeSet {
+  
+  def apply(path: Path): ChangeSet = new FlatChangeSet(path)
+  
+  def apply(path: Path, changes: Change*): ChangeSet = new FlatChangeSet(path, changes:_*)
+}
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
-  
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
-  }
+trait ChangeSet {
 
+  def leafChanges: Traversable[(Path, Change)]
+  
+  def withChange(change: Change): ChangeSet
+  
+  def withChange(path: Path, change: Change): ChangeSet
+  
 }

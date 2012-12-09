@@ -17,18 +17,16 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.model
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.FieldProperty
-import org.beandiff.core.model.IndexProperty
-import org.beandiff.core.model.PathImpl
+import Path.EmptyPath
+import org.scalatest.matchers.ShouldMatchers
 
 @RunWith(classOf[JUnitRunner])
-class PathTest extends FunSuite {
+class PathTest extends FunSuite with ShouldMatchers {
 
   test("should parse index property followed by field property") {
     assert(Path.of("[1].name") === new PathImpl(Vector(new IndexProperty(1), new FieldProperty("name"))))
@@ -52,5 +50,15 @@ class PathTest extends FunSuite {
   
   test("toString should return parseable representation") {
     assert(Path.of("values[0].id").toString === "values[0].id")
+  }
+  
+  test("empty + empty = empty") {
+    (EmptyPath ++ EmptyPath) should be === EmptyPath
+  }
+  
+  test("path step Self should yield path itself") {
+    val path = Path(Property("name"))
+    
+    path.step(Self) should be === path
   }
 }

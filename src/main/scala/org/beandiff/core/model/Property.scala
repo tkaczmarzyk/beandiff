@@ -19,6 +19,19 @@
  */
 package org.beandiff.core.model
 
+import java.io.StringReader
+
+
+object Property {
+
+  def apply(propStr: String): Property = {
+    val path = new PathParser().parsePath(propStr)
+    if (path.depth != 1)
+      throw new IllegalArgumentException("not a single property: " + propStr)
+    else
+      path.head
+  }
+}
 
 trait Property {
   

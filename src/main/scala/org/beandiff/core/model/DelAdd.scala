@@ -20,7 +20,7 @@
 package org.beandiff.core.model
 
 
-class DelAdd(
+class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
     private val deleted: Any,
     private val added: Any) extends Change {
 

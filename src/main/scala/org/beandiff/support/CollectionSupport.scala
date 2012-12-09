@@ -17,32 +17,22 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.support
+
+import scala.collection.JavaConversions.asScalaBuffer
+
+import org.beandiff.TypeDefs.JList
 
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
+object CollectionSupport {
+  implicit def convert[T](xs: Seq[T]) = new CollectionSupport(xs)
+  implicit def convert[T](xs: JList) = new CollectionSupport(xs)
+}
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
-  
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
+class CollectionSupport[T](
+    private val xs: Seq[T]) {
+
+  def dropIndices(indices: Seq[Int]): Seq[(T, Int)] = {
+    xs.zipWithIndex.filter(p => !indices.contains(p._2))
   }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
-  }
-
 }

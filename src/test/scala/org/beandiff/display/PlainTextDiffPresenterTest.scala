@@ -32,6 +32,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.ChangeSet
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -41,14 +42,14 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean1 = new ValueBean[IdBean]("Aaa", new IdBean(17))
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
-  val valueDiff = new DiffImpl(EmptyPath, null, Map(
-      new FieldProperty("id") -> new NewValue(new FieldProperty("id"), 17, 8)))
+  val valueDiff = new DiffImpl(Path.of("[0]"), null, Map(
+      new FieldProperty("id") -> ChangeSet(Path.of("id"), new NewValue(new FieldProperty("id"), 17, 8))))
   
-  val valuesDiff = new DiffImpl(EmptyPath, bean1.values, Map(
+  val valuesDiff = new DiffImpl(Path.of("values"), bean1.values, Map(
       new IndexProperty(0) -> valueDiff))
   
   val diff1 = new DiffImpl(EmptyPath, bean1, Map( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> new NewValue(new FieldProperty("name"), "Aaa", "Bbb"),
+      new FieldProperty("name") -> ChangeSet(Path.of("name"), new NewValue(new FieldProperty("name"), "Aaa", "Bbb")),
       new FieldProperty("values") -> valuesDiff))
   
   

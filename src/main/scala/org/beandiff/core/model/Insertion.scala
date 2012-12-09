@@ -20,11 +20,11 @@
 package org.beandiff.core.model
 
 class Insertion(
-    private val index: Int,
-    private val element: Any) extends Change {
+  private val element: Any,
+  private val index: Int) extends Change with Equals {
 
-  type jList = java.util.List[Any]
-  
+  type jList = java.util.List[Any] // FIXME
+
   override def perform(target: Any): Unit = {
     require(target.isInstanceOf[jList])
     val list = target.asInstanceOf[jList]
@@ -33,6 +33,25 @@ class Insertion(
 
   override def newValue =
     throw new UnsupportedOperationException
-    
+
   override def oldValue() = throw new UnsupportedOperationException("tmp")
+
+
+  override def toString = "Insertion[" + element + ", " + index + "]"
+  
+  def canEqual(other: Any) = {
+    other.isInstanceOf[org.beandiff.core.model.Insertion]
+  }
+
+  override def equals(other: Any) = {
+    other match {
+      case that: org.beandiff.core.model.Insertion => that.canEqual(Insertion.this) && element == that.element && index == that.index
+      case _ => false
+    }
+  }
+
+  override def hashCode() = {
+    val prime = 41
+    prime * (prime + element.hashCode) + index.hashCode
+  }
 }

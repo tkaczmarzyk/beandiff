@@ -17,32 +17,17 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff
+
+import org.mockito.Mockito._
+import org.mockito.Matchers._
+import org.mockito.Matchers
+import org.beandiff.core.model.Diff
 
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
+object TestDefs {
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
+  def anyDiff = any(classOf[Diff])
   
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
-  }
-
+  def of[T](o: T) = Matchers.eq(o)
 }

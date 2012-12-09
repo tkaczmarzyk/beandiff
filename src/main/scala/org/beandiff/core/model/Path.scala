@@ -36,6 +36,10 @@ object Path {
     new PathParser().parsePath(pathStr)
   }
 
+  def apply(properties: Property*): Path = {
+    new PathImpl(Vector(properties.dropWhile(_ == Self):_*)) // TODO it's kind of workaround
+  }
+  
   val EmptyPath = new PathImpl(Vector())
 }
 

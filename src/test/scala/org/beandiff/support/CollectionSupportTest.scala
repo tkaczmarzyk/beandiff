@@ -17,32 +17,15 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.support
+
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 
 
-class NewValue(
-  private val property: Property, 
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
-
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
-  
-    
-  def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.NewValue]
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: org.beandiff.core.model.NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
-  }
+@RunWith(classOf[JUnitRunner])
+class CollectionSupportTest extends FunSuite with ShouldMatchers {
 
 }

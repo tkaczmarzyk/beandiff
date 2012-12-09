@@ -38,18 +38,22 @@ final class PathImpl(
   }
 
   override def head = 
-    if (props.isEmpty) new Self else props.head
+    if (props.isEmpty) Self else props.head
 
   override def tail = new PathImpl(props.tail)
 
-  override def step(p: Property): Path =
-    new PathImpl(props :+ p)
+  override def step(p: Property): Path = { // TODO avoid typecheck
+    if (p == Self)
+      this
+    else
+      new PathImpl(props :+ p)
+  }
 
   override def ++(other: Path): Path =
     new PathImpl(props ++ other.props)
 
   override def last: Property = 
-    if (props.isEmpty) new Self else props.last
+    if (props.isEmpty) Self else props.last
 
   override def toString() = { // TODO
     if (depth == 0)

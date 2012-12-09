@@ -22,53 +22,57 @@ package org.beandiff.core.model
 import Path.EmptyPath
 
 class DiffImpl(
-  private val path: Path, 
-  val target: Any, 
-  private val propChanges: Map[Property, Change]) extends Diff {
+  private val path: Path, // TODO redundant (as is stored in map)
+  val target: Any,
+  private val propChanges: Map[Property, ChangeSet]) extends Diff {
 
-  def this(target: Any, changes: Map[Property, Change]) =
+  def this(target: Any, changes: Map[Property, ChangeSet]) =
     this(EmptyPath, target, changes)
 
-    
-  override def leafChanges: Iterable[(Path, Change)] =
+  override def leafChanges: Traversable[(Path, Change)] = // FIXME merge with private method
     leafChanges(EmptyPath)
 
-  private def leafChanges(currentPath: Path): Iterable[(Path, Change)] = { // TODO generic method for traversation (with break option)
+  private def leafChanges(currentPath: Path): Traversable[(Path, Change)] = { // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
-      case (prop, change) => change match { //TODO avoid direct type checks
-        case diff: DiffImpl => diff.leafChanges(currentPath.step(prop))
-        case _ => List((currentPath.step(prop), change))
-      }
+      case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (path ++ pathChange._1, pathChange._2))
     })
   }
-  
-  override def changes: Iterable[(Property, Change)] = 
-    propChanges.toList
+
+  override def changes = propChanges.toList
+
+  override def withChange(change: Change): DiffImpl = withChange(Self, change)
   
   override def withChange(property: Property, change: Change): DiffImpl = {
-    new DiffImpl(path, target, propChanges + (property -> change))
+    val newMod = propChanges.get(property) match {
+      case Some(mod) => mod.withChange(change)
+      case None => new FlatChangeSet(Path(property), change)
+    }
+
+    new DiffImpl(path, target, propChanges + (property -> newMod))
   }
-  
+
+  override def withChanges(property: Property, changes: ChangeSet) =
+    new DiffImpl(path, target, propChanges + (property -> changes))
+
   override def withChange(path: Path, change: Change): Diff = {
     if (path.depth <= 1) {
       withChange(path.head, change)
     } else {
-      val interDiff =
-        if (propChanges.contains(path.head))
-          propChanges(path.head).asInstanceOf[Diff] //TODO
-        else
-          new DiffImpl(this.path.step(path.head), null, Map())
-      
-      withChange(path.head, interDiff.withChange(path.tail, change))
+      val interDiff = propChanges.get(path.head) match {
+        case Some(mod) => mod
+        case None => new DiffImpl(new PathImpl(path.head), null, Map()) // TODO null
+      }
+
+      withChanges(path.head, interDiff.withChange(path.tail, change))
     }
   }
-  
+
   override def hasDifference(): Boolean =
     !propChanges.isEmpty
-    
+
   override def hasDifference(pathStr: String): Boolean =
     hasDifference(Path.of(pathStr))
-  
+
   override def hasDifference(pathToFind: Path): Boolean = { // FIXME tmp, refactor!!
     if (pathToFind == EmptyPath) {
       return hasDifference
@@ -86,15 +90,13 @@ class DiffImpl(
       } else false
     }
   }
-  
-  override def transformTarget() = perform(null, null)
-  
-  override def newValue() = throw new UnsupportedOperationException("tmp")
-  override def oldValue() = throw new UnsupportedOperationException("tmp")
-    
-  override def perform(parent: Any) = {
+
+  override def transformTarget() = { // FIXME FIXME FIXME
     propChanges.foreach({
-      case (prop, change) => change.perform(target) 
+      case (prop, changeSet) => changeSet.leafChanges.foreach({
+        case (prop, change) => change.perform(target)
+      })
     })
   }
+
 }

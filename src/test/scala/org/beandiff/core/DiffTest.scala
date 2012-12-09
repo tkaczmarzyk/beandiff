@@ -30,6 +30,7 @@ import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.Property
 
 @RunWith(classOf[JUnitRunner])
 class DiffTest extends FunSuite with ShouldMatchers {
