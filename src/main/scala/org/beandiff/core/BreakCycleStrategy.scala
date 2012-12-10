@@ -19,15 +19,14 @@
  */
 package org.beandiff.core
 
-import scala.collection.mutable.HashSet
-import java.util.IdentityHashMap
-import com.google.common.collect.Sets
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path$
-import java.util.List
 import java.util.ArrayList
 import java.util.Arrays
-import scala.collection.JavaConversions._
+import java.util.IdentityHashMap
+import java.util.List
+
+import scala.collection.JavaConversions.asScalaBuffer
+
+import org.beandiff.core.model.Path
 
 class BreakCycleStrategy(private val delegate: DescendingStrategy) extends DescendingStrategy {
 
