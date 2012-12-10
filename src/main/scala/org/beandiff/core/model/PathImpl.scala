@@ -55,6 +55,15 @@ final class PathImpl(
   override def last: Property = 
     if (props.isEmpty) Self else props.last
 
+  override def isPrefixOf(other: Path) = {
+      if (depth == 0)
+        true
+      else if (head == other.head)
+        tail.isPrefixOf(other.tail)
+      else
+        false
+  }
+    
   override def toString() = { // TODO
     if (depth == 0)
       ""

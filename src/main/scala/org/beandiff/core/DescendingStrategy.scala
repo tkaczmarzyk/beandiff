@@ -19,8 +19,10 @@
  */
 package org.beandiff.core
 
+import org.beandiff.core.model.Path
+
 //TODO rename to sth like EndStrategy
 trait DescendingStrategy {
 
-  def shouldProceed(obj1: Any, obj2: Any): Boolean
+  def shouldProceed(path: Path, obj1: Any, obj2: Any): Boolean
 }

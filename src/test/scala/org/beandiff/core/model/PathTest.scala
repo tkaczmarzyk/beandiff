@@ -61,4 +61,16 @@ class PathTest extends FunSuite with ShouldMatchers {
     
     path.step(Self) should be === path
   }
+  
+  test("list.value[0] should be prefix of list.value[0].child.name") {
+    Path.of("list.value[0]").isPrefixOf(Path.of("list.value[0].child.name")) should be === true
+  }
+  
+  test("path should be prefix of itself") {
+    Path.of("value.name").isPrefixOf(Path.of("value.name")) should be === true
+  }
+  
+  test("aa.bb.cc is not a prefix of aa.bb") {
+    Path.of("aa.bb.cc").isPrefixOf(Path.of("aa.bb")) should be === false
+  }
 }

@@ -43,7 +43,7 @@ private class LeafDiffEngine(
   }
 
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
-    if (!descStrategy.shouldProceed(o1, o2)) {
+    if (!descStrategy.shouldProceed(location, o1, o2)) {
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
         zero.withChange(location, new NewValue(location.last, o1, o2))
       } else {

@@ -22,17 +22,26 @@ package org.beandiff.core
 import scala.collection.mutable.HashSet
 import java.util.IdentityHashMap
 import com.google.common.collect.Sets
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path$
+import java.util.List
+import java.util.ArrayList
+import java.util.Arrays
+import scala.collection.JavaConversions._
 
 class BreakCycleStrategy(private val delegate: DescendingStrategy) extends DescendingStrategy {
 
-  private val visitedObjects = Sets.newSetFromMap(new IdentityHashMap[Any, java.lang.Boolean])
-  
-  def shouldProceed(o1: Any, o2: Any): Boolean = {
-    if (delegate.shouldProceed(o1, o2) && !visitedObjects.contains(o1)) {
-      if (o1 != null) {
-        visitedObjects.add(o1)
-      }
-      true
+  private val visitedObjects = new IdentityHashMap[Any, List[Path]]
+
+  def shouldProceed(path: Path, o1: Any, o2: Any): Boolean = {
+    if (delegate.shouldProceed(path, o1, o2)) {
+      if (!visitedObjects.containsKey(o1)) {
+        if (o1 != null) {
+          visitedObjects.put(o1, new ArrayList(Arrays.asList(path)))
+        }
+        true
+      } else
+        !visitedObjects.get(o1).exists(_.isPrefixOf(path))
     } else false
   }
 }

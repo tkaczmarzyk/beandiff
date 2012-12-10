@@ -29,44 +29,45 @@ import java.lang.Byte
 import org.beandiff.beans.SimpleEnum._
 import java.lang.Float
 import org.scalatest.junit.JUnitRunner
+import org.beandiff.core.model.Path.EmptyPath
 
 
 @RunWith(classOf[JUnitRunner])
 class EndOnSimpleTypeStrategyTest extends FunSuite with ShouldMatchers {
 
   test("should end on String") {
-    EndOnSimpleTypeStrategy.shouldProceed("aa", "bb") should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, "aa", "bb") should be (false)
   }
   
   test("should end on java Integer") {
-    EndOnSimpleTypeStrategy.shouldProceed(Integer.valueOf(1), Integer.valueOf(2)) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Integer.valueOf(1), Integer.valueOf(2)) should be (false)
   }
   
   test("should end on java Long") {
-    EndOnSimpleTypeStrategy.shouldProceed(Long.valueOf(1), Long.valueOf(2)) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Long.valueOf(1), Long.valueOf(2)) should be (false)
   }
   
   test("should end on java Float") {
-    EndOnSimpleTypeStrategy.shouldProceed(Float.valueOf(1.0f), Float.valueOf(2.0f)) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Float.valueOf(1.0f), Float.valueOf(2.0f)) should be (false)
   }
   
   test("should end on java Double") {
-    EndOnSimpleTypeStrategy.shouldProceed(Double.valueOf(1.0), Double.valueOf(2.0)) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Double.valueOf(1.0), Double.valueOf(2.0)) should be (false)
   }
   
   test("should end on java Boolean") {
-    EndOnSimpleTypeStrategy.shouldProceed(Boolean.TRUE, Boolean.TRUE) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Boolean.TRUE, Boolean.TRUE) should be (false)
   }
   
   test("should end on java Character") {
-    EndOnSimpleTypeStrategy.shouldProceed(Character.valueOf('t'), Character.valueOf('k')) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Character.valueOf('t'), Character.valueOf('k')) should be (false)
   }
   
   test("should end on java Enum") {
-    EndOnSimpleTypeStrategy.shouldProceed(ONE, TWO) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, ONE, TWO) should be (false)
   }
   
   test("should end on java Byte") {
-    EndOnSimpleTypeStrategy.shouldProceed(Byte.MIN_VALUE, Byte.MAX_VALUE) should be (false)
+    EndOnSimpleTypeStrategy.shouldProceed(EmptyPath, Byte.MIN_VALUE, Byte.MAX_VALUE) should be (false)
   }
 }

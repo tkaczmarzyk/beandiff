@@ -251,4 +251,14 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       writer.toString() should startWith("[0] -- 'aaa' vs 'bbb'\n[1] -- 'bbb' vs 'ccc'")
     }
   }
+  
+  test("if object appears twice but not at the same path, it's not a cycle") {
+    val parent1 = new ParentBean("parent", new SimpleJavaBean("lucky", 8))
+    val parent2 = new ParentBean("parent", new SimpleJavaBean("unlucky", 8))
+    
+    val d = diff(Arrays.asList(parent1, parent1), Arrays.asList(parent2, parent2))
+    
+    assert(d.hasDifference("[0].child.name"))
+    assert(d.hasDifference("[1].child.name"))
+  }
 }

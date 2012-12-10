@@ -49,7 +49,7 @@ class ObjectWalker(
   }
 
   def walk(current: Path, o1: Any, o2: Any): Unit = {
-    val isLeaf = !descStrategy.shouldProceed(o1, o2)
+    val isLeaf = !descStrategy.shouldProceed(current, o1, o2)
 
     val t1 = if (o1 != null) transformers(o1.getClass).transform(o1) else null
     val t2 = if (o2 != null) transformers(o2.getClass).transform(o2) else null

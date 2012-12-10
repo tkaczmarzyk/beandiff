@@ -19,12 +19,14 @@
  */
 package org.beandiff.core
 
+import org.beandiff.core.model.Path
+
 class EndOnNullStrategy(
   private val delegate: DescendingStrategy) extends DescendingStrategy {
 
-  def shouldProceed(o1: Any, o2: Any): Boolean = {
+  def shouldProceed(path: Path, o1: Any, o2: Any): Boolean = {
     if (o1 != null && o2 != null)
-      delegate.shouldProceed(o1, o2)
+      delegate.shouldProceed(path, o1, o2)
     else false
   }
 }
