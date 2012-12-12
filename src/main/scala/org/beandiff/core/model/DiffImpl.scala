@@ -73,22 +73,14 @@ class DiffImpl(
   override def hasDifference(pathStr: String): Boolean =
     hasDifference(Path.of(pathStr))
 
-  override def hasDifference(pathToFind: Path): Boolean = { // FIXME tmp, refactor!!
-    if (pathToFind == EmptyPath) {
-      return hasDifference
-    }
-    if (pathToFind.depth == 1) {
-      propChanges.contains(pathToFind.head)
-    } else {
-      if (propChanges.contains(pathToFind.head)) {
-        val change = propChanges(pathToFind.head)
-        if (change.isInstanceOf[Diff]) {
-          change.asInstanceOf[Diff].hasDifference(pathToFind.tail)
-        } else {
-          pathToFind.tail == null || pathToFind.tail == EmptyPath
-        }
-      } else false
-    }
+  override def hasDifference(pathToFind: Path): Boolean = {
+    if (pathToFind == EmptyPath)
+      hasDifference
+    else
+      propChanges.get(pathToFind.head) match {
+        case Some(changeset) => changeset.hasDifference(pathToFind.tail)
+        case None => false
+      }
   }
 
   override def transformTarget() = { // FIXME FIXME FIXME

@@ -35,4 +35,5 @@ trait ChangeSet {
   
   def withChange(path: Path, change: Change): ChangeSet
   
+  def hasDifference(pathToFind: Path): Boolean
 }

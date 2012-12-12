@@ -38,5 +38,8 @@ class FlatChangeSet(
   
   override def withChange(path: Path, change: Change): ChangeSet = this.toDiff.withChange(path, change)
   
+  override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
+  
   private def toDiff = new DiffImpl(path, null, Map(Self -> this)) // FIXME nulls
+  
 }
