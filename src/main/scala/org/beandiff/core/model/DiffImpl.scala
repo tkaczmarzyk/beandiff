@@ -58,12 +58,12 @@ class DiffImpl(
     if (path.depth <= 1) {
       withChange(path.head, change)
     } else {
-      val interDiff = propChanges.get(path.head) match {
-        case Some(mod) => mod
+      val interChangeset = propChanges.get(path.head) match {
+        case Some(changeset) => changeset
         case None => new DiffImpl(new PathImpl(path.head), null, Map()) // TODO null
       }
 
-      withChanges(path.head, interDiff.withChange(path.tail, change))
+      withChanges(path.head, interChangeset.withChange(path.tail, change))
     }
   }
 
