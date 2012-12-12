@@ -29,14 +29,10 @@ class DiffImpl(
   def this(target: Any, changes: Map[Property, ChangeSet]) =
     this(EmptyPath, target, changes)
 
-  override def leafChanges: Traversable[(Path, Change)] = // FIXME merge with private method
-    leafChanges(EmptyPath)
-
-  private def leafChanges(currentPath: Path): Traversable[(Path, Change)] = { // TODO generic method for traversation (with break option)
+  override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
       case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (path ++ pathChange._1, pathChange._2))
     })
-  }
 
   override def changes = propChanges.toList
 
