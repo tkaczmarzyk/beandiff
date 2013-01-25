@@ -17,40 +17,19 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.beans;
+package org.beandiff.test
 
-public class ParentBean {
+import org.scalatest.matchers.Matcher
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
 
-	private String name;
-	private Object child;
-	
-	
-	public ParentBean(String name) {
-		this.name = name;
-	}
-	
-	public ParentBean(Object child) {
-		this.child = child;
-	}
-	
-	public ParentBean(String name, Object child) {
-		this(child);
-		this.name = name;
-	}
-	
-	public Object getChild() {
-		return child;
-	}
-	
-	public void setChild(Object child) {
-		this.child = child;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String toString() {
-		return "ParentBean[name=" + name  + ", child=" + child + "]";
-	}
+
+object BeanDiffMatchers { // TODO move to main/src ?
+
+  def haveDifference: Matcher[Diff] = haveDifference(EmptyPath)
+  
+  def haveDifference(pathDef: String) = new PathDifferenceMatcher(pathDef)
+  
+  def haveDifference(path: Path) = new PathDifferenceMatcher(path)
 }

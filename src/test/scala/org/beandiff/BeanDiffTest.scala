@@ -22,6 +22,7 @@ package org.beandiff
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
+import org.beandiff.test.BeanDiffMatchers._;
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
 import org.beandiff.BeanDiff.ignoreCase
@@ -101,13 +102,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("should not show difference when all leaf properties are the same") {
     new NestedBeans {
       val d = diff(parent1, parent1clone)
-      assert(!d.hasDifference)
+      d should not (haveDifference)
     }
   }
   
   test("should detect difference in lists of different size") {
     new Collections {
       val d = diff(jList1, new ArrayList)
+      
+      d should haveDifference("[0]")
       assert(d.hasDifference("[0]"))
       assert(d.hasDifference("[1]"))
       assert(d.hasDifference("[2]"))
@@ -117,9 +120,9 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("should detect difference in list of lists") {
     new Collections {
       val d = diff(Arrays.asList(jList1, jList2), Arrays.asList(jList2, jList1))
-      assert(d.hasDifference)
-      assert(d.hasDifference("[0][0]"))
-      assert(d.hasDifference("[1][0]"))
+      
+      d should haveDifference("[0][0]")
+      d should haveDifference("[1][0]")
     }
   }
   
@@ -163,27 +166,28 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     new Collections {
       val d = diff(jList1, jList2)
       
-      assert(d.hasDifference("[0]"))
+      d should haveDifference("[0]")
     }
   }
   
   test("should detect exact difference in nested list of beans") {
     new CollectionBeans {
       val d = diff(beans1, beans2)
-      assert(!d.hasDifference("collection[0]"))
-      assert(d.hasDifference("collection[1]"))
-      assert(!d.hasDifference("collection[1].name"))
-      assert(d.hasDifference("collection[1].value"))
+      
+      d should not (haveDifference("collection[0]"))
+      d should haveDifference("collection[1]")
+      d should not (haveDifference("collection[1].name"))
+      d should haveDifference("collection[1].value")
     }
   }
   
   test("should detect exact difference in nested list of strings") {
     new CollectionBeans {
       val d = diff(abc, abd)
-      assert(d.hasDifference)
-      assert(!d.hasDifference("collection[0]"))
-      assert(!d.hasDifference("collection[1]"))
-      assert(d.hasDifference("collection[2]"))
+      
+      d should not (haveDifference("collection[0]"))
+      d should not (haveDifference("collection[1]"))
+      d should haveDifference("collection[2]")
     }
   }
   

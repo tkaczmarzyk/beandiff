@@ -87,4 +87,5 @@ class DiffImpl(
     })
   }
 
+  override def toString = "DiffImpl[" + propChanges + "]"
 }

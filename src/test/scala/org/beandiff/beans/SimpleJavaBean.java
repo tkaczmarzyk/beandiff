@@ -38,4 +38,9 @@ public class SimpleJavaBean {
 	public int getValue() {
 		return value;
 	}
+	
+	@Override
+	public String toString() {
+		return "Bean[" + name + ", " + value + "]";
+	}
 }

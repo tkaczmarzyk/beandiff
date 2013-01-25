@@ -44,5 +44,7 @@ class NewValue(
     val prime = 41
     prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
   }
+  
+  override def toString = "NewValue[" + oldValue + "->" + newValue + "]"
 
 }

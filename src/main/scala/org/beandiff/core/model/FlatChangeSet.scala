@@ -42,4 +42,5 @@ class FlatChangeSet(
   
   private def toDiff = new DiffImpl(path, null, Map(Self -> this)) // FIXME nulls
   
+  override def toString() = "FlatChangeSet[" + selfChanges.mkString("", ", ", "") + "]"
 }
