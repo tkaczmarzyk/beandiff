@@ -32,6 +32,7 @@ trait Diff extends ChangeSet {
   def withChanges(property: Property, change: ChangeSet): Diff
   def withChange(path: Path, change: Change): Diff
   def withChange(property: Property, change: Change): Diff
+  def without(property: Property): Diff
   
   def transformTarget(): Unit
   def target: Any

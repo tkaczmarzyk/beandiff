@@ -21,9 +21,9 @@ package org.beandiff.core.model
 
 import org.beandiff.TypeDefs._
 
-class Deletion(
+case class Deletion(
   private val deleted: Any, // TODO it's only for presentation -- eliminat, 
-  private val index: Int) extends Change with Equals {
+  val index: Int) extends Change with Equals { // FIXME temporary public
 
   override def perform(target: Any): Unit = {
     target.asInstanceOf[JList].remove(index)

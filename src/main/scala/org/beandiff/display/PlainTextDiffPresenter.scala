@@ -22,6 +22,7 @@ package org.beandiff.display
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.NewValue
+import org.beandiff.core.model._
 import org.beandiff.core.model.Diff
 
 
@@ -37,11 +38,25 @@ class PlainTextDiffPresenter(
     else {
       val result = new StringBuilder
 
-      for ((path, change) <- d.leafChanges) {
-        result.append(path).append(pathValueSeparator)
-        result.append(valueQuote).append(change.oldValue).append(valueQuote)
-        result.append(valuesSeparator)
-        result.append(valueQuote).append(change.newValue).append(valueQuote)
+      for ((path, change) <- d.leafChanges) { // TODO temporary amendments to the new model
+        change match {
+          case Deletion(x, index) => {
+            result.append(path.withIndex(index)).append(pathValueSeparator).append("deleted")
+          }
+          
+          case Insertion(x, index) => {
+            result.append(path.withIndex(index)).append(pathValueSeparator)
+            result.append("inserted ").append(valueQuote).append(x).append(valueQuote)
+          }
+          
+          case x => {
+            result.append(path).append(pathValueSeparator)
+	        result.append(valueQuote).append(change.oldValue).append(valueQuote)
+	        result.append(valuesSeparator)
+	        result.append(valueQuote).append(change.newValue).append(valueQuote)
+          }
+        }
+        
         result.append(differenceSeparator)
       }
 

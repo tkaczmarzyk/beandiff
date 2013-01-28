@@ -17,40 +17,16 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.test
 
-import java.util.List
-import org.beandiff.support.ObjectSupport._
+import org.beandiff.core.model._
+import org.scalatest.matchers._
 
+class DeletionMatcher(
+    index: Int) extends Matcher[Traversable[(Path, Change)]] {
 
-class IndexProperty(val index: Int) extends Property {
-  
-  override def value(o: Any) = {
-    if (o.isInstanceOf[List[_]])
-      o(index)
-    else null //TODO
-  }
-  
-  override def setValue(target: Any, value: Any) = {
-    if (target.isInstanceOf[List[_]]) {
-      target.asInstanceOf[List[Any]].set(index, value)
-    } else {
-      throw new IllegalArgumentException("expected List but was: " + target)
-    }
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: IndexProperty => index == that.index
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    index.hashCode
-  }
-  
-  override def toString() = {
-    "[" + index + "]"
+  def apply(left: Traversable[(Path, Change)]): MatchResult = {
+    val filtered = left.filter(pathChange => pathChange._2.isInstanceOf[Deletion] && pathChange._2.asInstanceOf[Deletion].index == this.index)
+    MatchResult(!filtered.isEmpty, "ChangeSet doesn't have a deletion at " + index, "ChangeSet does have a deletion at " + index)
   }
 }

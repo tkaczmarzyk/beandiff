@@ -30,12 +30,14 @@ import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.Self
 import org.beandiff.core.model.IndexProperty
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import java.io.StringWriter
+import org.beandiff.test.TestConversions._
 import java.io.PrintWriter
 
 
@@ -69,6 +71,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   trait Collections {
     val jList1 = Arrays.asList("aaa", "bbb", "ccc")
     val jList2 = Arrays.asList("111", "bbb", "ccc")
+    val jList3 = Arrays.asList("xxx", "bbb", "ccc")
     
     val sList1 = List("aaa", "bbb", "ccc")
     val sList2 = List("111", "bbb", "ccc")
@@ -106,18 +109,38 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  test("should detect difference in lists of different size") {
+  test("should detect difference in lists of different size") { // TODO should deletion be attached to collection or particular index?
+    new Collections {
+      val d = diff(jList1, new ArrayList)
+      val selfChanges = d.changes.filter(_._1 == Self).head._2.leafChanges // FIXME simplify
+      
+      selfChanges should have size 3
+      selfChanges should haveDeletionAt(0)
+      selfChanges should haveDeletionAt(1)
+      selfChanges should haveDeletionAt(2)
+    }
+  }
+  
+  ignore("should detect difference in lists of different size (old)") { // TODO should deletion be attached to collection or particular index?
     new Collections {
       val d = diff(jList1, new ArrayList)
       
       d should haveDifference("[0]")
-      assert(d.hasDifference("[0]"))
       assert(d.hasDifference("[1]"))
       assert(d.hasDifference("[2]"))
     }
   }
   
-  test("should detect difference in list of lists") {
+  ignore("should detect difference in list of lists (no-swap)") { // TODO tests as per initial impl (before LCS). Decide if it's now obsolete or not
+    new Collections {
+      val d = diff(Arrays.asList(jList1, jList2), Arrays.asList(jList2, jList3))
+      
+      d should haveDifference("[0][0]")
+      d should haveDifference("[1][0]")
+    }
+  }  
+  
+  ignore("should detect difference in list of lists (swap)") { // TODO tests as per initial impl (before LCS). Decide if it's now obsolete or not
     new Collections {
       val d = diff(Arrays.asList(jList1, jList2), Arrays.asList(jList2, jList1))
       
@@ -252,6 +275,16 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       
       val writer = new StringWriter
       printDiff(new PrintWriter(writer), jSet1, jSet3)
+      writer.toString() should startWith("[0] -- deleted\n[1] -- inserted 'ccc'") // TODO [1] vs [2] --> insertion index after or before the deletion?
+    }
+  }
+  
+  ignore("should correctly present difference between sets (old)") { // FIXME the old way -- rethink & remove/refactor
+    new Collections {
+      val tmp = diff(jSet1, jSet3)
+      
+      val writer = new StringWriter
+      printDiff(new PrintWriter(writer), jSet1, jSet3)
       writer.toString() should startWith("[0] -- 'aaa' vs 'bbb'\n[1] -- 'bbb' vs 'ccc'")
     }
   }
@@ -262,7 +295,12 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     val d = diff(Arrays.asList(parent1, parent1), Arrays.asList(parent2, parent2))
     
-    assert(d.hasDifference("[0].child.name"))
-    assert(d.hasDifference("[1].child.name"))
+    d should haveDifference("[0].child.name")
+    d should haveDifference("[1].child.name")
+  }
+  
+  test("an instertion to the list should be detected as a single difference") {
+    val d = diff(Arrays.asList("default"), Arrays.asList("backgammon", "default"));
+    d.changes should have size 1
   }
 }

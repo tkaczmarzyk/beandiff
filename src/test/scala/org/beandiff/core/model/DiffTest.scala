@@ -19,38 +19,16 @@
  */
 package org.beandiff.core.model
 
-import java.util.List
-import org.beandiff.support.ObjectSupport._
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import Path.EmptyPath
+import org.scalatest.matchers.ShouldMatchers
 
+@RunWith(classOf[JUnitRunner])
+class DiffTest extends FunSuite with ShouldMatchers {
 
-class IndexProperty(val index: Int) extends Property {
-  
-  override def value(o: Any) = {
-    if (o.isInstanceOf[List[_]])
-      o(index)
-    else null //TODO
-  }
-  
-  override def setValue(target: Any, value: Any) = {
-    if (target.isInstanceOf[List[_]]) {
-      target.asInstanceOf[List[Any]].set(index, value)
-    } else {
-      throw new IllegalArgumentException("expected List but was: " + target)
-    }
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: IndexProperty => index == that.index
-      case _ => false
-    }
-  }
-  
-  override def hashCode() = {
-    index.hashCode
-  }
-  
-  override def toString() = {
-    "[" + index + "]"
+  test("") {
+    
   }
 }

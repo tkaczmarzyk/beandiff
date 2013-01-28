@@ -25,11 +25,13 @@ import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 
 
-object BeanDiffMatchers { // TODO move to main/src ?
+object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (make it have-word compatible if possible)
 
   def haveDifference: Matcher[Diff] = haveDifference(EmptyPath)
   
   def haveDifference(pathDef: String) = new PathDifferenceMatcher(pathDef)
   
   def haveDifference(path: Path) = new PathDifferenceMatcher(path)
+  
+  def haveDeletionAt(index: Int) = new DeletionMatcher(index)
 }

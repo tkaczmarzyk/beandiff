@@ -19,23 +19,25 @@
  */
 package org.beandiff.core
 
-import org.beandiff.support.ClassDictionary
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.model.DiffImpl
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.TypeDefs.JList
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.NewValue
-import org.beandiff.core.model.Self
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.lcs.NaiveLcsCalc
+import org.beandiff.support.ClassDictionary
+
 
 class DelegatingDiffEngine(
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators, descStrategy)))
+    .withEntry(classOf[JList] -> new LcsResultOptimizer(this, new LcsDiffEngine(this, new NaiveLcsCalc(eqInvestigators.defaultValue))))
     .withEntry(classOf[java.util.Set[_]] ->
-      new TransformingDiffEngine(DelegatingDiffEngine.this, new ToListTransformer, Map(classOf[NewValue] -> new IndexPropChangeTranslator)))
+      new TransformingDiffEngine(this, new ToListTransformer, Map(classOf[NewValue] -> new IndexPropChangeTranslator)))
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
     calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)

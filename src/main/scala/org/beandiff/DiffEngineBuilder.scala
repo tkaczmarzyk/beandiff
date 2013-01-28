@@ -17,40 +17,23 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff
 
-import java.util.List
-import org.beandiff.support.ObjectSupport._
+import org.beandiff.core.DiffEngine
 
 
-class IndexProperty(val index: Int) extends Property {
+object DiffEngineBuilder {
   
-  override def value(o: Any) = {
-    if (o.isInstanceOf[List[_]])
-      o(index)
-    else null //TODO
-  }
+  def aDiffEngine(): DiffEngineBuilder = null
   
-  override def setValue(target: Any, value: Any) = {
-    if (target.isInstanceOf[List[_]]) {
-      target.asInstanceOf[List[Any]].set(index, value)
-    } else {
-      throw new IllegalArgumentException("expected List but was: " + target)
-    }
-  }
+  implicit def builder2engine(builder: DiffEngineBuilder) = builder.build() 
+}
+
+class DiffEngineBuilder {
+
+  private var engine: DiffEngine = null
   
-  override def equals(other: Any) = {
-    other match {
-      case that: IndexProperty => index == that.index
-      case _ => false
-    }
-  }
   
-  override def hashCode() = {
-    index.hashCode
-  }
+  def build() = engine
   
-  override def toString() = {
-    "[" + index + "]"
-  }
 }

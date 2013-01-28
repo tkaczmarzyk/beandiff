@@ -19,9 +19,9 @@
  */
 package org.beandiff.core.model
 
-class Insertion(
+case class Insertion(
   private val element: Any,
-  private val index: Int) extends Change with Equals {
+  val index: Int) extends Change with Equals { // FIXME temp public
 
   type jList = java.util.List[Any] // FIXME
 
@@ -31,10 +31,9 @@ class Insertion(
     list.add(index, element)
   }
 
-  override def newValue =
-    throw new UnsupportedOperationException
+  override def newValue = element // FIXME
 
-  override def oldValue() = throw new UnsupportedOperationException("tmp")
+  override def oldValue() = "_tmp_[NOTHING]"
 
 
   override def toString = "Insertion[" + element + ", " + index + "]"

@@ -62,6 +62,10 @@ class DiffImpl(
       withChanges(path.head, interChangeset.withChange(path.tail, change))
     }
   }
+  
+  override def without(prop: Property) = {
+    new DiffImpl(path, target, propChanges - prop)
+  }
 
   override def hasDifference(): Boolean =
     !propChanges.isEmpty
@@ -87,5 +91,5 @@ class DiffImpl(
     })
   }
 
-  override def toString = "DiffImpl[" + propChanges + "]"
+  override def toString = "Diff[" + propChanges.mkString("", ",", "") + "]"
 }
