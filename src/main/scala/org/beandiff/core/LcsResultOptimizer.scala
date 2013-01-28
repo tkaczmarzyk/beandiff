@@ -19,28 +19,23 @@
  */
 package org.beandiff.core
 
-import org.beandiff.core.model.DiffImpl
-import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Change
 import org.beandiff.core.model.ChangeSet
-import org.beandiff.core.model.Property
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.core.model.FlatChangeSet
-import org.beandiff.core.model.FlatChangeSet
 import org.beandiff.core.model.Deletion
-import org.beandiff.core.model.Insertion
-import org.beandiff.core.model.Self
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.FlatChangeSet
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.Insertion
 import org.beandiff.core.model.NewValue
-import org.beandiff.core.model.Insertion
-import org.beandiff.core.model.Change
-import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.Self
 
 // FIXME: an experimental feature, just a prototype -- if it's OK, then refactor (e.g. move some logic to Changeset.optimize?)
 class LcsResultOptimizer(
-    parent: DiffEngine,
-    lcsEngine: LcsDiffEngine) extends DiffEngine {
+  parent: DiffEngine,
+  lcsEngine: LcsDiffEngine) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
     val zero = new DiffImpl(EmptyPath, o1, Map())
@@ -61,16 +56,16 @@ class LcsResultOptimizer(
     }
     diff
   }
-  
+
   // FIXME temporary, ugly prototype
   private def optimize(path: Path, target: Any, changeset: ChangeSet): Diff = {
     if (!changeset.isInstanceOf[FlatChangeSet]) {
       throw new Error()
     } else {
       var result: Diff = new DiffImpl(path, target, Map())
-      
+
       var skip = List[Change]()
-      
+
       for {
         (path1, change1) <- changeset.leafChanges if change1.isInstanceOf[Deletion]
         (path2, change2) <- changeset.leafChanges if change2.isInstanceOf[Insertion] && change1.asInstanceOf[Deletion].index == change2.asInstanceOf[Insertion].index
@@ -90,7 +85,7 @@ class LcsResultOptimizer(
           }
         }
       }
-      
+
       result
     }
   }
