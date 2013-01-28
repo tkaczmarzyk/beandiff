@@ -43,15 +43,14 @@ class LcsResultOptimizer(
   }
 
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
-    var diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
+    val diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
 
     for ((prop, changeset) <- diff.changes) {
       if (prop == Self) {
         return optimize(Path(prop), Path(prop).value(diff.target), changeset)
       } else {
-        diff = diff.without(prop)
         val optimized = optimize(Path(prop), Path(prop).value(diff.target), changeset)
-        diff = diff.withChanges(prop, optimized)
+        return diff.without(prop).withChanges(prop, optimized)
       }
     }
     diff
