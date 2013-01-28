@@ -34,6 +34,7 @@
 		<scala.version>2.9.2</scala.version>
 		<scala-maven-plugin.version>3.1.0</scala-maven-plugin.version>
 		<wagon-ftp.version>2.2</wagon-ftp.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<scm>
