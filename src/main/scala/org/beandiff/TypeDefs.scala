@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Tomasz Kaczmarzyk.
+ * Copyright (c) 2012-2013, Tomasz Kaczmarzyk.
  *
  * This file is part of BeanDiff.
  *
@@ -22,6 +22,7 @@ package org.beandiff
 object TypeDefs {
 
   type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[_]
+  type JList = java.util.List[Any]
+  type JSet = java.util.Set[Any]
   
 }

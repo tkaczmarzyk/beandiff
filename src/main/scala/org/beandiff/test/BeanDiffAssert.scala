@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012, Tomasz Kaczmarzyk.
+ * Copyright (c) 2012-2013, Tomasz Kaczmarzyk.
  *
  * This file is part of BeanDiff.
  *

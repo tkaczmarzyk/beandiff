@@ -1,4 +1,4 @@
-Copyright (c) 2012, Tomasz Kaczmarzyk.
+Copyright (c) ${year}, Tomasz Kaczmarzyk.
 
 This file is part of BeanDiff.
 
