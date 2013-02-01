@@ -36,6 +36,8 @@ object Path {
     new PathParser().parsePath(pathStr)
   }
 
+  def apply(pathStr: String) = Path.of(pathStr)
+  
   def apply(properties: Property*): Path = {
     new PathImpl(Vector(properties.dropWhile(_ == Self):_*)) // TODO it's kind of workaround
   }
@@ -52,7 +54,8 @@ abstract class Path {
   def value(o: Any): Any
 
   def step(p: Property): Path
-
+  def stepBack: Path
+  
   def props: Iterable[Property]
   
   def ++(other: Path): Path

@@ -26,6 +26,7 @@ import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Change
 import org.beandiff.core.model.ChangeSet
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.FlatChangeSet
 
 
 class TransformingDiffEngine(
@@ -43,21 +44,21 @@ class TransformingDiffEngine(
     
     val diff = delegate.calculateDiff0(zero, location, t1, t2)
     
-    diff.changes.foldLeft(diff)(
+    diff.changes.foldLeft(zero)(
         (diff, propChanges) => diff.withChanges(propChanges._1, transform(propChanges._2))) //TODO test withChange(emptyDiff)
   }
   
   private def transform(changes: ChangeSet) = {
     val transformed = changes.leafChanges.map(transformChange)
     
-    transformed.foldLeft(ChangeSet(EmptyPath))( // TODO check 
-        (acc: ChangeSet, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
+    transformed.foldLeft(ChangeSet(changes.target, EmptyPath))( // TODO check 
+        (acc: ChangeSet, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
   
   private def transformChange(pathChange: (Path, Change)): (Path, Change) = {
-    if (pathChange._1.depth > 0) {
+//    if (pathChange._1.depth > 0) { // FIME ?
       pathChange._1 -> transformChange(pathChange._2)
-    } else pathChange
+//    } else pathChange
   }
   
   private def transformChange(change: Change): Change = {

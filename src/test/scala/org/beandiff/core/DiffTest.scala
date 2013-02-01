@@ -31,19 +31,20 @@ import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.Property
+import org.beandiff.beans.ParentBean
 
 @RunWith(classOf[JUnitRunner])
 class DiffTest extends FunSuite with ShouldMatchers {
 
   val simpleBean1 = new SimpleJavaBean("aa", 1)
+  val parent = new ParentBean("parent", simpleBean1)
   val simpleDiff = BeanDiff.diff(simpleBean1, new SimpleJavaBean("bb", 1))
   
-  
   test("should add change at the path") {
-    val diff = new DiffImpl(EmptyPath, null, Map())
-    val updated = diff.withChange(Path.of("aa.bb"), new NewValue(new FieldProperty("bb"), ":(", ":)"))
+    val diff = new DiffImpl(EmptyPath, parent, Map())
+    val updated = diff.withChange(Path.of("child.name"), new NewValue(parent, new FieldProperty("name"), ":(", ":)"))
     
-    assert(updated.leafChanges.exists(_._1 == Path.of("aa.bb")))
+    assert(updated.leafChanges.exists(_._1 == Path.of("child.name")))
   }
   
   test("there should be no difference in simple property after transformation") {

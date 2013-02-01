@@ -19,25 +19,18 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.TypeDefs._
 
-object ChangeSet {
-  
-  def apply(target: Any, path: Path): ChangeSet = new FlatChangeSet(target, path)
-  
-  def apply(target: Any, path: Path, changes: Change*): ChangeSet = new FlatChangeSet(target, path, changes:_*)
-}
+case class Addition(
+    element: Any) extends Change {
 
-trait ChangeSet {
-
-  def leafChanges: Traversable[(Path, Change)]
+  def perform(target: Any) = {
+    target.asInstanceOf[JSet].add(element)
+  }
   
-  def withChange(change: Change): ChangeSet
+  @deprecated
+  def newValue: Any = element // FIXME
   
-  def withChange(path: Path, change: Change): ChangeSet
-  
-  def hasDifference(pathToFind: Path): Boolean
-  
-  def transformTarget(): Unit
-  
-  def target: Any // TODO remove?
+  @deprecated
+  def oldValue: Any = throw new UnsupportedOperationException // FIXME
 }

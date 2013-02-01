@@ -41,7 +41,7 @@ class DiffImpl(
   override def withChange(property: Property, change: Change): DiffImpl = {
     val newMod = propChanges.get(property) match {
       case Some(mod) => mod.withChange(change)
-      case None => new FlatChangeSet(Path(property), change)
+      case None => new FlatChangeSet(property.value(target), Path(property), change)
     }
 
     new DiffImpl(path, target, propChanges + (property -> newMod))
@@ -56,7 +56,7 @@ class DiffImpl(
     } else {
       val interChangeset = propChanges.get(path.head) match {
         case Some(changeset) => changeset
-        case None => new DiffImpl(new PathImpl(path.head), null, Map()) // TODO null
+        case None => new DiffImpl(Path(path.head), path.head.value(target), Map())
       }
 
       withChanges(path.head, interChangeset.withChange(path.tail, change))
@@ -83,11 +83,9 @@ class DiffImpl(
       }
   }
 
-  override def transformTarget() = { // FIXME FIXME FIXME
+  override def transformTarget() = {
     propChanges.foreach({
-      case (prop, changeSet) => changeSet.leafChanges.foreach({
-        case (prop, change) => change.perform(target)
-      })
+      case (prop, changeSet) => changeSet.transformTarget()
     })
   }
 

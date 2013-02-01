@@ -275,7 +275,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       
       val writer = new StringWriter
       printDiff(new PrintWriter(writer), jSet1, jSet3)
-      writer.toString() should startWith("[0] -- deleted\n[1] -- inserted 'ccc'") // TODO [1] vs [2] --> insertion index after or before the deletion?
+      writer.toString() should startWith(" -- removed 'aaa'\n -- added 'ccc'") // TODO [1] vs [2] --> insertion index after or before the deletion?
     }
   }
   

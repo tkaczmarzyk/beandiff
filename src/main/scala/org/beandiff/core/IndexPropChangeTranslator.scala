@@ -22,13 +22,22 @@ package org.beandiff.core
 import org.beandiff.core.model.Change
 import org.beandiff.core.model.NewValue
 import org.beandiff.core.model.DelAdd
+import org.beandiff.core.model.Insertion
+import org.beandiff.core.model.Addition
+import org.beandiff.core.model.Deletion
+import org.beandiff.core.model.Removal
 
 
+// FIXME better name, clearer responsibility, avoid if-else
 class IndexPropChangeTranslator extends ChangeTranslator {
 
   override def translate(change: Change) = {
     if (change.isInstanceOf[NewValue]) {
       new DelAdd(change.oldValue, change.newValue) // TODO verify that property is IndexProperty
+    } else if (change.isInstanceOf[Insertion]) {
+      new Addition(change.newValue)
+    } else if (change.isInstanceOf[Deletion]) {
+      new Removal(change.oldValue) 
     } else {
       change
     }

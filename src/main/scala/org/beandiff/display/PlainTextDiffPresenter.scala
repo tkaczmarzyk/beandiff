@@ -39,7 +39,7 @@ class PlainTextDiffPresenter(
       val result = new StringBuilder
 
       for ((path, change) <- d.leafChanges) { // TODO temporary amendments to the new model
-        change match {
+        change match { // TODO better hierarchy for changes // TODO use sealed classes?
           case Deletion(x, index) => {
             result.append(path.withIndex(index)).append(pathValueSeparator).append("deleted")
           }
@@ -47,6 +47,16 @@ class PlainTextDiffPresenter(
           case Insertion(x, index) => {
             result.append(path.withIndex(index)).append(pathValueSeparator)
             result.append("inserted ").append(valueQuote).append(x).append(valueQuote)
+          }
+          
+          case Addition(x) => {
+            result.append(path).append(pathValueSeparator);
+            result.append("added ").append(valueQuote).append(x).append(valueQuote)
+          }
+          
+          case Removal(x) => {
+            result.append(path).append(pathValueSeparator);
+            result.append("removed ").append(valueQuote).append(x).append(valueQuote)
           }
           
           case x => {

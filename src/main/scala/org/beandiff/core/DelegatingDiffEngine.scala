@@ -28,6 +28,8 @@ import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.lcs.NaiveLcsCalc
 import org.beandiff.support.ClassDictionary
+import org.beandiff.core.model.Insertion
+import org.beandiff.core.model.Deletion
 
 
 class DelegatingDiffEngine(
@@ -37,7 +39,10 @@ class DelegatingDiffEngine(
   private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators, descStrategy)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this, new LcsDiffEngine(this, new NaiveLcsCalc(eqInvestigators.defaultValue))))
     .withEntry(classOf[java.util.Set[_]] ->
-      new TransformingDiffEngine(this, new ToListTransformer, Map(classOf[NewValue] -> new IndexPropChangeTranslator)))
+      new TransformingDiffEngine(this, new ToListTransformer,
+          Map(classOf[NewValue] -> new IndexPropChangeTranslator,
+              classOf[Insertion] -> new IndexPropChangeTranslator,
+              classOf[Deletion] -> new IndexPropChangeTranslator))) // TODO if one translator is going to support multiple classes, then change the way this map is constructed (e.g. use translator.getSuppoertedClasses)
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
     calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)

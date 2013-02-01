@@ -19,25 +19,19 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.TypeDefs.JSet
 
-object ChangeSet {
-  
-  def apply(target: Any, path: Path): ChangeSet = new FlatChangeSet(target, path)
-  
-  def apply(target: Any, path: Path, changes: Change*): ChangeSet = new FlatChangeSet(target, path, changes:_*)
-}
 
-trait ChangeSet {
+case class Removal(
+    element: Any) extends Change {
 
-  def leafChanges: Traversable[(Path, Change)]
+  def perform(target: Any) = {
+    target.asInstanceOf[JSet].remove(element)
+  }
   
-  def withChange(change: Change): ChangeSet
+  @deprecated
+  def newValue: Any = throw new UnsupportedOperationException // FIXME
   
-  def withChange(path: Path, change: Change): ChangeSet
-  
-  def hasDifference(pathToFind: Path): Boolean
-  
-  def transformTarget(): Unit
-  
-  def target: Any // TODO remove?
+  @deprecated
+  def oldValue: Any = element
 }

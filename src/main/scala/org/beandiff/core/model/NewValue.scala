@@ -21,12 +21,13 @@ package org.beandiff.core.model
 
 
 class NewValue(
-  private val property: Property, 
+  val target: Any, // TODO tmp
+  private val property: Property,// FIXME target vs (self->FlatCHangeSet[NewValue[1->2]) vs Insertion/Deletion (attached to collection rather to IndexProperty) 
   val oldValue: Any, 
   val newValue: Any) extends Change with Equals {
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
+  override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
+    property.setValue(this.target, newValue)
   
     
   def canEqual(other: Any) = {

@@ -17,27 +17,12 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.test
 
+import java.util.HashSet
+import java.util.Arrays
 
-object ChangeSet {
-  
-  def apply(target: Any, path: Path): ChangeSet = new FlatChangeSet(target, path)
-  
-  def apply(target: Any, path: Path, changes: Change*): ChangeSet = new FlatChangeSet(target, path, changes:_*)
-}
+object JSet {
 
-trait ChangeSet {
-
-  def leafChanges: Traversable[(Path, Change)]
-  
-  def withChange(change: Change): ChangeSet
-  
-  def withChange(path: Path, change: Change): ChangeSet
-  
-  def hasDifference(pathToFind: Path): Boolean
-  
-  def transformTarget(): Unit
-  
-  def target: Any // TODO remove?
+  def apply[T](elems: T*) = new HashSet(Arrays.asList(elems:_*))
 }

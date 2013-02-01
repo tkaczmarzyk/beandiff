@@ -45,7 +45,8 @@ private class LeafDiffEngine(
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
     if (!descStrategy.shouldProceed(location, o1, o2)) {
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
-        zero.withChange(location, new NewValue(location.last, o1, o2))
+        val propOwner = if (location.depth == 0) null else location.stepBack.value(zero.target) // TODO tmp ugly target calculation + null
+        zero.withChange(location, new NewValue(propOwner, location.last, o1, o2))
       } else {
         zero
       }
