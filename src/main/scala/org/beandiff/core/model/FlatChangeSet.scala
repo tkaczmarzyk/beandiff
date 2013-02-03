@@ -47,7 +47,7 @@ class FlatChangeSet(
   
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
   
-  private def toDiff = new DiffImpl(path, null, Map(Self -> this)) // FIXME nulls
+  private def toDiff = new DiffImpl(path, target, Map(Self -> this))
   
   override def toString() = "FlatChangeSet[" + selfChanges.mkString("", ", ", "") + "]"
   
