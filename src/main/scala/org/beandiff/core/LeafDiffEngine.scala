@@ -20,14 +20,14 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.support.ClassDictionary
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.core.model.Self
-import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.DiffImpl
 
 private class LeafDiffEngine(

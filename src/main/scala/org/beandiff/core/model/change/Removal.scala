@@ -17,22 +17,21 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.core.model.change
+
+import org.beandiff.TypeDefs.JSet
 
 
-class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
-    private val deleted: Any,
-    private val added: Any) extends Change {
+case class Removal(
+    element: Any) extends Change {
 
-  def perform(target: Any): Unit = {
-    val collection = target.asInstanceOf[java.util.Collection[Any]]
-    collection.remove(deleted)
-    collection.add(added)
+  def perform(target: Any) = {
+    target.asInstanceOf[JSet].remove(element)
   }
   
   @deprecated
-  def newValue: Any = added
+  def newValue: Any = throw new UnsupportedOperationException // FIXME
   
   @deprecated
-  def oldValue: Any = deleted
+  def oldValue: Any = element
 }

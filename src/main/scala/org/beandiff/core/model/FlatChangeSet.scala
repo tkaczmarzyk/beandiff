@@ -20,6 +20,7 @@
 package org.beandiff.core.model
 
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.change.Change
 
 
 class FlatChangeSet(

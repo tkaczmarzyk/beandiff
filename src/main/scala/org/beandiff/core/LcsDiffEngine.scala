@@ -27,10 +27,10 @@ import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.lcs.LcsCalc
 import org.beandiff.support.CollectionSupport.convert
-import org.beandiff.core.model.Deletion
-import org.beandiff.core.model.Change
-import org.beandiff.core.model.Deletion
-import org.beandiff.core.model.Insertion
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
 
 
 class LcsDiffEngine(

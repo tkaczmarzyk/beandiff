@@ -17,12 +17,13 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.core.model.change
 
 import org.beandiff.TypeDefs._
 
+
 case class Deletion(
-  private val deleted: Any, // TODO it's only for presentation -- eliminat, 
+  private val deleted: Any, // TODO it's only for presentation -- eliminate?, 
   val index: Int) extends Change with Equals { // FIXME temporary public
 
   override def perform(target: Any): Unit = {
@@ -39,12 +40,12 @@ case class Deletion(
   override def toString = "Deletion[" + deleted + ", " + index + "]"
 
   override def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.Deletion]
+    other.isInstanceOf[Deletion]
   }
 
   override def equals(other: Any) = {
     other match {
-      case that: org.beandiff.core.model.Deletion => that.canEqual(Deletion.this) && deleted == that.deleted && index == that.index
+      case that: Deletion => that.canEqual(Deletion.this) && deleted == that.deleted && index == that.index
       case _ => false
     }
   }

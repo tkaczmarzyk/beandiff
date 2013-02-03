@@ -19,7 +19,7 @@
  */
 package org.beandiff.core
 
-import org.beandiff.core.model.Change
+import org.beandiff.core.model.change.Change
 
 
 trait ChangeTranslator {

@@ -19,13 +19,13 @@
  */
 package org.beandiff.core
 
-import org.beandiff.core.model.Change
-import org.beandiff.core.model.NewValue
-import org.beandiff.core.model.DelAdd
-import org.beandiff.core.model.Insertion
-import org.beandiff.core.model.Addition
-import org.beandiff.core.model.Deletion
-import org.beandiff.core.model.Removal
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.DelAdd
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Addition
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Removal
 
 
 // FIXME better name, clearer responsibility, avoid if-else

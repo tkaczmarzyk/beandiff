@@ -21,6 +21,8 @@ package org.beandiff.test
 
 import org.beandiff.core.model._
 import org.scalatest.matchers._
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Deletion
 
 class DeletionMatcher(
     index: Int) extends Matcher[Traversable[(Path, Change)]] {

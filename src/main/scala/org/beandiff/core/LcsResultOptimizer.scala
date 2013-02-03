@@ -19,15 +19,15 @@
  */
 package org.beandiff.core
 
-import org.beandiff.core.model.Change
+import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.ChangeSet
-import org.beandiff.core.model.Deletion
+import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.FlatChangeSet
 import org.beandiff.core.model.IndexProperty
-import org.beandiff.core.model.Insertion
-import org.beandiff.core.model.NewValue
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Self

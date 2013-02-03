@@ -17,40 +17,37 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.core.model.change
 
-case class Insertion(
-  private val element: Any,
-  val index: Int) extends Change with Equals { // FIXME temp public
-
-  type jList = java.util.List[Any] // FIXME
-
-  override def perform(target: Any): Unit = {
-    require(target.isInstanceOf[jList])
-    val list = target.asInstanceOf[jList]
-    list.add(index, element)
-  }
-
-  override def newValue = element // FIXME
-
-  override def oldValue() = "_tmp_[NOTHING]"
+import org.beandiff.core.model.Property
 
 
-  override def toString = "Insertion[" + element + ", " + index + "]"
+class NewValue(
+  val target: Any, // TODO tmp
+  private val property: Property,// FIXME target vs (self->FlatCHangeSet[NewValue[1->2]) vs Insertion/Deletion (attached to collection rather to IndexProperty) 
+  val oldValue: Any, 
+  val newValue: Any) extends Change with Equals {
+
+  override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
+    property.setValue(this.target, newValue)
   
+    
   def canEqual(other: Any) = {
-    other.isInstanceOf[org.beandiff.core.model.Insertion]
+    other.isInstanceOf[NewValue]
   }
-
+  
   override def equals(other: Any) = {
     other match {
-      case that: org.beandiff.core.model.Insertion => that.canEqual(Insertion.this) && element == that.element && index == that.index
+      case that: NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
       case _ => false
     }
   }
-
+  
   override def hashCode() = {
     val prime = 41
-    prime * (prime + element.hashCode) + index.hashCode
+    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
   }
+  
+  override def toString = "NewValue[" + oldValue + "->" + newValue + "]"
+
 }

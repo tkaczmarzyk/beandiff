@@ -19,6 +19,8 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.core.model.change.Change
+
 // TODO factory for values such as EmptyDiff etc
 trait Diff extends ChangeSet {
 

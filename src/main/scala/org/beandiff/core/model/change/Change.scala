@@ -17,20 +17,16 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.core.model.change
 
-import org.beandiff.TypeDefs._
 
-case class Addition(
-    element: Any) extends Change {
+trait Change {
 
-  def perform(target: Any) = {
-    target.asInstanceOf[JSet].add(element)
-  }
+  def perform(target: Any): Unit // TODO better name
   
   @deprecated
-  def newValue: Any = element // FIXME
+  def newValue: Any // FIXME tmp
   
   @deprecated
-  def oldValue: Any = throw new UnsupportedOperationException // FIXME
+  def oldValue: Any //FIXME tmp
 }

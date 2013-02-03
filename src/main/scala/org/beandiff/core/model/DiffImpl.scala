@@ -20,6 +20,7 @@
 package org.beandiff.core.model
 
 import Path.EmptyPath
+import org.beandiff.core.model.change.Change
 
 class DiffImpl(
   private val path: Path, // TODO redundant (as is stored in map)

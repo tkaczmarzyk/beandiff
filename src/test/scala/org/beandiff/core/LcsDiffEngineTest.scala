@@ -22,7 +22,7 @@ package org.beandiff.core
 import java.util.Arrays
 import org.beandiff.TestDefs.of
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.Insertion
+import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.equality.StdEqualityInvestigator
@@ -37,8 +37,8 @@ import org.mockito.stubbing.Answer
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.core.model.Deletion
-import org.beandiff.core.model.Insertion
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
 
 
 @RunWith(classOf[JUnitRunner])

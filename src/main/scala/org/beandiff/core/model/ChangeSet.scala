@@ -19,6 +19,8 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.core.model.change.Change
+
 
 object ChangeSet {
   
