@@ -17,23 +17,20 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model.change
+package org.beandiff.core.translation
+
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Addition
+import org.beandiff.core.model.change.Insertion
 
 
-@deprecated // used in LeafDiffEngine on lists ?
-class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
-    private val deleted: Any,
-    private val added: Any) extends Change {
+class InsertionToAddition extends ChangeTranslation {
 
-  def perform(target: Any): Unit = {
-    val collection = target.asInstanceOf[java.util.Collection[Any]]
-    collection.remove(deleted)
-    collection.add(added)
+  override def translate(insert: Change) = {
+    if (insert.isInstanceOf[Insertion])
+      new Addition(insert.newValue)
+    else
+      throw new IllegalArgumentException("expected insertion but was: " + insert)
   }
-  
-  @deprecated
-  def newValue: Any = added
-  
-  @deprecated
-  def oldValue: Any = deleted
 }

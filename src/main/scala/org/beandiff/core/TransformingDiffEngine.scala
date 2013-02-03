@@ -21,6 +21,7 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.translation.ChangeTranslation
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
@@ -32,7 +33,7 @@ import org.beandiff.core.model.FlatChangeSet
 class TransformingDiffEngine(
     private val delegate: DiffEngine,
     private val transformer: ObjectTransformer,
-    private val translators: Map[Class[_ <: Change], ChangeTranslator]) extends DiffEngine {
+    private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
     calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)

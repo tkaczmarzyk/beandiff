@@ -17,29 +17,12 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.translation
 
 import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.change.NewValue
-import org.beandiff.core.model.change.DelAdd
-import org.beandiff.core.model.change.Insertion
-import org.beandiff.core.model.change.Addition
-import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.model.change.Removal
 
 
-// FIXME better name, clearer responsibility, avoid if-else
-class IndexPropChangeTranslator extends ChangeTranslator {
+trait ChangeTranslation { // TODO type parameters
 
-  override def translate(change: Change) = {
-    if (change.isInstanceOf[NewValue]) {
-      new DelAdd(change.oldValue, change.newValue) // TODO verify that property is IndexProperty
-    } else if (change.isInstanceOf[Insertion]) {
-      new Addition(change.newValue)
-    } else if (change.isInstanceOf[Deletion]) {
-      new Removal(change.oldValue) 
-    } else {
-      change
-    }
-  }
+  def translate(change: Change): Change
 }

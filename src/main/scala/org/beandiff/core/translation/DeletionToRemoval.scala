@@ -17,12 +17,20 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.core.translation
 
 import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Removal
+import org.beandiff.core.model.change.Deletion
 
 
-trait ChangeTranslator {
+class DeletionToRemoval extends ChangeTranslation {
+  
+  def translate(del: Change) = {
+    if (del.isInstanceOf[Deletion])
+      new Removal(del.oldValue)
+    else
+      throw new IllegalArgumentException("expected Deletion but was: " + del)
+  }
 
-  def translate(change: Change): Change
 }
