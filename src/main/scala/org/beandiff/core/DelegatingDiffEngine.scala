@@ -33,6 +33,7 @@ import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.translation.InsertionToAddition
 import org.beandiff.core.translation.DeletionToRemoval
+import org.beandiff.lcs.MemoizedLcsCalc
 
 
 class DelegatingDiffEngine(
@@ -40,7 +41,8 @@ class DelegatingDiffEngine(
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators, descStrategy)))
-    .withEntry(classOf[JList] -> new LcsResultOptimizer(this, new LcsDiffEngine(this, new NaiveLcsCalc(eqInvestigators.defaultValue))))
+    .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
+        new LcsDiffEngine(this, new MemoizedLcsCalc(eqInvestigators.defaultValue))))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
           Map(//classOf[NewValue] -> new IndexPropChangeTranslator,

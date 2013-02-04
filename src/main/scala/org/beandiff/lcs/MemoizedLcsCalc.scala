@@ -19,29 +19,21 @@
  */
 package org.beandiff.lcs
 
-import org.beandiff.TypeDefs.JList
-import org.beandiff.support.:+
+import java.util.HashMap
 import org.beandiff.equality.EqualityInvestigator
 
-class NaiveLcsCalc(
-    private val id: EqualityInvestigator) extends LcsCalc {
+class MemoizedLcsCalc(
+    id: EqualityInvestigator) extends NaiveLcsCalc(id) {
 
-  private val empty = Vector()
+  private var cache = new HashMap[(Seq[Any], Seq[Any]), Seq[Occurence]]()
   
-  override def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence] = {
-    if (xs.isEmpty || ys.isEmpty)
-      empty
-    else (xs, ys) match {
-      case (xs1 :+ x, ys1 :+ y) =>
-        if (id.areEqual(x, y))
-          lcs(xs1, ys1) :+ Occurence(x, xs.length - 1, ys.length - 1)
-        else {
-          val lcs1 = lcs(xs1, ys)
-          val lcs2 = lcs(xs, ys1)
-          
-          if (lcs1.length > lcs2.length) lcs1
-          else lcs2
-        }
+  override def lcs(xs: Seq[Any], ys: Seq[Any]) = {
+    if (cache.containsKey((xs, ys))) {
+      cache.get((xs, ys))
+    } else {
+      val result = super.lcs(xs, ys)
+      cache.put((xs, ys), result)
+      result
     }
   }
 }
