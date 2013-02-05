@@ -35,4 +35,9 @@ public class CollectionBean<T> {
 	public static <T> CollectionBean<T> listBean(T... elems) {
 		return new CollectionBean<T>(new ArrayList<T>(Arrays.asList(elems)));
 	}
+	
+	@Override
+	public String toString() {
+		return "CollectionBean[" + collection + "]";
+	}
 }
