@@ -20,6 +20,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.TypeDefs._
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Path
@@ -29,62 +30,76 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.CollectionBean
 
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
+  ignore("should update when 2 sets are on the path") {
+    val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
+    val bean1 = new ParentBean("bean", JSet(col1))
+
+    val col2 = new CollectionBean(JSet(new SimpleJavaBean("Sknerus", 1)))
+    val bean2 = new ParentBean("bean", JSet(col2))
+
+    diff(bean1, bean2).transformTarget
+    
+    val updatedVal = bean1.getChild().asInstanceOf[JSet].iterator().next().asInstanceOf[SimpleJavaBean].getName() // TODO nice way to get it
+    updatedVal should be ===  "Sknerus"
+  }
+
   test("should update a simple property") {
     val bean1 = new SimpleJavaBean("bean", 1)
     val bean2 = new SimpleJavaBean("bean", 2)
-    
+
     diff(bean1, bean2).transformTarget()
-    
+
     bean1.getValue() should be === 2
   }
-  
+
   test("should update a property of a nested bean") {
     val parent1 = new ParentBean("parent", new SimpleJavaBean("bart", 1))
     val parent2 = new ParentBean("parent", new SimpleJavaBean("lisa", 1))
-    
+
     diff(parent1, parent2).transformTarget()
-    
+
     Path("child.name").value(parent1) should be === "lisa"
   }
-  
+
   test("should insert an element to a list") {
     val list1 = JList("a", "c")
     val list2 = JList("a", "b", "c")
-    
+
     diff(list1, list2).transformTarget()
-    
+
     list1 should be === list2
   }
-  
+
   test("should add an element to a set") {
     val set1 = JSet("a", "c")
     val set2 = JSet("a", "b", "c")
-    
+
     diff(set1, set2).transformTarget()
-    
+
     set1 should be === set2
   }
-  
+
   test("should remove an element from a list") {
-     val list1 = JList("a", "b", "c")
-     val list2 = JList("a", "c")
-     
-     diff(list1, list2).transformTarget()
-     
-     list1 should be === list2
+    val list1 = JList("a", "b", "c")
+    val list2 = JList("a", "c")
+
+    diff(list1, list2).transformTarget()
+
+    list1 should be === list2
   }
-  
+
   test("should remove an element from a set") {
     val set1 = JSet("a", "b", "c")
     val set2 = JSet("a", "c")
-    
+
     diff(set1, set2).transformTarget()
-    
+
     set1 should be === set2
   }
 }
