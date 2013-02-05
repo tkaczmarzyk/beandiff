@@ -101,7 +101,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff(bean1, bean2)
   }
   
-  test("subsequent calls should return the same result") {
+  test("subsequent calls should return the same result") { // TODO similar test with a difference expected
     new SimpleBeans {
       assert(!diff(a1a, a1b).hasDifference)
       assert(!diff(a1a, a1b).hasDifference)
