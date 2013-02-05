@@ -45,7 +45,7 @@ class LcsResultOptimizer(
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
     val diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
 
-    for ((prop, changeset) <- diff.changes) {
+    for ((prop, changeset) <- diff.changes) { // FIXME single return point
       if (prop == Self) {
         return optimize(Path(prop), Path(prop).value(diff.target), changeset)
       } else {

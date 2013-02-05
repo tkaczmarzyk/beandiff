@@ -22,7 +22,7 @@ package org.beandiff
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
-import org.beandiff.test.BeanDiffMatchers._;
+import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
 import org.beandiff.BeanDiff.ignoreCase
@@ -39,6 +39,7 @@ import org.scalatest.matchers.ShouldMatchers
 import java.io.StringWriter
 import org.beandiff.test.TestConversions._
 import java.io.PrintWriter
+import org.beandiff.test.JSet
 
 
 @RunWith(classOf[JUnitRunner])
@@ -88,6 +89,16 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       
       assert(d.hasDifference("[0]"))
     }
+  }
+  
+  ignore("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
+    val col1 = new CollectionBean(JSet(new Object()))
+    val bean1 = new ParentBean("bean", JSet(col1))
+    
+    val col2 = new CollectionBean(JSet(new Object()))
+    val bean2 = new ParentBean("bean", JSet(col2))
+    
+    diff(bean1, bean2)
   }
   
   test("subsequent calls should return the same result") {
