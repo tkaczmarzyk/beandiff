@@ -58,7 +58,7 @@ class LcsDiffEngine(
         (accDiff, occurence) => {
           val ver1 = xs.get(occurence.index1)
           val ver2 = ys.get(occurence.index2)
-          delegate.calculateDiff0(accDiff, location.withIndex(occurence.index1), ver1, ver2)
+          delegate.calculateDiff0(accDiff, location.withIndex(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
         }
     )
   }
