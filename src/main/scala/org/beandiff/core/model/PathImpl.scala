@@ -49,7 +49,7 @@ final class PathImpl(
       new PathImpl(props :+ p)
   }
   
-  override def stepBack = new PathImpl(props.init)
+  override def stepBack = if (depth == 0) this else new PathImpl(props.init)
 
   override def ++(other: Path): Path =
     new PathImpl(props ++ other.props)

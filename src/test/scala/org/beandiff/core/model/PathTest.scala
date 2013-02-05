@@ -28,6 +28,10 @@ import org.scalatest.matchers.ShouldMatchers
 @RunWith(classOf[JUnitRunner])
 class PathTest extends FunSuite with ShouldMatchers {
 
+  test("stepBack on emptyPath should yield an empty path") {
+    EmptyPath.stepBack should be === EmptyPath  
+  }
+  
   test("should parse index property followed by field property") {
     assert(Path.of("[1].name") === new PathImpl(Vector(new IndexProperty(1), new FieldProperty("name"))))
   }
