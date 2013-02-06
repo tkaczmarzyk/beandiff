@@ -73,7 +73,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(list1, list2).transformTarget()
 
-    list1 should be === list2
+    list1 should be === JList("a", "b", "c")
   }
 
   test("should add an element to a set") {
@@ -82,7 +82,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(set1, set2).transformTarget()
 
-    set1 should be === set2
+    set1 should be === JSet("a", "b", "c")
   }
 
   test("should remove an element from a list") {
@@ -91,7 +91,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(list1, list2).transformTarget()
 
-    list1 should be === list2
+    list1 should be === JList("a", "c")
   }
 
   test("should remove an element from a set") {
@@ -100,6 +100,16 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(set1, set2).transformTarget()
 
-    set1 should be === set2
+    set1 should be === JSet("a", "c")
+  }
+  
+  // TODO
+  ignore("should add element to a set within a set") { // "A feint within a feint within a feint..."
+    val set1 = JSet(JSet("a", "b"))
+    val set2 = JSet(JSet("a", "b", "c"))
+    val d = diff(set1, set2)
+    diff(set1, set2).transformTarget()
+    
+    set1 should be === JSet(JSet("a", "b", "c"))
   }
 }

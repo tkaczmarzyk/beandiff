@@ -86,7 +86,7 @@ class TransformingDiffEngine(
     result
   }
   
-  private def transformProperty(prop: Property, transformedValue: Any): Property = {
+  private def transformProperty(prop: Property, transformedValue: Any): TransformedProperty = {
     new TransformedProperty(prop, transformedValue)
   }
   
