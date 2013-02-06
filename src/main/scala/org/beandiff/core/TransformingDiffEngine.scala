@@ -73,7 +73,7 @@ class TransformingDiffEngine(
     val transformedProperty = transformProperty(location.last, t1)
     val transformedLocation = location.stepBack.step(transformedProperty)
     
-    val diff = delegate.calculateDiff0(zero, transformedLocation, t1, t2)
+    val diff = delegate.calculateDiff0(zero, transformedLocation, t1, t2) // TODO in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
     
     val result = diff.changes.foldLeft(zero)( // TODO tests
         (diff, propChanges) => {
