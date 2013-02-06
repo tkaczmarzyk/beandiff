@@ -25,18 +25,17 @@ import org.beandiff.core.model.change.Change
 
 class FlatChangeSet(
     val target: Any, // TODO decide whether it should be present
-    private val path: Path, // FIXME now it's rather a Property: either change field type or fix the impl
     private val selfChanges: List[Change]) extends ChangeSet {
 
   
-  def this(target: Any, path: Path, changes: Change*) {
-    this(target, path, List(changes:_*))
+  def this(target: Any, changes: Change*) {
+    this(target, List(changes:_*))
   }
   
   
-  override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (path, ch))
+  override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (Path(Self), ch))
   
-  override def withChange(change: Change) = new FlatChangeSet(target, path, selfChanges :+ change)
+  override def withChange(change: Change) = new FlatChangeSet(target, selfChanges :+ change)
   
   override def withChange(path: Path, change: Change): ChangeSet = { 
     if (path.depth == 0)
@@ -47,7 +46,7 @@ class FlatChangeSet(
   
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
   
-  private def toDiff = new DiffImpl(path, target, Map(Self -> this))
+  private def toDiff = new DiffImpl(target, Map(Self -> this))
   
   override def toString() = "FlatChangeSet[" + selfChanges.mkString("", ", ", "") + "]"
   

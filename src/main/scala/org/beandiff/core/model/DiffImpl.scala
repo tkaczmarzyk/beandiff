@@ -23,16 +23,12 @@ import Path.EmptyPath
 import org.beandiff.core.model.change.Change
 
 class DiffImpl(
-  private val path: Path, // TODO redundant (as is stored in map)
   val target: Any,
   private val propChanges: Map[Property, ChangeSet]) extends Diff {
 
-  def this(target: Any, changes: Map[Property, ChangeSet]) =
-    this(EmptyPath, target, changes)
-
   override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
-      case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (path ++ pathChange._1, pathChange._2)) // FIXME FIXME path seems to be used inconsistently
+      case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (Path(prop) ++ pathChange._1, pathChange._2))
     })
 
   override def changes = propChanges.toList
@@ -42,14 +38,14 @@ class DiffImpl(
   override def withChange(property: Property, change: Change): DiffImpl = {
     val newMod = propChanges.get(property) match {
       case Some(mod) => mod.withChange(change)
-      case None => new FlatChangeSet(property.value(target), Path(property), change)
+      case None => new FlatChangeSet(property.value(target), change)
     }
 
-    new DiffImpl(path, target, propChanges + (property -> newMod))
+    new DiffImpl(target, propChanges + (property -> newMod))
   }
 
   override def withChanges(property: Property, changes: ChangeSet) =
-    new DiffImpl(path, target, propChanges + (property -> changes))
+    new DiffImpl(target, propChanges + (property -> changes))
 
   override def withChange(path: Path, change: Change): Diff = {
     if (path.depth <= 1) {
@@ -57,7 +53,7 @@ class DiffImpl(
     } else {
       val interChangeset = propChanges.get(path.head) match {
         case Some(changeset) => changeset
-        case None => new DiffImpl(Path(path.head), path.head.value(target), Map())
+        case None => new DiffImpl(path.head.value(target), Map())
       }
 
       withChanges(path.head, interChangeset.withChange(path.tail, change))
@@ -65,7 +61,7 @@ class DiffImpl(
   }
   
   override def without(prop: Property) = {
-    new DiffImpl(path, target, propChanges - prop)
+    new DiffImpl(target, propChanges - prop)
   }
 
   override def hasDifference(): Boolean =

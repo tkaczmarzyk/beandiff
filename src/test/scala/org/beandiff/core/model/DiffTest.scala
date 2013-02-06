@@ -39,9 +39,10 @@ class DiffTest extends FunSuite with ShouldMatchers {
   val simpleDiff = BeanDiff.diff(simpleBean1, new SimpleJavaBean("bb", 1))
   
   test("should add change at the path") {
-    val diff = new DiffImpl(EmptyPath, parent, Map())
-    val updated = diff.withChange(Path.of("child.name"), new NewValue(parent, new FieldProperty("name"), ":(", ":)"))
+    val diff = new DiffImpl(parent, Map())
+    val updated = diff.withChange(Path.of("child.name"), new NewValue(simpleBean1, new FieldProperty("name"), ":(", ":)"))
     
+    val lea = updated.leafChanges
     assert(updated.leafChanges.exists(_._1 == Path.of("child.name")))
   }
   
@@ -52,15 +53,9 @@ class DiffTest extends FunSuite with ShouldMatchers {
   
   test("should return a single leaf change") {
     val change = mock(classOf[NewValue])
-    val diff = new DiffImpl(EmptyPath, JList(1), Map(new IndexProperty(0) -> ChangeSet(1, Path("[0]"), change)))
+    val diff = new DiffImpl(EmptyPath, Map(new IndexProperty(0) -> ChangeSet(1, change)))
     
     diff.leafChanges should be === List((Path("[0]"), change))
   }
   
-  ignore("should skip its own path when returning leafChanges?") {
-    val change = mock(classOf[NewValue])
-    val diff = new DiffImpl(Path("outerProp"), JList(1), Map(new IndexProperty(0) -> ChangeSet(1, Path("[0]"), change)))
-    
-    diff.leafChanges should be === List((Path("[0]"), change))
-  }
 }

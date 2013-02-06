@@ -42,14 +42,14 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean1 = new ValueBean[IdBean]("Aaa", new IdBean(17))
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
-  val valueDiff = new DiffImpl(Path.of("[0]"), null, Map(
-      new FieldProperty("id") -> ChangeSet(bean1, Path.of("id"), new NewValue(null, new FieldProperty("id"), 17, 8))))
+  val valueDiff = new DiffImpl(null, Map(
+      new FieldProperty("id") -> ChangeSet(bean1, new NewValue(null, new FieldProperty("id"), 17, 8))))
   
-  val valuesDiff = new DiffImpl(Path.of("values"), bean1.values, Map(
+  val valuesDiff = new DiffImpl(bean1.values, Map(
       new IndexProperty(0) -> valueDiff))
   
-  val diff1 = new DiffImpl(EmptyPath, bean1, Map( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> ChangeSet(bean1, Path.of("name"), new NewValue(null, new FieldProperty("name"), "Aaa", "Bbb")),
+  val diff1 = new DiffImpl(bean1, Map( // TODO reduce verbosity and dependency to other functionality
+      new FieldProperty("name") -> ChangeSet(bean1, new NewValue(null, new FieldProperty("name"), "Aaa", "Bbb")),
       new FieldProperty("values") -> valuesDiff))
   
   

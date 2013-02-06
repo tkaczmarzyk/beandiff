@@ -38,7 +38,7 @@ class LcsDiffEngine(
   private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    val zero = new DiffImpl(EmptyPath, o1, Map())
+    val zero = new DiffImpl(o1, Map())
     calculateDiff0(zero, EmptyPath, o1, o2)
   }
 

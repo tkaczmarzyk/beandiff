@@ -50,7 +50,7 @@ class DelegatingDiffEngine(
               classOf[Deletion] -> new DeletionToRemoval)))
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2)
+    calculateDiff0(new DiffImpl(o1, Map()), EmptyPath, o1, o2)
   }
 
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {

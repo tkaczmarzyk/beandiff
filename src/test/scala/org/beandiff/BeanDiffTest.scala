@@ -93,8 +93,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  // TODO:
-  ignore("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
+  test("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
     val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
     val bean1 = new ParentBean("bean", JSet(col1))
 

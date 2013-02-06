@@ -24,9 +24,7 @@ import org.beandiff.core.model.change.Change
 
 object ChangeSet {
   
-  def apply(target: Any, path: Path): ChangeSet = new FlatChangeSet(target, path)
-  
-  def apply(target: Any, path: Path, changes: Change*): ChangeSet = new FlatChangeSet(target, path, changes:_*)
+  def apply(target: Any, changes: Change*): ChangeSet = new FlatChangeSet(target, changes:_*)
 }
 
 trait ChangeSet {

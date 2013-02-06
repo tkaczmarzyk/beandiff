@@ -63,7 +63,7 @@ class TransformingDiffEngine(
     private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(new DiffImpl(EmptyPath, o1, Map()), EmptyPath, o1, o2) // FIME creates diff with untransformed target
+    calculateDiff0(new DiffImpl(o1, Map()), EmptyPath, o1, o2) // FIME creates diff with untransformed target
   }
   
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any) = {
@@ -94,7 +94,7 @@ class TransformingDiffEngine(
     val leafChanges = changes.leafChanges
     val transformed = leafChanges.map(transformChange)
     
-    transformed.foldLeft(ChangeSet(changes.target, EmptyPath))( // TODO check 
+    transformed.foldLeft(ChangeSet(changes.target))( // TODO check 
         (acc: ChangeSet, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
   

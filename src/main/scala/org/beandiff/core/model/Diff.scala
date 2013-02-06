@@ -21,6 +21,11 @@ package org.beandiff.core.model
 
 import org.beandiff.core.model.change.Change
 
+
+object Diff {
+  def apply(target: Any) = new DiffImpl(target, Map[Property, ChangeSet]())
+}
+
 // TODO factory for values such as EmptyDiff etc
 trait Diff extends ChangeSet {
 
