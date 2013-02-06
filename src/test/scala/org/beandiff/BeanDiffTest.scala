@@ -106,7 +106,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     d should haveDifference("child[0].collection[0].name")
   }
   
-  test("should find difference in a sets within sets") {
+  test("should find difference between a sets within sets") {
     val set1 = JSet(JSet(1))
     val set2 = JSet(JSet(2))
     
