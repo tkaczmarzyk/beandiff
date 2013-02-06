@@ -99,9 +99,7 @@ class TransformingDiffEngine(
   }
   
   private def transformChange(pathChange: (Path, Change)): (Path, Change) = {
-//    if (pathChange._1.depth > 0) { // FIME ?
       pathChange._1 -> transformChange(pathChange._2)
-//    } else pathChange
   }
   
   private def transformChange(change: Change): Change = {
