@@ -77,7 +77,7 @@ class TransformingDiffEngine(
     
     val result = diff.changes.foldLeft(zero)( // TODO tests
         (diff, propChanges) => {
-          val transformedChangeset = transform(propChanges._1, propChanges._2)
+          val transformedChangeset = transform(propChanges._2)
           diff.withChanges(propChanges._1, transformedChangeset)
         }) //TODO test withChange(emptyDiff)
         
@@ -90,7 +90,7 @@ class TransformingDiffEngine(
     new TransformedProperty(prop, transformedValue)
   }
   
-  private def transform(propToSkip: Property, changes: ChangeSet) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
+  private def transform(changes: ChangeSet) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
     val leafChanges = changes.leafChanges
     val transformed = leafChanges.map(transformChange)
     
