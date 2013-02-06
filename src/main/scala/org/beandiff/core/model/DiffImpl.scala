@@ -32,7 +32,7 @@ class DiffImpl(
 
   override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
-      case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (path ++ pathChange._1, pathChange._2))
+      case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (path ++ pathChange._1, pathChange._2)) // FIXME FIXME path seems to be used inconsistently
     })
 
   override def changes = propChanges.toList

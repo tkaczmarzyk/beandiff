@@ -20,11 +20,13 @@
 package org.beandiff.core.model
 
 import org.beandiff.support.ObjectSupport._
+import org.beandiff.core.TransformedProperty
 
 
-class FieldProperty(val name: String) extends Property {
+class FieldProperty(val name: String) extends Property with Equals {
 
   override def value(o: Any): Any = {
+    if (o == null) throw new IllegalArgumentException("cannot get field '" + name + "' from null")
     if (o hasField name)
       o getFieldVal name
     else null
@@ -38,18 +40,24 @@ class FieldProperty(val name: String) extends Property {
     }
   }
   
+  override def toString() = {
+    name
+  }
+  
+  def canEqual(other: Any) = {
+    other.isInstanceOf[FieldProperty]
+  }
+  
   override def equals(other: Any) = {
     other match {
-      case that: FieldProperty => name == that.name
+      case that: FieldProperty => that.canEqual(FieldProperty.this) && name == that.name
+      case other: TransformedProperty => other.equals(this) // FIXME FIXME FIXME !
       case _ => false
     }
   }
   
   override def hashCode() = {
-    name.hashCode
-  }
-  
-  override def toString() = {
-    name
+    val prime = 41
+    prime + name.hashCode
   }
 }

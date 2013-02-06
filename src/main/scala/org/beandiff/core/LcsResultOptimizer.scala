@@ -45,21 +45,29 @@ class LcsResultOptimizer(
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
     val diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
 
+    optimizeDiff(diff)
+  }
+
+  private def optimizeDiff(diff: Diff): Diff = {
     for ((prop, changeset) <- diff.changes) { // FIXME single return point
-      if (prop == Self) {
-        return optimize(Path(prop), Path(prop).value(diff.target), changeset)
+      val path = Path(prop)
+      if (prop == Self) { // FIXME FIXME FIXME:
+        return optimize(Path(prop), diff.target, changeset)
       } else {
-        val optimized = optimize(Path(prop), Path(prop).value(diff.target), changeset)
-        return diff.without(prop).withChanges(prop, optimized)
+        val optimized = // FIME if-else
+          if (changeset.isInstanceOf[FlatChangeSet])
+        	optimize(path, path.value(diff.target), changeset)
+          else optimizeDiff(changeset.asInstanceOf[Diff])
+        return diff.without(prop).withChanges(prop, optimized) // TODO what if optimization targets contain collection properties?
       }
     }
     diff
   }
-
+  
   // FIXME temporary, ugly prototype
   private def optimize(path: Path, target: Any, changeset: ChangeSet): Diff = {
     if (!changeset.isInstanceOf[FlatChangeSet]) {
-      throw new Error()
+      changeset.asInstanceOf[Diff] // FIXME 
     } else {
       var result: Diff = new DiffImpl(path, target, Map())
 

@@ -36,16 +36,16 @@ import org.beandiff.beans.CollectionBean
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
-  ignore("should update when 2 sets are on the path") {
+  test("should update when 2 sets are on the path") {
     val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
     val bean1 = new ParentBean("bean", JSet(col1))
 
     val col2 = new CollectionBean(JSet(new SimpleJavaBean("Sknerus", 1)))
     val bean2 = new ParentBean("bean", JSet(col2))
 
-    diff(bean1, bean2).transformTarget
+    diff(bean1, bean2).transformTarget()
     
-    val updatedVal = bean1.getChild().asInstanceOf[JSet].iterator().next().asInstanceOf[SimpleJavaBean].getName() // TODO nice way to get it
+    val updatedVal = bean1.getChild().asInstanceOf[JSet].iterator().next().asInstanceOf[CollectionBean[JSet]].collection.iterator().next().asInstanceOf[SimpleJavaBean].getName() // FIXME nice way to get it
     updatedVal should be ===  "Sknerus"
   }
 

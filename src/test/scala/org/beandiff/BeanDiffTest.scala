@@ -31,6 +31,7 @@ import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.IndexProperty
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -40,6 +41,7 @@ import java.io.StringWriter
 import org.beandiff.test.TestConversions._
 import java.io.PrintWriter
 import org.beandiff.test.JSet
+import org.beandiff.test.JList
 
 
 @RunWith(classOf[JUnitRunner])
@@ -91,14 +93,26 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  // TODO:
   ignore("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
-    val col1 = new CollectionBean(JSet(new Object()))
+    val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
     val bean1 = new ParentBean("bean", JSet(col1))
-    
-    val col2 = new CollectionBean(JSet(new Object()))
+
+    val col2 = new CollectionBean(JSet(new SimpleJavaBean("Sknerus", 1)))
     val bean2 = new ParentBean("bean", JSet(col2))
     
-    diff(bean1, bean2)
+    val d = diff(bean1, bean2)
+
+    d should haveDifference("child[0].collection[0].name")
+  }
+  
+  test("should find difference in a sets within sets") {
+    val set1 = JSet(JSet(1))
+    val set2 = JSet(JSet(2))
+    
+    val d = diff(set1, set2)
+    
+    d should haveDifference("[0][0]")
   }
   
   test("subsequent calls should return the same result") { // TODO similar test with a difference expected

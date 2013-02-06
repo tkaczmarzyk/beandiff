@@ -21,6 +21,7 @@ package org.beandiff.core.model
 
 import java.util.List
 import org.beandiff.support.ObjectSupport._
+import org.beandiff.core.TransformedProperty
 
 
 class IndexProperty(val index: Int) extends Property {
@@ -42,6 +43,7 @@ class IndexProperty(val index: Int) extends Property {
   override def equals(other: Any) = {
     other match {
       case that: IndexProperty => index == that.index
+      case other: TransformedProperty => other.equals(this) // FIXME FIXME FIXME
       case _ => false
     }
   }
