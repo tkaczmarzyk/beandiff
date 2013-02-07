@@ -86,6 +86,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   }
   
   
+  // TODO
   ignore("should detect differnces in scala lists of strings") {
     new Collections {
       val d = diff(sList1, sList2)
