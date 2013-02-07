@@ -42,6 +42,7 @@ import org.beandiff.test.TestConversions._
 import java.io.PrintWriter
 import org.beandiff.test.JSet
 import org.beandiff.test.JList
+import org.beandiff.beans.NamedBean
 
 
 @RunWith(classOf[JUnitRunner])
@@ -91,6 +92,22 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       
       assert(d.hasDifference("[0]"))
     }
+  }
+  
+  // TODO
+  ignore("there should be no difference between sets when there are another differences in the parent") { // tests the optimization after lcs // TODO unit test for it
+    val bean1 = new ParentBean("aaa", JSet(new NamedBean("a"), new NamedBean("b")))
+    val bean2 = new ParentBean("bbb", JSet(new NamedBean("b"), new NamedBean("a")))
+    
+    diff(bean1, bean2) should not (haveDifference("child"))
+  }
+  
+  // TODO
+  ignore("should detect that there is no difference between beans with sets of beans") {
+    val bean1 = new ParentBean("parent", JSet(new NamedBean("a"), new NamedBean("b")))
+    val bean2 = new ParentBean("parent", JSet(new NamedBean("b"), new NamedBean("a")))
+    
+    diff(bean1, bean2) should not (haveDifference)
   }
   
   test("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
