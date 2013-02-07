@@ -32,8 +32,10 @@ trait ChangeSet {
   def leafChanges: Traversable[(Path, Change)]
   
   def withChange(change: Change): ChangeSet
-  
   def withChange(path: Path, change: Change): ChangeSet
+  def withChanges(path: Path, changes: ChangeSet): ChangeSet
+  def changes(path: Path): ChangeSet
+  def without(path: Path): ChangeSet // TODO ?
   
   def hasDifference(pathToFind: Path): Boolean
   

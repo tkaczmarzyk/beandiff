@@ -21,6 +21,8 @@ package org.beandiff.core.model
 
 import Path.EmptyPath
 import org.beandiff.core.model.change.Change
+import scala.annotation.tailrec
+
 
 class DiffImpl(
   val target: Any,
@@ -80,6 +82,41 @@ class DiffImpl(
       }
   }
 
+  override def changes(path: Path): ChangeSet = {
+    if (path.depth <= 1)
+      propChanges(path.head)
+    else
+      propChanges(path.head).changes(path.tail)
+  }
+  
+  override def without(path: Path): Diff = {
+    if (path == EmptyPath)
+      Diff(target)
+    else if (path.depth == 1)
+      without(path.head)
+    else {
+      val subWithout = propChanges(path.head).without(path.tail)
+      if (subWithout.leafChanges.isEmpty)
+        without(path.head)
+      else
+        without(path.head).withChanges(path.head, subWithout)
+    }
+  }
+  
+  override def withChanges(path: Path, changes: ChangeSet): Diff = {
+    if (path.depth <= 1)
+      withChanges(path.head, changes)
+    else {
+      val interChangeset = propChanges.get(path.head) match { // FIXME FIXME FIXME temporary copy-paste
+        case Some(changeset) => changeset
+        case None => new DiffImpl(path.head.value(target), Map())
+      }
+      
+      without(path.head)
+      	.withChanges(path.head, interChangeset.withChanges(path.tail, changes))
+    }
+  }
+  
   override def transformTarget() = {
     propChanges.foreach({
       case (prop, changeSet) => changeSet.transformTarget()

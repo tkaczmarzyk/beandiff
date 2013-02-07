@@ -45,27 +45,27 @@ class LcsResultOptimizer(
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
     val diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
 
-    optimizeDiff(diff)
+    optimizeDiff(diff, location)
   }
 
-  private def optimizeDiff(diff: Diff): Diff = {
-    for ((prop, changeset) <- diff.changes) { // FIXME single return point
-      val path = Path(prop)
-      if (prop == Self) { // FIXME FIXME FIXME:
-        return optimize(Path(prop), diff.target, changeset)
-      } else {
-        val optimized = // FIME if-else
-          if (changeset.isInstanceOf[FlatChangeSet])
-        	optimize(path, path.value(diff.target), changeset)
-          else optimizeDiff(changeset.asInstanceOf[Diff])
-        return diff.without(prop).withChanges(prop, optimized) // TODO what if optimization targets contain collection properties?
+  private def optimizeDiff(diff: Diff, pathToOptimize: Path): Diff = {
+    if (!diff.hasDifference(pathToOptimize))
+      diff
+    else {
+      val subdiff = diff.changes(pathToOptimize)
+      val optimized = optimize(subdiff.target, subdiff)
+      if (optimized.leafChanges.isEmpty) // TODO duplicated somewhere else? move to withChanges method
+        diff.without(pathToOptimize)
+      else {
+        val withoutOldSubdiff = diff.without(pathToOptimize) // TODO clarify the code below (which replaced initial diff.without(pathToOptimize).withChanges(pathToOptimize, optimized) which perhaps could be refactored to handle te tricky scenarios
+        optimized.leafChanges.foldLeft(withoutOldSubdiff)(
+            (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathToOptimize ++ pathChange._1, pathChange._2))
       }
     }
-    diff
   }
   
   // FIXME temporary, ugly prototype
-  private def optimize(path: Path, target: Any, changeset: ChangeSet): Diff = {
+  private def optimize(target: Any, changeset: ChangeSet): Diff = {
     if (!changeset.isInstanceOf[FlatChangeSet]) {
       changeset.asInstanceOf[Diff] // FIXME 
     } else {

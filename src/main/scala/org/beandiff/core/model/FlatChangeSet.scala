@@ -45,8 +45,30 @@ class FlatChangeSet(
   }
   
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
+
+  override def without(path: Path) = {
+    if (path == EmptyPath)
+      ChangeSet(target)
+    else
+      throw new IllegalArgumentException()
+  }
   
-  private def toDiff = new DiffImpl(target, Map(Self -> this))
+  override def changes(path: Path): ChangeSet = { // TODO is it really needed ? (should be ever called?)
+    if (path != EmptyPath)
+      throw new IllegalArgumentException
+    else
+      this // FIXME Self-related confusion
+  }
+  
+  override def withChanges(path: Path, changes: ChangeSet): ChangeSet = { // TODO verify
+    toDiff.withChanges(path, changes)
+  }
+  
+  def toDiff =
+    if (selfChanges.isEmpty)
+      Diff(target)
+    else
+      Diff(target, Map(Self -> this))
   
   override def toString() = "FlatChangeSet[" + selfChanges.mkString("", ", ", "") + "]"
   

@@ -19,31 +19,28 @@
  */
 package org.beandiff.core.model
 
-import org.beandiff.core.model.change.Change
+import org.beandiff.BeanDiff
+import org.beandiff.beans.ParentBean
+import org.beandiff.test.BeanDiffMatchers._
+import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.test.JList
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
+import org.mockito.Mockito.mock
+import org.beandiff.core.model.change.NewValue
+import org.scalatest.FunSuite
 
 
-object Diff {
-  def apply(target: Any) = new DiffImpl(target, Map[Property, ChangeSet]())
-}
+@RunWith(classOf[JUnitRunner])
+class FlatChangeSetTest extends FunSuite with ShouldMatchers {
 
-// TODO factory for values such as EmptyDiff etc
-trait Diff extends ChangeSet {
-
-  def hasDifference(): Boolean
-  def hasDifference(path: String): Boolean
-  def hasDifference(p: Path): Boolean
-  
-  def leafChanges: Traversable[(Path, Change)]
-  def changes: Traversable[(Property, ChangeSet)] // TODO
-  def changes(path: Path): ChangeSet
-  
-  def withChanges(property: Property, changes: ChangeSet): Diff
-  def withChanges(path: Path, changes: ChangeSet): Diff
-  def withChange(path: Path, change: Change): Diff
-  def withChange(property: Property, change: Change): Diff
-  def without(property: Property): Diff
-  def without(path: Path): Diff
-  
-  def transformTarget(): Unit
-  def target: Any
+  test("empty FlatChangeset should be converted to an empty Diff") {
+    val converted = new FlatChangeSet(new Object).toDiff
+    
+    converted should not (haveDifference)
+  }
 }

@@ -21,6 +21,7 @@ package org.beandiff.core.model
 
 import org.beandiff.BeanDiff
 import org.beandiff.beans.ParentBean
+import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.NewValue
@@ -30,17 +31,23 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito.mock
+import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
 class DiffTest extends FunSuite with ShouldMatchers {
 
-  val simpleBean1 = new SimpleJavaBean("aa", 1)
-  val parent = new ParentBean("parent", simpleBean1)
-  val simpleDiff = BeanDiff.diff(simpleBean1, new SimpleJavaBean("bb", 1))
+  val child = new SimpleJavaBean("aa", 1)
+  val parent = new ParentBean("parent", child)
+  val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1))
+  
+  val childNameDiff = new DiffImpl(parent,
+        Map(new FieldProperty("child") -> new DiffImpl(child, 
+            Map(new FieldProperty("name") -> ChangeSet(null, new NewValue(child, new FieldProperty("name"), "bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
+  
   
   test("should add change at the path") {
     val diff = new DiffImpl(parent, Map())
-    val updated = diff.withChange(Path.of("child.name"), new NewValue(simpleBean1, new FieldProperty("name"), ":(", ":)"))
+    val updated = diff.withChange(Path.of("child.name"), new NewValue(child, new FieldProperty("name"), ":(", ":)"))
     
     val lea = updated.leafChanges
     assert(updated.leafChanges.exists(_._1 == Path.of("child.name")))
@@ -48,14 +55,38 @@ class DiffTest extends FunSuite with ShouldMatchers {
   
   test("there should be no difference in simple property after transformation") {
     simpleDiff.transformTarget()
-    simpleBean1.getName() should be === "bb"
+    child.getName() should be === "bb"
   }
   
   test("should return a single leaf change") {
     val change = mock(classOf[NewValue])
-    val diff = new DiffImpl(EmptyPath, Map(new IndexProperty(0) -> ChangeSet(1, change)))
+    val diff = new DiffImpl(null, Map(new IndexProperty(0) -> ChangeSet(1, change)))
     
     diff.leafChanges should be === List((Path("[0]"), change))
   }
   
+  test("should remove subdiff on the provided path") {
+    childNameDiff.without(Path("child.name")) should not (haveDifference("child.name"))
+  }
+  
+  test("should remove a diff that becomes empty after removal") {
+    childNameDiff.without(Path("child.name")) should not (haveDifference)
+  }
+  
+  test("should add changes at the specified path") {
+    val diff = Diff(parent)
+    val added = ChangeSet(null, new NewValue(child, new FieldProperty("name"), "bb", "cc"))
+    val modified = diff.withChanges(Path("child.name"), added)
+    
+    modified should haveDifference("child.name") // TODO better assertion
+  }
+  
+  test("should yield the nested changeset") {
+    val nestedChanges = mock(classOf[ChangeSet])
+    val diff = new DiffImpl(parent,
+        Map(new FieldProperty("child") -> new DiffImpl(child, 
+            Map(new FieldProperty("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
+    
+    diff.changes(Path("child.name")) should be === nestedChanges
+  }
 }
