@@ -26,7 +26,7 @@ import org.beandiff.core.translation.ChangeTranslation
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.ChangeSet
+import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.FlatChangeSet
 import org.beandiff.core.model.FieldProperty
@@ -90,12 +90,12 @@ class TransformingDiffEngine(
     new TransformedProperty(prop, transformedValue)
   }
   
-  private def transform(changes: ChangeSet) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
+  private def transform(changes: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
     val leafChanges = changes.leafChanges
     val transformed = leafChanges.map(transformChange)
     
-    transformed.foldLeft(ChangeSet(changes.target))( // TODO check 
-        (acc: ChangeSet, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
+    transformed.foldLeft[Diff](new FlatChangeSet(changes.target))( // TODO check 
+        (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
   
   private def transformChange(pathChange: (Path, Change)): (Path, Change) = {

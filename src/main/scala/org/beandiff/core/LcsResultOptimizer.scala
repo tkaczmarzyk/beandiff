@@ -20,7 +20,7 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.ChangeSet
+import org.beandiff.core.model.Diff
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DiffImpl
@@ -65,7 +65,7 @@ class LcsResultOptimizer(
   }
   
   // FIXME temporary, ugly prototype
-  private def optimize(target: Any, changeset: ChangeSet): Diff = {
+  private def optimize(target: Any, changeset: Diff): Diff = {
     if (!changeset.isInstanceOf[FlatChangeSet]) {
       changeset.asInstanceOf[Diff] // FIXME 
     } else {

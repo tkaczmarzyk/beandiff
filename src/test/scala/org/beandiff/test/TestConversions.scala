@@ -19,10 +19,10 @@
  */
 package org.beandiff.test
 
-import org.beandiff.core.model.ChangeSet
+import org.beandiff.core.model.Diff
 import org.scalatest.matchers.ShouldMatchers
 
 object TestConversions {
 
-  implicit def changesetToList(changeset: ChangeSet) = changeset.leafChanges
+  implicit def diffToList(diff: Diff) = diff.leafChanges
 }

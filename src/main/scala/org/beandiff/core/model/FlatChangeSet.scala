@@ -25,7 +25,7 @@ import org.beandiff.core.model.change.Change
 
 class FlatChangeSet(
     val target: Any, // TODO decide whether it should be present
-    private val selfChanges: List[Change]) extends ChangeSet {
+    private val selfChanges: List[Change]) extends Diff {
 
   
   def this(target: Any, changes: Change*) {
@@ -37,7 +37,7 @@ class FlatChangeSet(
   
   override def withChange(change: Change) = new FlatChangeSet(target, selfChanges :+ change)
   
-  override def withChange(path: Path, change: Change): ChangeSet = { 
+  override def withChange(path: Path, change: Change): Diff = { 
     if (path.depth == 0)
       withChange(change)
     else
@@ -48,22 +48,36 @@ class FlatChangeSet(
 
   override def without(path: Path) = {
     if (path == EmptyPath)
-      ChangeSet(target)
+      new FlatChangeSet(target, List())
     else
       throw new IllegalArgumentException()
   }
   
-  override def changes(path: Path): ChangeSet = { // TODO is it really needed ? (should be ever called?)
+  override def changes(path: Path): Diff = { // TODO is it really needed ? (should be ever called?)
     if (path != EmptyPath)
       throw new IllegalArgumentException
     else
       this // FIXME Self-related confusion
   }
   
-  override def withChanges(path: Path, changes: ChangeSet): ChangeSet = { // TODO verify
+  override def withChanges(path: Path, changes: Diff): Diff = { // TODO verify
     toDiff.withChanges(path, changes)
   }
   
+  override def without(prop: Property) = {
+    this // FIXME FIXME FIXME
+  }
+  
+  override def withChange(prop: Property, change: Change) = 
+    toDiff.withChange(prop, change)
+  
+  override def withChanges(prop:Property, diff: Diff) =
+    toDiff.withChanges(prop, diff)// FIXME FIXME FIXME
+    
+  override def hasDifference = !selfChanges.isEmpty
+  
+  override def hasDifference(pathStr: String) = toDiff.hasDifference(pathStr)
+    
   def toDiff =
     if (selfChanges.isEmpty)
       Diff(target)
@@ -71,6 +85,8 @@ class FlatChangeSet(
       Diff(target, Map(Self -> this))
   
   override def toString() = "FlatChangeSet[" + selfChanges.mkString("", ", ", "") + "]"
+  
+  override def changes = toDiff.changes
   
   override def transformTarget = {
     for (change <- selfChanges) {

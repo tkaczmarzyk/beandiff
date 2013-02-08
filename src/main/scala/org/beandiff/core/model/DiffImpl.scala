@@ -26,7 +26,7 @@ import scala.annotation.tailrec
 
 class DiffImpl(
   val target: Any,
-  private val propChanges: Map[Property, ChangeSet]) extends Diff {
+  private val propChanges: Map[Property, Diff]) extends Diff {
 
   override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
@@ -46,7 +46,7 @@ class DiffImpl(
     new DiffImpl(target, propChanges + (property -> newMod))
   }
 
-  override def withChanges(property: Property, changes: ChangeSet) =
+  override def withChanges(property: Property, changes: Diff) =
     new DiffImpl(target, propChanges + (property -> changes))
 
   override def withChange(path: Path, change: Change): Diff = {
@@ -82,7 +82,7 @@ class DiffImpl(
       }
   }
 
-  override def changes(path: Path): ChangeSet = {
+  override def changes(path: Path): Diff = {
     if (path.depth <= 1)
       propChanges(path.head)
     else
@@ -103,7 +103,7 @@ class DiffImpl(
     }
   }
   
-  override def withChanges(path: Path, changes: ChangeSet): Diff = {
+  override def withChanges(path: Path, changes: Diff): Diff = {
     if (path.depth <= 1)
       withChanges(path.head, changes)
     else {

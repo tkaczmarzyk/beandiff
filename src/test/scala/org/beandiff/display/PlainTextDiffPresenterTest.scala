@@ -23,16 +23,13 @@ import org.beandiff.beans.IdBean
 import org.beandiff.beans.ValueBean
 import org.beandiff.core.model.DiffImpl
 import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.FlatChangeSet
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.change.NewValue
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.core.model.FieldProperty
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.core.model.ChangeSet
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -43,13 +40,13 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
   val valueDiff = new DiffImpl(null, Map(
-      new FieldProperty("id") -> ChangeSet(bean1, new NewValue(null, new FieldProperty("id"), 17, 8))))
+      new FieldProperty("id") -> new FlatChangeSet(bean1, new NewValue(null, new FieldProperty("id"), 17, 8))))
   
   val valuesDiff = new DiffImpl(bean1.values, Map(
       new IndexProperty(0) -> valueDiff))
   
   val diff1 = new DiffImpl(bean1, Map( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> ChangeSet(bean1, new NewValue(null, new FieldProperty("name"), "Aaa", "Bbb")),
+      new FieldProperty("name") -> new FlatChangeSet(bean1, new NewValue(null, new FieldProperty("name"), "Aaa", "Bbb")),
       new FieldProperty("values") -> valuesDiff))
   
   

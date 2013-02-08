@@ -23,27 +23,28 @@ import org.beandiff.core.model.change.Change
 
 
 object Diff {
-  def apply(target: Any) = new DiffImpl(target, Map[Property, ChangeSet]())
+  def apply(target: Any) = new DiffImpl(target, Map[Property, Diff]())
 }
 
 // TODO factory for values such as EmptyDiff etc
-trait Diff extends ChangeSet {
+trait Diff {
 
   def hasDifference(): Boolean
   def hasDifference(path: String): Boolean
   def hasDifference(p: Path): Boolean
   
   def leafChanges: Traversable[(Path, Change)]
-  def changes: Traversable[(Property, ChangeSet)] // TODO
-  def changes(path: Path): ChangeSet
+  def changes: Traversable[(Property, Diff)] // TODO
+  def changes(path: Path): Diff
   
-  def withChanges(property: Property, changes: ChangeSet): Diff
-  def withChanges(path: Path, changes: ChangeSet): Diff
+  def withChanges(property: Property, changes: Diff): Diff
+  def withChanges(path: Path, changes: Diff): Diff
+  def withChange(change: Change): Diff
   def withChange(path: Path, change: Change): Diff
   def withChange(property: Property, change: Change): Diff
   def without(property: Property): Diff
   def without(path: Path): Diff
   
   def transformTarget(): Unit
-  def target: Any
+  def target: Any // TODO remove?
 }
