@@ -69,4 +69,16 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     
     diff.getClass() should be === classOf[FlatDiff]
   }
+  
+  test("should yield an empty diff") {
+    val diff = new FlatDiff(parent, mockChange())
+
+    diff.without(Self) should be === new FlatDiff(parent)
+  }
+  
+  test("should yield and empty diff (path arg)") { // FIXME test duplication
+    val diff = new FlatDiff(parent, mockChange())
+    
+    diff.without(EmptyPath) should be === new FlatDiff(parent)
+  } 
 }

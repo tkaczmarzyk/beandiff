@@ -26,7 +26,7 @@ class FlatDiff(
   val target: Any, // TODO decide whether it should be prese, 
   private val selfChanges: List[Change]) extends Diff {
 
-  def this(target: Any, changes: Change*) {
+  def this(target: Any, changes: Change*) { // TODO Change parameter to ensure at least 1 change is provided
     this(target, List(changes: _*))
   }
 
@@ -43,13 +43,6 @@ class FlatDiff(
 
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
 
-  override def without(path: Path) = {
-    if (path == EmptyPath)
-      new FlatDiff(target, List())
-    else
-      throw new IllegalArgumentException()
-  }
-
   override def changes(path: Path): Diff = { // TODO is it really needed ? (should be ever called?)
     if (path != EmptyPath)
       throw new IllegalArgumentException
@@ -65,7 +58,14 @@ class FlatDiff(
   }
 
   override def without(prop: Property) = {
-    FlatDiff.this // FIXME FIXME FIXME
+    without(Path(prop))
+  }
+  
+  override def without(path: Path) = {
+    if (path == EmptyPath)
+      new FlatDiff(target)
+    else
+      throw new IllegalArgumentException()
   }
 
   override def withChange(prop: Property, change: Change) = {
@@ -98,6 +98,15 @@ class FlatDiff(
 
   override def changes = toDiff.changes
 
+  override def hashCode = 13 * target.hashCode + selfChanges.hashCode
+  
+  override def equals(other: Any) = {
+    other match {
+      case that: FlatDiff => target == that.target && selfChanges == that.selfChanges
+      case _ => false
+    }
+  }
+  
   override def transformTarget = {
     for (change <- selfChanges) {
       change.perform(target)
