@@ -23,14 +23,15 @@ import org.beandiff.core.model.Property
 
 
 class NewValue(
-  val target: Any, // TODO tmp
-  private val property: Property,// FIXME target vs (self->FlatCHangeSet[NewValue[1->2]) vs Insertion/Deletion (attached to collection rather to IndexProperty) 
+  val target: Any, // TODO tmp // FIXME target vs (self->FlatCHangeSet[NewValue[1->2]) vs Insertion/Deletion (attached to collection rather to IndexProperty)
   val oldValue: Any, 
   val newValue: Any) extends Change with Equals {
 
   override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
-    property.setValue(this.target, newValue)
+    throw new IllegalStateException()
   
+  def perform(target: Any, prop: Property) =//FIXME temporary hack during refactoring
+    prop.setValue(target, newValue)
     
   def canEqual(other: Any) = {
     other.isInstanceOf[NewValue]
@@ -38,14 +39,14 @@ class NewValue(
   
   override def equals(other: Any) = {
     other match {
-      case that: NewValue => that.canEqual(NewValue.this) && property == that.property && oldValue == that.oldValue && newValue == that.newValue
+      case that: NewValue => that.canEqual(NewValue.this) && oldValue == that.oldValue && newValue == that.newValue
       case _ => false
     }
   }
   
   override def hashCode() = {
     val prime = 41
-    prime * (prime * (prime + property.hashCode) + oldValue.hashCode) + newValue.hashCode
+    prime * (prime * (prime + oldValue.hashCode) + newValue.hashCode)
   }
   
   override def toString = "NewValue[" + oldValue + "->" + newValue + "]"

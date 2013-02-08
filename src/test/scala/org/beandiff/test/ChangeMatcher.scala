@@ -17,14 +17,18 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.test
 
-import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DeepDiff
-import org.beandiff.core.model.Path
+import org.beandiff.core.model._
+import org.scalatest.matchers._
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Deletion
 
-trait DiffEngine {
+class ChangeMatcher(
+    change: Change) extends Matcher[Diff] {
 
-  def calculateDiff(o1: Any, o2: Any): Diff
-  
+  def apply(left: Diff): MatchResult = {
+    val filtered = left.leafChanges.filter(pathChange => pathChange._2 == change)
+    MatchResult(!filtered.isEmpty, "Diff doesn't have " + change, "Diff does have " + change)
+  }
 }

@@ -59,7 +59,10 @@ trait Diff {
   
   def without(property: Property): Diff
   def without(path: Path): Diff
+  def without(path: Path, change: Change): Diff
   
   def transformTarget(): Unit
+  private[model] def transformTarget(target: Any, prop: Property): Unit // FIXME FIXME FIXME temporary fix during refactoring
   def target: Any // TODO remove?
+  def forTarget(newTarget: Any): Diff
 }

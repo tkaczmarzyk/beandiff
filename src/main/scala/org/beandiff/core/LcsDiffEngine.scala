@@ -31,6 +31,7 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.IndexProperty
 
 
 class LcsDiffEngine(
@@ -38,10 +39,6 @@ class LcsDiffEngine(
   private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    calculateDiff0(Diff(o1), EmptyPath, o1, o2)
-  }
-
-  private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
     val xs = o1.asInstanceOf[JList]
     val ys = o2.asInstanceOf[JList]
 
@@ -50,22 +47,21 @@ class LcsDiffEngine(
     val deleted = xs.dropIndices(lcs.map(_.index1))
     val inserted = ys.dropIndices(lcs.map(_.index2))
 
-    val dels = deleted.foldLeft(zero)(withChange(location, zero, new Deletion(_, _)))
-    val delsAndInserts = inserted.foldLeft(dels)(withChange(location, zero, new Insertion(_, _)))
+    val dels = deleted.foldLeft(Diff(o1))( // TODO two similar and quite complex expressions, refactor
+        (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
+      case (elem, index) => acc.withChange(new Deletion(elem, index)) // TODO or: location.withIndex(index)
+    })
+    val delsAndInserts = inserted.foldLeft(dels)( // TODO two similar and quite complex expressions, refactor
+        (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
+      case (elem, index) => acc.withChange(new Insertion(elem, index)) // TODO or: location.withIndex(index)
+    })
     
     lcs.foldLeft(delsAndInserts)(
         (accDiff, occurence) => {
           val ver1 = xs.get(occurence.index1)
           val ver2 = ys.get(occurence.index2)
-          delegate.calculateDiff0(accDiff, location.withIndex(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
+          accDiff.withChanges(new IndexProperty(occurence.index1), delegate.calculateDiff(ver1, ver2)) // FIXME redundant when idInvestigator is full-diff-based?
         }
     )
   }
-
-  private def withChange(location: Path, acc: Diff, changeGen: (Any, Int) => Change)(accDiff: Diff, elemWithIndex: (Any, Int)) = {
-    elemWithIndex match {
-      case (elem, index) => accDiff.withChange(location, changeGen(elem, index)) // TODO or: location.withIndex(index)
-    }
-  }
-
 }

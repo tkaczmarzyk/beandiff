@@ -41,13 +41,13 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
   val valueDiff = Diff(null, Map[Property, Diff](// TODO variance in properties not to require explicit type parameters
-      new FieldProperty("id") -> Diff(bean1, new NewValue(null, new FieldProperty("id"), 17, 8))))
+      new FieldProperty("id") -> Diff(bean1, new NewValue(null, /*new FieldProperty("id"), */17, 8))))
   
   val valuesDiff = Diff(bean1.values, Map[Property, Diff](
       new IndexProperty(0) -> valueDiff))
   
   val diff1 = Diff(bean1, Map[Property, Diff]( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> Diff(bean1, new NewValue(null, new FieldProperty("name"), "Aaa", "Bbb")),
+      new FieldProperty("name") -> Diff(bean1, new NewValue(null,/* new FieldProperty("name"), */"Aaa", "Bbb")),
       new FieldProperty("values") -> valuesDiff))
   
   

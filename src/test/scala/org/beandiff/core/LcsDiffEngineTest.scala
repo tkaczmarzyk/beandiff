@@ -46,8 +46,8 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
 
   private val mockDelegate = mock(classOf[DiffEngine])
   
-  when(mockDelegate.calculateDiff0(any(classOf[Diff]), any(classOf[Path]), any(), any())).thenAnswer(new Answer[Diff] {
-    override def answer(invocation: InvocationOnMock): Diff = invocation.getArguments()(0).asInstanceOf[Diff]
+  when(mockDelegate.calculateDiff(any(), any())).thenAnswer(new Answer[Diff] {
+    override def answer(invocation: InvocationOnMock): Diff = Diff(invocation.getArguments()(0))
   })
   
   private val engine = new LcsDiffEngine(mockDelegate, new NaiveLcsCalc(new StdEqualityInvestigator))
@@ -61,8 +61,8 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
   test("should call dlegate on all elements in LCS") {
     val diff = engine.calculateDiff(abc, bcd)
     
-    verify(mockDelegate).calculateDiff0(any(classOf[Diff]), of(Path.of("[1]")), of("b"), of("b"))
-    verify(mockDelegate).calculateDiff0(any(classOf[Diff]), of(Path.of("[2]")), of("c"), of("c"))
+    verify(mockDelegate).calculateDiff(of("b"), of("b"))
+    verify(mockDelegate).calculateDiff(of("c"), of("c"))
   }
   
   test("should add insertions for elements at right but not in the LCS") {

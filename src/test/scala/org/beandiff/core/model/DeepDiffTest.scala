@@ -43,7 +43,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
   
   val childNameDiff = new DeepDiff(parent,
         Map(new FieldProperty("child") -> new DeepDiff(child, 
-            Map(new FieldProperty("name") -> new FlatDiff(null, new NewValue(child, new FieldProperty("name"), "bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
+            Map(new FieldProperty("name") -> new FlatDiff(null, new NewValue(child, /*new FieldProperty("name"), */"bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
   
   
   test("should add all property changes at the path") { // TODO test for withChanges(property, ...)
@@ -56,7 +56,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
   
   test("should add change at the path") {
     val diff = new DeepDiff(parent, Map())
-    val updated = diff.withChange(Path.of("child.name"), new NewValue(child, new FieldProperty("name"), ":(", ":)"))
+    val updated = diff.withChange(Path.of("child.name"), new NewValue(child, /*new FieldProperty("name"), */":(", ":)"))
     
     val lea = updated.leafChanges
     assert(updated.leafChanges.exists(_._1 == Path.of("child.name")))
@@ -84,7 +84,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
   
   test("should add changes at the specified path") {
     val diff = Diff(parent)
-    val added = new FlatDiff(null, new NewValue(child, new FieldProperty("name"), "bb", "cc"))
+    val added = new FlatDiff(null, new NewValue(child,/* new FieldProperty("name"),*/ "bb", "cc"))
     val modified = diff.withChanges(Path("child.name"), added)
     
     modified should haveDifference("child.name") // TODO better assertion

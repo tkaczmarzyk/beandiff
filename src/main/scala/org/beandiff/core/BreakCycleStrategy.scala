@@ -28,6 +28,7 @@ import scala.collection.JavaConversions.asScalaBuffer
 
 import org.beandiff.core.model.Path
 
+@deprecated
 class BreakCycleStrategy(private val delegate: DescendingStrategy) extends DescendingStrategy {
 
   private val visitedObjects = new IdentityHashMap[Any, List[Path]]

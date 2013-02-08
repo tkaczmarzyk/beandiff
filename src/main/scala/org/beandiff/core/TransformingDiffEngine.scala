@@ -31,81 +31,71 @@ import org.beandiff.core.model.Self
 import org.beandiff.core.model.FlatDiff
 import org.beandiff.core.model.FieldProperty
 
-
 private class TransformedProperty( // TODO temp aproach, verify & refactor/change
-    original: Property,
-    transformedValue: Any) extends Property {
-  
+  original: Property,
+  transformedValue: Any) extends Property {
+
   var yieldTransformed = true
-  
+
   override def value(target: Any) = {
     if (yieldTransformed)
       transformedValue
     else
       original.value(target)
   }
-  
+
   override def setValue(target: Any, value: Any) = {
     if (yieldTransformed)
       throw new UnsupportedOperationException // TODO
     else
       original.setValue(target, value)
   }
-  
+
   override def toString = original.toString()
   override def hashCode() = original.hashCode()
   override def equals(obj: Any) = original.equals(obj)
 }
 
 class TransformingDiffEngine(
-    private val delegate: DiffEngine,
-    private val transformer: ObjectTransformer,
-    private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
+  private val delegate: DiffEngine,
+  private val transformer: ObjectTransformer,
+  private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(Diff(o1), EmptyPath, o1, o2) // FIME creates diff with untransformed target
-  }
-  
-  private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any) = {
+    val zero = Diff(o1)
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
-    
-    val transformedProperty = transformProperty(location.last, t1)
-    val transformedLocation = location.stepBack.step(transformedProperty)
-    
-    val diff = delegate.calculateDiff0(zero, transformedLocation, t1, t2) // TODO in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
-    
+
+    val transformedProperty = transformProperty(Self, t1) // TODO after refactoring it seems to be possible to get rid of transformedProperties
+
+    val diff = zero.withChanges(transformedProperty, delegate.calculateDiff(t1, t2)) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
+
     val result = diff.changes.foldLeft(zero)( // TODO tests
-        (diff, propChanges) => {
-          val transformedChangeset = transform(propChanges._2)
-          diff.withChanges(propChanges._1, transformedChangeset)
-        }) //TODO test withChange(emptyDiff)
-        
-//    transformedProperty.yieldTransformed = false // FIXME if set to false, then unable to transform changes from outer collection
-        
-    result
+      (diff, propChanges) => {
+        val transformedChangeset = transform(propChanges._2)
+        diff.withChanges(propChanges._1, transformedChangeset)
+      }) //TODO test withChange(emptyDiff)
+
+    //    transformedProperty.yieldTransformed = false // FIXME if set to false, then unable to transform changes from outer collection
+
+    result.forTarget(o1)
   }
-  
+
   private def transformProperty(prop: Property, transformedValue: Any): TransformedProperty = {
     new TransformedProperty(prop, transformedValue)
   }
-  
-  private def transform(changes: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
-    val leafChanges = changes.leafChanges
-    val transformed = leafChanges.map(transformChange)
-    
-    transformed.foldLeft[Diff](Diff(changes.target))( // TODO check 
-        (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
-  }
-  
-  private def transformChange(pathChange: (Path, Change)): (Path, Change) = {
-      pathChange._1 -> transformChange(pathChange._2)
-  }
-  
-  private def transformChange(change: Change): Change = {
-    translators.get(change.getClass) match {
-      case Some(t) => t.translate(change)
-      case None => change
-    }
+
+  private def transform(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
+    val leafChanges = original.leafChanges
+
+    leafChanges.foldLeft(original)( // TODO check 
+      (acc: Diff, pathChange: (Path, Change)) => {
+        val path = pathChange._1
+        val change = pathChange._2
+        translators.get(change.getClass) match {
+          case Some(t) => acc.without(path, change).withChange(t.translate(change))
+          case None => acc
+        }
+      }) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
 }

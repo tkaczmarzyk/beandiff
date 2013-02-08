@@ -23,6 +23,7 @@ import org.scalatest.matchers.Matcher
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.change.Change
 
 
 object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (make it have-word compatible if possible)
@@ -33,5 +34,7 @@ object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (m
   
   def haveDifference(path: Path) = new PathDifferenceMatcher(path)
   
-  def haveDeletionAt(index: Int) = new DeletionMatcher(index)
+  def haveDeletionAt(index: Int) = new DeletionMatcher(index) // TODO refactor to have(new Deletion(...)
+  
+  def haveChange(change: Change) = new ChangeMatcher(change)
 }

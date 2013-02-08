@@ -21,6 +21,7 @@ package org.beandiff.core.model
 
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.NewValue
 
 private[model] class FlatDiff(
   val target: Any, // TODO decide whether it should be prese, 
@@ -65,9 +66,16 @@ private[model] class FlatDiff(
     if (path == EmptyPath)
       new FlatDiff(target)
     else
-      throw new IllegalArgumentException()
+      throw new IllegalArgumentException() // TODO
   }
 
+  override def without(path: Path, change: Change): Diff = {
+    if (path != EmptyPath)
+      this
+    else
+      new FlatDiff(target, selfChanges - change)
+  }
+  
   override def withChange(prop: Property, change: Change) = {
     if (prop == Self)
       new FlatDiff(target, change :: selfChanges)
@@ -107,9 +115,20 @@ private[model] class FlatDiff(
     }
   }
   
+  override def forTarget(newTarget: Any) = new FlatDiff(newTarget, selfChanges)
+  
   override def transformTarget = {
     for (change <- selfChanges) {
       change.perform(target)
+    }
+  }
+  
+  def transformTarget(target2: Any, prop: Property) = {
+    for (change <- selfChanges) {
+      if (change.isInstanceOf[NewValue])
+        change.asInstanceOf[NewValue].perform(target2, prop)
+      else
+        change.perform(target)
     }
   }
 }

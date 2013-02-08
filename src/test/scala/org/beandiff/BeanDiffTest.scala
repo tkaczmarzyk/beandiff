@@ -33,6 +33,7 @@ import org.beandiff.core.model.FieldProperty
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.change._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -95,6 +96,11 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  test("should detect difference of simple types") {
+    diff(1, 2) should haveDifference
+    diff("aa", "bb") should haveDifference
+  }
+  
   test("there should be no difference between sets when there are another differences in the parent") { // tests the optimization after lcs // TODO unit test for it
     val bean1 = new ParentBean("aaa", JSet(new NamedBean("a"), new NamedBean("b")))
     val bean2 = new ParentBean("bbb", JSet(new NamedBean("b"), new NamedBean("a")))
@@ -135,11 +141,6 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       assert(!diff(a1a, a1b).hasDifference)
       assert(!diff(a1a, a1b).hasDifference)
     }
-  }
-  
-  test("should detect difference of simple types") {
-    assert(diff(1, 2).hasDifference)
-    assert(diff("aa", "bb").hasDifference)
   }
   
   test("should not show difference when all leaf properties are the same") {
@@ -197,7 +198,11 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should detect difference in sets") {
     new Collections {
-      assert(diff(jSet1, jSet3).hasDifference)
+      val d = diff(jSet1, jSet3)
+      
+      d should haveDifference
+      d should haveChange(new Addition("ccc"))
+      d should haveChange(new Removal("aaa"))
     }
   }
   
@@ -311,11 +316,10 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should correctly present difference between sets") {
     new Collections {
-      val tmp = diff(jSet1, jSet3)
-      
       val writer = new StringWriter
+
       printDiff(new PrintWriter(writer), jSet1, jSet3)
-      writer.toString() should startWith(" -- removed 'aaa'\n -- added 'ccc'") // TODO [1] vs [2] --> insertion index after or before the deletion?
+      writer.toString() should startWith(" -- added 'ccc'\n -- removed 'aaa'") // TODO [1] vs [2] --> insertion index after or before the deletion?
     }
   }
   

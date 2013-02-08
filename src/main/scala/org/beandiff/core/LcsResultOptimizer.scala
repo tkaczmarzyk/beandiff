@@ -38,28 +38,20 @@ class LcsResultOptimizer(
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    calculateDiff0(Diff(o1), EmptyPath, o1, o2)
+    val diff = lcsEngine.calculateDiff(o1, o2)
+    optimizeDiff(diff)
   }
 
-  private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
-    val diff = lcsEngine.calculateDiff0(zero, location, o1, o2)
-
-    optimizeDiff(diff, location)
-  }
-
-  private def optimizeDiff(diff: Diff, pathToOptimize: Path): Diff = {
-    if (!diff.hasDifference(pathToOptimize))
+  private def optimizeDiff(diff: Diff): Diff = {
+    if (!diff.hasDifference)
       diff
     else {
-      val subdiff = diff.changes(pathToOptimize)
+      val subdiff = diff.changes(EmptyPath) // TODO no longer required as location is always EMptyPath?
       val optimized = optimize(subdiff.target, subdiff)
       if (optimized.leafChanges.isEmpty) // TODO duplicated somewhere else? move to withChanges method
-        diff.without(pathToOptimize)
-      else {
-        val withoutOldSubdiff = diff.without(pathToOptimize) // TODO clarify the code below (which replaced initial diff.without(pathToOptimize).withChanges(pathToOptimize, optimized) which perhaps could be refactored to handle te tricky scenarios
-        optimized.leafChanges.foldLeft(withoutOldSubdiff)(
-            (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathToOptimize ++ pathChange._1, pathChange._2))
-      }
+        Diff(diff.target)
+      else
+        optimized
     }
   }
   
@@ -78,7 +70,7 @@ class LcsResultOptimizer(
       } {
         val index = new IndexProperty(change1.asInstanceOf[Deletion].index)
         skip :::= List(change1, change2)
-        result = parent.calculateDiff0(result, Path(index), change1.oldValue, change2.newValue)
+        result = result.withChanges(index, parent.calculateDiff(change1.oldValue, change2.newValue))
       }
 
       for ((path, change) <- changeset.leafChanges) {

@@ -30,41 +30,20 @@ import org.beandiff.core.model.Self
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.DeepDiff
 
-private class LeafDiffEngine(
+private class LeafDiffEngine( // TODO responsibility has been reduced, consider name change
   private val delegate: DiffEngine,
-  private val eqInvestigators: ClassDictionary[EqualityInvestigator],
-  private val descStrategy: DescendingStrategy) extends DiffEngine {
+  private val eqInvestigators: ClassDictionary[EqualityInvestigator]) extends DiffEngine {
 
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(Diff(o1), EmptyPath, o1, o2)
+    val zero = Diff(o1)
+    val routes = routePlanners(o1.getClass).routes(o1, o2)
+
+    routes.foldLeft(zero)(
+      (accDiff, route) => route match {
+        case (prop, (obj1, obj2)) => accDiff.withChanges(prop, delegate.calculateDiff(obj1, obj2))
+      })
   }
 
-  private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
-    if (!descStrategy.shouldProceed(location, o1, o2)) {
-      if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
-        val propOwner = if (location.depth == 0) null else location.stepBack.value(zero.target) // TODO tmp ugly target calculation + null
-        zero.withChange(location, new NewValue(propOwner, location.last, o1, o2))
-      } else {
-        zero
-      }
-    } else {
-      val routes = routePlanners(o1.getClass).routes(o1, o2)
-
-      routes.foldLeft(zero)(
-        (accDiff, route) => route match {
-          case (prop, (obj1, obj2)) => delegate.calculateDiff0(accDiff, location.step(prop), obj1, obj2)
-        })
-    }
-  }
-
-  private def getEqInvestigator(val1: Any, val2: Any) = {
-    if (val1 == null && val2 == null)
-      eqInvestigators.defaultValue
-    else {
-      val nonNull = if (val1 != null) val1 else val2
-      eqInvestigators(nonNull.getClass)
-    }
-  }
 }

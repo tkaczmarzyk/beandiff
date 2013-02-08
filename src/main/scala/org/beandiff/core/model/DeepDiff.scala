@@ -28,6 +28,7 @@ private[model] class DeepDiff(
   val target: Any,
   private val propChanges: Map[Property, Diff]) extends Diff {
 
+
   override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
       case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (Path(prop) ++ pathChange._1, pathChange._2))
@@ -66,7 +67,14 @@ private[model] class DeepDiff(
     new DeepDiff(target, propChanges - prop)
   }
 
-  override def hasDifference(): Boolean =
+  override def without(path: Path, change: Change): Diff = {// TODO verify // TODO detect when it should become a FlatDiff
+    if (path == EmptyPath)
+      new DeepDiff(target, propChanges + (Self -> propChanges(Self).without(EmptyPath, change)))
+    else
+      without(path.head).withChanges(path.head, propChanges(path.head).without(path.tail, change)) // TODO simplity/decompose
+  }
+  
+  def hasDifference(): Boolean =
     !propChanges.isEmpty
 
   override def hasDifference(pathStr: String): Boolean =
@@ -119,7 +127,7 @@ private[model] class DeepDiff(
   
   override def transformTarget() = {
     propChanges.foreach({
-      case (prop, changeSet) => changeSet.transformTarget()
+      case (prop, changeSet) => changeSet.transformTarget(target, prop)
     })
   }
 
@@ -132,5 +140,9 @@ private[model] class DeepDiff(
     }
   }
   
+  override def forTarget(newTarget: Any) = new DeepDiff(newTarget, propChanges)
+  
   override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
+  
+  def transformTarget(target: Any, prop: Property) = transformTarget()
 }
