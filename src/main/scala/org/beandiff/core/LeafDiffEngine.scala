@@ -38,8 +38,7 @@ private class LeafDiffEngine(
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    val zero = new DeepDiff(o1, Map())
-    calculateDiff0(zero, EmptyPath, o1, o2)
+    calculateDiff0(Diff(o1), EmptyPath, o1, o2)
   }
 
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {

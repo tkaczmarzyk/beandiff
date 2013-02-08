@@ -63,7 +63,7 @@ class TransformingDiffEngine(
     private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(new DeepDiff(o1, Map()), EmptyPath, o1, o2) // FIME creates diff with untransformed target
+    calculateDiff0(Diff(o1), EmptyPath, o1, o2) // FIME creates diff with untransformed target
   }
   
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any) = {

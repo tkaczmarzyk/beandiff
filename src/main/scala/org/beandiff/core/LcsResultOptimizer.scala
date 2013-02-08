@@ -66,8 +66,8 @@ class LcsResultOptimizer(
   
   // FIXME temporary, ugly prototype
   private def optimize(target: Any, changeset: Diff): Diff = {
-    if (!changeset.isInstanceOf[FlatDiff]) {
-      changeset.asInstanceOf[Diff] // FIXME 
+    if (!changeset.isInstanceOf[FlatDiff]) { // FIXME
+      changeset
     } else {
       var result: Diff = new DeepDiff(target, Map())
 
