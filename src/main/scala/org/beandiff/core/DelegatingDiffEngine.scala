@@ -22,7 +22,7 @@ package org.beandiff.core
 import org.beandiff.TypeDefs.JList
 import org.beandiff.TypeDefs.JSet
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
@@ -50,7 +50,7 @@ class DelegatingDiffEngine(
               classOf[Deletion] -> new DeletionToRemoval)))
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(new DiffImpl(o1, Map()), EmptyPath, o1, o2)
+    calculateDiff0(new DeepDiff(o1, Map()), EmptyPath, o1, o2)
   }
 
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {

@@ -20,7 +20,7 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 import org.beandiff.core.model.Path
 
 trait DiffEngine {

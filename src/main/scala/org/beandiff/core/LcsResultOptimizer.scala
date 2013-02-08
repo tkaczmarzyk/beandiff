@@ -23,8 +23,8 @@ import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DiffImpl
-import org.beandiff.core.model.FlatChangeSet
+import org.beandiff.core.model.DeepDiff
+import org.beandiff.core.model.FlatDiff
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
@@ -38,7 +38,7 @@ class LcsResultOptimizer(
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    val zero = new DiffImpl(o1, Map())
+    val zero = new DeepDiff(o1, Map())
     calculateDiff0(zero, EmptyPath, o1, o2)
   }
 
@@ -66,10 +66,10 @@ class LcsResultOptimizer(
   
   // FIXME temporary, ugly prototype
   private def optimize(target: Any, changeset: Diff): Diff = {
-    if (!changeset.isInstanceOf[FlatChangeSet]) {
+    if (!changeset.isInstanceOf[FlatDiff]) {
       changeset.asInstanceOf[Diff] // FIXME 
     } else {
-      var result: Diff = new DiffImpl(target, Map())
+      var result: Diff = new DeepDiff(target, Map())
 
       var skip = List[Change]()
 

@@ -22,7 +22,7 @@ package org.beandiff.core
 import scala.collection.JavaConversions.asScalaBuffer
 import org.beandiff.TypeDefs.JList
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.lcs.LcsCalc
@@ -38,7 +38,7 @@ class LcsDiffEngine(
   private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    val zero = new DiffImpl(o1, Map())
+    val zero = new DeepDiff(o1, Map())
     calculateDiff0(zero, EmptyPath, o1, o2)
   }
 

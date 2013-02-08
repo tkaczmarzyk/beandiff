@@ -21,14 +21,14 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.change.NewValue
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 import org.beandiff.support.ClassDictionary
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.change.NewValue
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 
 private class LeafDiffEngine(
   private val delegate: DiffEngine,
@@ -38,7 +38,7 @@ private class LeafDiffEngine(
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    val zero = new DiffImpl(o1, Map())
+    val zero = new DeepDiff(o1, Map())
     calculateDiff0(zero, EmptyPath, o1, o2)
   }
 

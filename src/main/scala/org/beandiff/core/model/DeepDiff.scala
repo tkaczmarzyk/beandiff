@@ -24,7 +24,7 @@ import org.beandiff.core.model.change.Change
 import scala.annotation.tailrec
 
 
-class DiffImpl(
+class DeepDiff(
   val target: Any,
   private val propChanges: Map[Property, Diff]) extends Diff {
 
@@ -35,19 +35,19 @@ class DiffImpl(
 
   override def changes = propChanges.toList
 
-  override def withChange(change: Change): DiffImpl = withChange(Self, change)
+  override def withChange(change: Change): DeepDiff = withChange(Self, change)
   
-  override def withChange(property: Property, change: Change): DiffImpl = {
+  override def withChange(property: Property, change: Change): DeepDiff = {
     val newMod = propChanges.get(property) match {
       case Some(mod) => mod.withChange(change)
-      case None => new FlatChangeSet(property.value(target), change)
+      case None => new FlatDiff(property.value(target), change)
     }
 
-    new DiffImpl(target, propChanges + (property -> newMod))
+    new DeepDiff(target, propChanges + (property -> newMod))
   }
 
   override def withChanges(property: Property, changes: Diff) =
-    new DiffImpl(target, propChanges + (property -> changes))
+    new DeepDiff(target, propChanges + (property -> changes))
 
   override def withChange(path: Path, change: Change): Diff = {
     if (path.depth <= 1) {
@@ -55,7 +55,7 @@ class DiffImpl(
     } else {
       val interChangeset = propChanges.get(path.head) match {
         case Some(changeset) => changeset
-        case None => new DiffImpl(path.head.value(target), Map())
+        case None => new DeepDiff(path.head.value(target), Map())
       }
 
       withChanges(path.head, interChangeset.withChange(path.tail, change))
@@ -63,7 +63,7 @@ class DiffImpl(
   }
   
   override def without(prop: Property) = {
-    new DiffImpl(target, propChanges - prop)
+    new DeepDiff(target, propChanges - prop)
   }
 
   override def hasDifference(): Boolean =
@@ -109,7 +109,7 @@ class DiffImpl(
     else {
       val interChangeset = propChanges.get(path.head) match { // FIXME FIXME FIXME temporary copy-paste
         case Some(changeset) => changeset
-        case None => new DiffImpl(path.head.value(target), Map())
+        case None => new DeepDiff(path.head.value(target), Map())
       }
       
       without(path.head)
@@ -123,5 +123,5 @@ class DiffImpl(
     })
   }
 
-  override def toString = "Diff[" + propChanges.mkString("", ",", "") + "]"
+  override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
 }

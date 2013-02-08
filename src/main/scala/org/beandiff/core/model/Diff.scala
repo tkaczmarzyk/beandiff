@@ -23,7 +23,7 @@ import org.beandiff.core.model.change.Change
 
 
 object Diff {
-  def apply(target: Any) = new DiffImpl(target, Map[Property, Diff]())
+  def apply(target: Any) = new DeepDiff(target, Map[Property, Diff]())
 }
 
 // TODO factory for values such as EmptyDiff etc

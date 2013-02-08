@@ -39,7 +39,7 @@ import org.scalatest.FunSuite
 class FlatChangeSetTest extends FunSuite with ShouldMatchers {
 
   test("empty FlatChangeset should be converted to an empty Diff") {
-    val converted = new FlatChangeSet(new Object).toDiff
+    val converted = new FlatDiff(new Object).toDiff
     
     converted should not (haveDifference)
   }

@@ -40,13 +40,13 @@ class DiffTest extends FunSuite with ShouldMatchers {
   val parent = new ParentBean("parent", child)
   val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1))
   
-  val childNameDiff = new DiffImpl(parent,
-        Map(new FieldProperty("child") -> new DiffImpl(child, 
-            Map(new FieldProperty("name") -> new FlatChangeSet(null, new NewValue(child, new FieldProperty("name"), "bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
+  val childNameDiff = new DeepDiff(parent,
+        Map(new FieldProperty("child") -> new DeepDiff(child, 
+            Map(new FieldProperty("name") -> new FlatDiff(null, new NewValue(child, new FieldProperty("name"), "bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
   
   
   test("should add change at the path") {
-    val diff = new DiffImpl(parent, Map())
+    val diff = new DeepDiff(parent, Map())
     val updated = diff.withChange(Path.of("child.name"), new NewValue(child, new FieldProperty("name"), ":(", ":)"))
     
     val lea = updated.leafChanges
@@ -60,7 +60,7 @@ class DiffTest extends FunSuite with ShouldMatchers {
   
   test("should return a single leaf change") {
     val change = mock(classOf[NewValue])
-    val diff = new DiffImpl(null, Map(new IndexProperty(0) -> new FlatChangeSet(1, change)))
+    val diff = new DeepDiff(null, Map(new IndexProperty(0) -> new FlatDiff(1, change)))
     
     diff.leafChanges should be === List((Path("[0]"), change))
   }
@@ -75,7 +75,7 @@ class DiffTest extends FunSuite with ShouldMatchers {
   
   test("should add changes at the specified path") {
     val diff = Diff(parent)
-    val added = new FlatChangeSet(null, new NewValue(child, new FieldProperty("name"), "bb", "cc"))
+    val added = new FlatDiff(null, new NewValue(child, new FieldProperty("name"), "bb", "cc"))
     val modified = diff.withChanges(Path("child.name"), added)
     
     modified should haveDifference("child.name") // TODO better assertion
@@ -83,8 +83,8 @@ class DiffTest extends FunSuite with ShouldMatchers {
   
   test("should yield the nested changeset") {
     val nestedChanges = mock(classOf[Diff])
-    val diff = new DiffImpl(parent,
-        Map(new FieldProperty("child") -> new DiffImpl(child, 
+    val diff = new DeepDiff(parent,
+        Map(new FieldProperty("child") -> new DeepDiff(child, 
             Map(new FieldProperty("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
     
     diff.changes(Path("child.name")) should be === nestedChanges

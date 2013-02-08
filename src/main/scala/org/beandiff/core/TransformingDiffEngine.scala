@@ -21,14 +21,14 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Property
-import org.beandiff.core.model.DiffImpl
+import org.beandiff.core.model.DeepDiff
 import org.beandiff.core.translation.ChangeTranslation
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Self
-import org.beandiff.core.model.FlatChangeSet
+import org.beandiff.core.model.FlatDiff
 import org.beandiff.core.model.FieldProperty
 
 
@@ -63,7 +63,7 @@ class TransformingDiffEngine(
     private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
-    calculateDiff0(new DiffImpl(o1, Map()), EmptyPath, o1, o2) // FIME creates diff with untransformed target
+    calculateDiff0(new DeepDiff(o1, Map()), EmptyPath, o1, o2) // FIME creates diff with untransformed target
   }
   
   private[core] override def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any) = {
@@ -94,7 +94,7 @@ class TransformingDiffEngine(
     val leafChanges = changes.leafChanges
     val transformed = leafChanges.map(transformChange)
     
-    transformed.foldLeft[Diff](new FlatChangeSet(changes.target))( // TODO check 
+    transformed.foldLeft[Diff](new FlatDiff(changes.target))( // TODO check 
         (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
   
