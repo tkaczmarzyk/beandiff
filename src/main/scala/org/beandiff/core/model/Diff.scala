@@ -28,7 +28,7 @@ object Diff {
     new DeepDiff(target, nestedChanges)
   }
   
-  def apply(target: Any): Diff = new DeepDiff(target, Map[Property, Diff]()) // TODO start with FlatDiff ?
+  def apply(target: Any): Diff = new FlatDiff(target, List[Change]())
 }
 
 // TODO factory for values such as EmptyDiff etc
