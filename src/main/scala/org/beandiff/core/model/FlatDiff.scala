@@ -22,7 +22,7 @@ package org.beandiff.core.model
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
 
-class FlatDiff(
+private[model] class FlatDiff(
   val target: Any, // TODO decide whether it should be prese, 
   private val selfChanges: List[Change]) extends Diff {
 
@@ -92,7 +92,7 @@ class FlatDiff(
     if (selfChanges.isEmpty)
       new DeepDiff(target, Map())
     else
-      Diff(target, Map(Self -> FlatDiff.this))
+      Diff(target, Map[Property, Diff](Self -> this))
 
   override def toString() = "FlatDiff[" + selfChanges.mkString("", ", ", "") + "]"
 

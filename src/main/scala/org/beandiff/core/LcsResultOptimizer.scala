@@ -38,7 +38,7 @@ class LcsResultOptimizer(
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
-    calculateDiff0(Diff(o1, Map()), EmptyPath, o1, o2)
+    calculateDiff0(Diff(o1), EmptyPath, o1, o2)
   }
 
   private[core] def calculateDiff0(zero: Diff, location: Path, o1: Any, o2: Any): Diff = {
@@ -65,9 +65,9 @@ class LcsResultOptimizer(
   
   // FIXME temporary, ugly prototype
   private def optimize(target: Any, changeset: Diff): Diff = {
-    if (!changeset.isInstanceOf[FlatDiff]) { // FIXME
-      changeset
-    } else {
+//    if (!changeset.isInstanceOf[FlatDiff]) { // FIXME
+//      changeset
+//    } else {
       var result: Diff = Diff(target)
 
       var skip = List[Change]()
@@ -93,6 +93,6 @@ class LcsResultOptimizer(
       }
 
       result
-    }
+//    }
   }
 }

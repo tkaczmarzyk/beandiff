@@ -24,6 +24,11 @@ import org.beandiff.core.model.change.Change
 
 object Diff {
   
+  def apply(target: Any, change: Change, changes: Change*): Diff = {
+    val allChanges = change :: changes.toList
+    new FlatDiff(target, allChanges)
+  }
+  
   def apply(target: Any, nestedChanges: Map[Property, Diff]): Diff = {
     new DeepDiff(target, nestedChanges)
   }
