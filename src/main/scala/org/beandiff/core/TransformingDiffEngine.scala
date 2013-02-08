@@ -94,7 +94,7 @@ class TransformingDiffEngine(
     val leafChanges = changes.leafChanges
     val transformed = leafChanges.map(transformChange)
     
-    transformed.foldLeft[Diff](new FlatDiff(changes.target))( // TODO check 
+    transformed.foldLeft[Diff](Diff(changes.target))( // TODO check 
         (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2)) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
   }
   

@@ -22,27 +22,25 @@ package org.beandiff.core.model
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
 
-
 class FlatDiff(
-    val target: Any,  // TODO decide whether it should be prese, 
-    private val selfChanges: List[Change]) extends Diff {
-  
+  val target: Any, // TODO decide whether it should be prese, 
+  private val selfChanges: List[Change]) extends Diff {
+
   def this(target: Any, changes: Change*) {
-    this(target, List(changes:_*))
+    this(target, List(changes: _*))
   }
-  
-  
+
   override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (Path(Self), ch))
-  
+
   override def withChange(change: Change) = new FlatDiff(target, selfChanges :+ change)
-  
-  override def withChange(path: Path, change: Change): Diff = { 
+
+  override def withChange(path: Path, change: Change): Diff = {
     if (path.depth == 0)
       withChange(change)
     else
       toDiff.withChange(path, change)
   }
-  
+
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
 
   override def without(path: Path) = {
@@ -51,29 +49,29 @@ class FlatDiff(
     else
       throw new IllegalArgumentException()
   }
-  
+
   override def changes(path: Path): Diff = { // TODO is it really needed ? (should be ever called?)
     if (path != EmptyPath)
       throw new IllegalArgumentException
     else
       FlatDiff.this // FIXME Self-related confusion
   }
-  
+
   override def withChanges(path: Path, changes: Diff): Diff = {
     if (path.depth <= 1)
       withChanges(path.head, changes)
     else
       toDiff.withChanges(path, changes)
   }
-  
+
   override def without(prop: Property) = {
     FlatDiff.this // FIXME FIXME FIXME
   }
-  
-  override def withChange(prop: Property, change: Change) = 
+
+  override def withChange(prop: Property, change: Change) =
     toDiff.withChange(prop, change) // TODO
-  
-  override def withChanges(prop: Property, diff: Diff) = {// FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
+
+  override def withChanges(prop: Property, diff: Diff) = { // FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
     if (selfChanges.isEmpty)
       diff
     else if (diff.changes.exists(pathDiff => pathDiff._1 != EmptyPath))
@@ -81,21 +79,21 @@ class FlatDiff(
     else
       new FlatDiff(target, selfChanges ++ diff.leafChanges.map(_._2))
   }
-    
+
   override def hasDifference = !selfChanges.isEmpty
-  
+
   override def hasDifference(pathStr: String) = toDiff.hasDifference(pathStr)
-    
+
   def toDiff =
     if (selfChanges.isEmpty)
       Diff(target)
     else
       Diff(target, Map(Self -> FlatDiff.this))
-  
+
   override def toString() = "FlatDiff[" + selfChanges.mkString("", ", ", "") + "]"
-  
+
   override def changes = toDiff.changes
-  
+
   override def transformTarget = {
     for (change <- selfChanges) {
       change.perform(target)
