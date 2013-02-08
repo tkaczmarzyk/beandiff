@@ -35,8 +35,8 @@ class FlatDiff(
   override def withChange(change: Change) = new FlatDiff(target, selfChanges :+ change)
 
   override def withChange(path: Path, change: Change): Diff = {
-    if (path.depth == 0)
-      withChange(change)
+    if (path.depth <= 1)
+      withChange(path.head, change)
     else
       toDiff.withChange(path, change)
   }
