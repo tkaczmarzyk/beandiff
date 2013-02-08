@@ -40,7 +40,7 @@ class FlatDiff(
     if (path.depth == 0)
       withChange(change)
     else
-      FlatDiff.this.toDiff.withChange(path, change)
+      toDiff.withChange(path, change)
   }
   
   override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
@@ -59,8 +59,11 @@ class FlatDiff(
       FlatDiff.this // FIXME Self-related confusion
   }
   
-  override def withChanges(path: Path, changes: Diff): Diff = { // TODO verify
-    toDiff.withChanges(path, changes)
+  override def withChanges(path: Path, changes: Diff): Diff = {
+    if (path.depth <= 1)
+      withChanges(path.head, changes)
+    else
+      toDiff.withChanges(path, changes)
   }
   
   override def without(prop: Property) = {
@@ -68,10 +71,16 @@ class FlatDiff(
   }
   
   override def withChange(prop: Property, change: Change) = 
-    toDiff.withChange(prop, change)
+    toDiff.withChange(prop, change) // TODO
   
-  override def withChanges(prop:Property, diff: Diff) =
-    toDiff.withChanges(prop, diff)// FIXME FIXME FIXME
+  override def withChanges(prop: Property, diff: Diff) = {// FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
+    if (selfChanges.isEmpty)
+      diff
+    else if (diff.changes.exists(pathDiff => pathDiff._1 != EmptyPath))
+      toDiff.withChanges(prop, diff)
+    else
+      new FlatDiff(target, selfChanges ++ diff.leafChanges.map(_._2))
+  }
     
   override def hasDifference = !selfChanges.isEmpty
   

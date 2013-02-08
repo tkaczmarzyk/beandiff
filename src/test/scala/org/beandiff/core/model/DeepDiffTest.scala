@@ -29,6 +29,7 @@ import org.beandiff.test.JList
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.beandiff.TestDefs._
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
@@ -44,6 +45,14 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
         Map(new FieldProperty("child") -> new DeepDiff(child, 
             Map(new FieldProperty("name") -> new FlatDiff(null, new NewValue(child, new FieldProperty("name"), "bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
   
+  
+  test("should add all property changes at the path") { // TODO test for withChanges(property, ...)
+    val parentDiff = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
+    val childDiff = new DeepDiff(child, Map(new FieldProperty("name") -> mockDiff()))
+    
+    val merged = parentDiff.withChanges(Path("child"), childDiff)
+    merged should haveDifference("child.name")
+  }
   
   test("should add change at the path") {
     val diff = new DeepDiff(parent, Map())
@@ -81,7 +90,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
     modified should haveDifference("child.name") // TODO better assertion
   }
   
-  test("should yield the nested changeset") {
+  test("should yield the nested diff") {
     val nestedChanges = mock(classOf[Diff])
     val diff = new DeepDiff(parent,
         Map(new FieldProperty("child") -> new DeepDiff(child, 

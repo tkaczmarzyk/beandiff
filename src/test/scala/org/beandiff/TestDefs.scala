@@ -21,13 +21,21 @@ package org.beandiff
 
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import org.mockito.Matchers
+import org.mockito.{Matchers => MockitoMatchers}
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
 
 
 object TestDefs {
 
+  def mockDiff() = {
+    val diff = mock(classOf[Diff])
+    when(diff.hasDifference).thenReturn(true)
+    when(diff.hasDifference(any(classOf[Path]))).thenReturn(true)
+    diff
+  }
+  
   def anyDiff = any(classOf[Diff])
   
-  def of[T](o: T) = Matchers.eq(o)
+  def of[T](o: T) = MockitoMatchers.eq(o)
 }
