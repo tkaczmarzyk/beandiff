@@ -34,11 +34,11 @@ import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
-class DiffTest extends FunSuite with ShouldMatchers {
+class DeepDiffTest extends FunSuite with ShouldMatchers {
 
   val child = new SimpleJavaBean("aa", 1)
   val parent = new ParentBean("parent", child)
-  val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1))
+  val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1)) // FIXME do not rely on BeanDiff.diff
   
   val childNameDiff = new DeepDiff(parent,
         Map(new FieldProperty("child") -> new DeepDiff(child, 

@@ -36,9 +36,9 @@ import org.scalatest.FunSuite
 
 
 @RunWith(classOf[JUnitRunner])
-class FlatChangeSetTest extends FunSuite with ShouldMatchers {
+class FlatDiffTest extends FunSuite with ShouldMatchers {
 
-  test("empty FlatChangeset should be converted to an empty Diff") {
+  test("empty FlatDiff should be converted to an empty DeepDiff") {
     val converted = new FlatDiff(new Object).toDiff
     
     converted should not (haveDifference)
