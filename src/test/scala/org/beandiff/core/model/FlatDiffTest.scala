@@ -33,6 +33,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.TestDefs._
 import org.scalatest.FunSuite
 import org.beandiff.core.model.change.Insertion
 
@@ -51,15 +52,21 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
   
   test("flat diff without changes should become the one it's being merged with") {
     val flat = new FlatDiff(parent)
-    val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mock(classOf[Diff])))
+    val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
     
     flat.withChanges(Self, deep) should be === deep
   }
   
   test("flat diff without changes should become the one it's being merged with (path arg)") { // FIXME almost duplicated test
     val flat = new FlatDiff(parent)
-    val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mock(classOf[Diff])))
+    val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
     
     flat.withChanges(Path(Self), deep) should be === deep
+  }
+  
+  test("should be still a flat diff when a self-change is added") { // TODO eliminate type checks
+    val diff = new FlatDiff(parent).withChange(Self, mockChange())
+    
+    diff.getClass() should be === classOf[FlatDiff]
   }
 }

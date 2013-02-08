@@ -24,10 +24,15 @@ import org.mockito.Matchers._
 import org.mockito.{Matchers => MockitoMatchers}
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
+import org.beandiff.core.model.change.Change
 
 
 object TestDefs {
 
+  def mockChange() = {
+    mock(classOf[Change])
+  }
+  
   def mockDiff() = {
     val diff = mock(classOf[Diff])
     when(diff.hasDifference).thenReturn(true)

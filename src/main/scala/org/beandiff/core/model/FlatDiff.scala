@@ -32,7 +32,7 @@ class FlatDiff(
 
   override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (Path(Self), ch))
 
-  override def withChange(change: Change) = new FlatDiff(target, selfChanges :+ change)
+  override def withChange(change: Change) = withChange(Self, change)
 
   override def withChange(path: Path, change: Change): Diff = {
     if (path.depth <= 1)
@@ -68,8 +68,12 @@ class FlatDiff(
     FlatDiff.this // FIXME FIXME FIXME
   }
 
-  override def withChange(prop: Property, change: Change) =
-    toDiff.withChange(prop, change) // TODO
+  override def withChange(prop: Property, change: Change) = {
+    if (prop == Self)
+      new FlatDiff(target, change :: selfChanges)
+    else
+      toDiff.withChange(prop, change)
+  }
 
   override def withChanges(prop: Property, diff: Diff) = { // FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
     if (selfChanges.isEmpty)
