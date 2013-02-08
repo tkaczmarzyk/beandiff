@@ -50,18 +50,26 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     converted should not (haveDifference)
   }
   
-  test("flat diff without changes should become the one it's being merged with") {
+  test("empty flat diff without changes should become the one it's being merged with") {
     val flat = new FlatDiff(parent)
     val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
     
     flat.withChanges(Self, deep) should be === deep
   }
   
-  test("flat diff without changes should become the one it's being merged with (path arg)") { // FIXME almost duplicated test
+  test("empty flat diff should become the one it's being merged with (path arg)") { // FIXME almost duplicated test
     val flat = new FlatDiff(parent)
     val deep = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
     
     flat.withChanges(Path(Self), deep) should be === deep
+  }
+  
+  test("a nested change should be added at the specified property") {
+    val flat = new FlatDiff(parent)
+    val subDiff = new FlatDiff(null, List(mockChange()))
+    val merged = flat.withChanges(new FieldProperty("name"), subDiff)
+    
+    merged should be === new DeepDiff(parent, Map(new FieldProperty("name") -> subDiff))
   }
   
   test("should be still a flat diff when a self-change is added") { // TODO eliminate type checks

@@ -123,5 +123,14 @@ private[model] class DeepDiff(
     })
   }
 
+  override def hashCode = 13 * target.hashCode + propChanges.hashCode
+  
+  override def equals(other: Any) = {
+    other match {
+      case that: DeepDiff => that.target == target && that.propChanges == propChanges
+      case _ => false
+    }
+  }
+  
   override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
 }

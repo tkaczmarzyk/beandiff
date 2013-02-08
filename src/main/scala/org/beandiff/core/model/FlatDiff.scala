@@ -76,7 +76,7 @@ class FlatDiff(
   }
 
   override def withChanges(prop: Property, diff: Diff) = { // FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
-    if (selfChanges.isEmpty)
+    if (selfChanges.isEmpty && prop == Self)
       diff
     else if (diff.changes.exists(pathDiff => pathDiff._1 != EmptyPath))
       toDiff.withChanges(prop, diff)
@@ -90,7 +90,7 @@ class FlatDiff(
 
   def toDiff =
     if (selfChanges.isEmpty)
-      Diff(target)
+      new DeepDiff(target, Map())
     else
       Diff(target, Map(Self -> FlatDiff.this))
 
