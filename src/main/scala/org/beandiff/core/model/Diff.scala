@@ -30,7 +30,10 @@ object Diff {
 trait Diff {
 
   def hasDifference(): Boolean
+  
+  @deprecated("might lead to unexpected result when collection with insertion/deletion changes is on the path")
   def hasDifference(path: String): Boolean
+  @deprecated("might lead to unexpected result when collection with insertion/deletion changes is on the path")
   def hasDifference(p: Path): Boolean
   
   def leafChanges: Traversable[(Path, Change)]
@@ -39,9 +42,11 @@ trait Diff {
   
   def withChanges(property: Property, changes: Diff): Diff
   def withChanges(path: Path, changes: Diff): Diff
-  def withChange(change: Change): Diff
+  
+  def withChange(change: Change): Diff // TODO?
   def withChange(path: Path, change: Change): Diff
   def withChange(property: Property, change: Change): Diff
+  
   def without(property: Property): Diff
   def without(path: Path): Diff
   
