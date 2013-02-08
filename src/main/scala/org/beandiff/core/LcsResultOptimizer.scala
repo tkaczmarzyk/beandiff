@@ -68,7 +68,7 @@ class LcsResultOptimizer(
     if (!changeset.isInstanceOf[FlatDiff]) { // FIXME
       changeset
     } else {
-      var result: Diff = new DeepDiff(target, Map())
+      var result: Diff = Diff(target)
 
       var skip = List[Change]()
 

@@ -24,7 +24,7 @@ import org.beandiff.core.model.change.Change
 import scala.annotation.tailrec
 
 
-class DeepDiff(
+private[model] class DeepDiff(
   val target: Any,
   private val propChanges: Map[Property, Diff]) extends Diff {
 
