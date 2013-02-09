@@ -37,8 +37,10 @@ import org.beandiff.core.model.change.NewValue
 @RunWith(classOf[JUnitRunner])
 class DeepDiffTest extends FunSuite with ShouldMatchers {
 
+  val obj = new Object()
   val child = new SimpleJavaBean("aa", 1)
   val parent = new ParentBean("parent", child)
+  val grandpa = new ParentBean("grandpa", parent)
   val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1)) // FIXME do not rely on BeanDiff.diff
   
   val childNameDiff = new DeepDiff(parent,
@@ -97,5 +99,62 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
             Map(new FieldProperty("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
     
     diff.changes(Path("child.name")) should be === nestedChanges
+  }
+  
+  test("should add change at the path and create all intermediate diff object") {
+    val newChange = mockChange()
+    val diff = Diff(grandpa)
+    
+    diff.withChange(Path("child.child"), newChange) should be === Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> Diff(child, newChange)))))
+  }
+  
+  test("should add change to the existing subdiff") {
+    val oldChange, newChange = mockChange()
+    val diff = Diff(parent, Map(Property("child") -> Diff(child, oldChange)))
+    
+    diff.withChange(Path("child"), newChange) should be === Diff(parent, Map(Property("child") -> Diff(child, newChange, oldChange)))
+  }
+  
+  test("should merge the existing subdiff with a new one") {
+    val change1 = mockChange("ch1")
+    val change2 = mockChange("ch2")
+    val subdiff = Diff(child, change1)
+    val diff = Diff(parent, Map(Property("child") -> subdiff))
+    val newSubdiff = Diff(child, change2)
+    
+    diff.withChanges(Property("child"), newSubdiff) should be === Diff(parent, Map(Property("child") -> Diff(child, change2, change1)))
+  }
+  
+  test("should remove a subdiff at the path") {
+    val change = mockChange()
+    val diff = Diff(parent, Map(Property("child") -> Diff(child, change), Property("name") -> mockDiff()))
+    
+    diff.without(Path("name")) should be === Diff(parent, Map(Property("child") -> Diff(child, change)))
+  }
+  
+  test("should become an empty diff if removing the last change") {
+    val diff = Diff(parent, Map(Property("name") -> mockDiff()))
+    
+    diff.without(Path("name")) should be === Diff(parent)
+  }
+  
+  test("should remove the nested diff when it becomes empty") {
+    val change = mockChange()
+    val diff = Diff(parent, Map(Property("child") -> Diff(child, change)))
+    
+    diff.without(Path("child"), change) should be === Diff(parent)
+  }
+  
+  test("should remove the whole branch of subdiffs when the last leaf change is removed") {
+    val change = mockChange()
+    val diff = Diff(obj, Map(Property("aaa") -> Diff(null, Map(Property("bbb") -> Diff(null, Map(Property("ccc") -> Diff(null, change)))))))
+    
+    diff.without(Path("aaa.bbb.ccc"), change) should be === Diff(obj)
+  }
+  
+  test("should not add anything if the subdiff to be added is empty") {
+    val diff = Diff(parent, Map(Property("name") -> mockDiff()))
+    
+    diff.withChanges(Path("child"), Diff(child)) should be === diff
   }
 }

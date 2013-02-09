@@ -33,6 +33,10 @@ object TestDefs {
     mock(classOf[Change])
   }
   
+  def mockChange(name: String) = {
+    mock(classOf[Change], name)
+  }
+  
   def mockDiff() = {
     val diff = mock(classOf[Diff])
     when(diff.hasDifference).thenReturn(true)

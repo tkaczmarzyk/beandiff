@@ -36,35 +36,12 @@ private[model] class DeepDiff(
 
   override def changes = propChanges.toList
 
-  override def withChange(change: Change): DeepDiff = withChange(Self, change)
-  
-  override def withChange(property: Property, change: Change): DeepDiff = {
-    val newMod = propChanges.get(property) match {
-      case Some(mod) => mod.withChange(change)
-      case None => new FlatDiff(property.value(target), change)
-    }
-
-    new DeepDiff(target, propChanges + (property -> newMod))
-  }
-
-  override def withChanges(property: Property, changes: Diff) =
-    new DeepDiff(target, propChanges + (property -> changes))
-
-  override def withChange(path: Path, change: Change): Diff = {
-    if (path.depth <= 1) {
-      withChange(path.head, change)
-    } else {
-      val interChangeset = propChanges.get(path.head) match {
-        case Some(changeset) => changeset
-        case None => new DeepDiff(path.head.value(target), Map())
-      }
-
-      withChanges(path.head, interChangeset.withChange(path.tail, change))
-    }
-  }
-  
   override def without(prop: Property) = {
-    new DeepDiff(target, propChanges - prop)
+    val newPropChanges = propChanges - prop
+    if (newPropChanges.isEmpty)
+      Diff(target)
+    else
+      new DeepDiff(target, propChanges - prop)
   }
 
   override def without(path: Path, change: Change): Diff = {// TODO verify // TODO detect when it should become a FlatDiff
@@ -111,19 +88,53 @@ private[model] class DeepDiff(
     }
   }
   
+  override def withChanges(property: Property, subDiff: Diff) = {
+    if (!subDiff.hasDifference)
+      this
+    else {
+      val existing = interChangeset(property)
+      val merged = {
+        if (!existing.hasDifference) subDiff
+        else {
+          subDiff.leafChanges.foldLeft(existing)(
+              (acc:Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
+        }
+      }
+      new DeepDiff(target, propChanges + (property -> merged))
+    }
+  }
+  
   override def withChanges(path: Path, changes: Diff): Diff = {
     if (path.depth <= 1)
       withChanges(path.head, changes)
-    else {
-      val interChangeset = propChanges.get(path.head) match { // FIXME FIXME FIXME temporary copy-paste
-        case Some(changeset) => changeset
-        case None => new DeepDiff(path.head.value(target), Map())
-      }
-      
-      without(path.head)
-      	.withChanges(path.head, interChangeset.withChanges(path.tail, changes))
+    else
+      without(path.head).withChanges(path.head, interChangeset(path.head).withChanges(path.tail, changes))
+  }
+  
+  override def withChange(path: Path, change: Change): Diff = {
+    if (path.depth <= 1)
+      withChange(path.head, change)
+    else
+      without(path.head).withChanges(path.head, interChangeset(path.head).withChange(path.tail, change))
+  }
+  
+  private def interChangeset(property: Property): Diff = {
+    propChanges.get(property) match {
+      case Some(diff) => diff
+      case None => new DeepDiff(property.value(target), Map())
     }
   }
+  
+  override def withChange(property: Property, change: Change): DeepDiff = {
+    val newMod = propChanges.get(property) match {
+      case Some(mod) => mod.withChange(change)
+      case None => new FlatDiff(property.value(target), change)
+    }
+
+    new DeepDiff(target, propChanges + (property -> newMod))
+  }
+  
+  override def withChange(change: Change): DeepDiff = withChange(Self, change)
   
   override def transformTarget() = {
     propChanges.foreach({
