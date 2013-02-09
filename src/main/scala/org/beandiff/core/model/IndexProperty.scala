@@ -43,7 +43,6 @@ class IndexProperty(val index: Int) extends Property {
   override def equals(other: Any) = {
     other match {
       case that: IndexProperty => index == that.index
-      case other: TransformedProperty => other.equals(this) // FIXME FIXME FIXME
       case _ => false
     }
   }

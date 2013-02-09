@@ -20,7 +20,6 @@
 package org.beandiff.core.model
 
 import org.beandiff.support.ObjectSupport._
-import org.beandiff.core.TransformedProperty
 
 
 class FieldProperty(val name: String) extends Property with Equals {
@@ -51,7 +50,6 @@ class FieldProperty(val name: String) extends Property with Equals {
   override def equals(other: Any) = {
     other match {
       case that: FieldProperty => that.canEqual(FieldProperty.this) && name == that.name
-      case other: TransformedProperty => other.equals(this) // FIXME FIXME FIXME !
       case _ => false
     }
   }
