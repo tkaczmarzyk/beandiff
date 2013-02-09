@@ -74,7 +74,7 @@ class TransformingDiffEngine(
       (diff, propChanges) => {
         val transformedChangeset = transform(propChanges._2)
         diff.withChanges(propChanges._1, transformedChangeset)
-      }) //TODO test withChange(emptyDiff)
+      })
 
     //    transformedProperty.yieldTransformed = false // FIXME if set to false, then unable to transform changes from outer collection
 
