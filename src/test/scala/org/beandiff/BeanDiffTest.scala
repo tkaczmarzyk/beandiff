@@ -92,7 +92,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     new Collections {
       val d = diff(sList1, sList2)
       
-      assert(d.hasDifference("[0]"))
+      d should haveDifference("[0]")
     }
   }
   
@@ -138,8 +138,8 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("subsequent calls should return the same result") { // TODO similar test with a difference expected
     new SimpleBeans {
-      assert(!diff(a1a, a1b).hasDifference)
-      assert(!diff(a1a, a1b).hasDifference)
+      diff(a1a, a1b) should not (haveDifference)
+      diff(a1a, a1b) should not (haveDifference)
     }
   }
   
@@ -167,8 +167,8 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val d = diff(jList1, new ArrayList)
       
       d should haveDifference("[0]")
-      assert(d.hasDifference("[1]"))
-      assert(d.hasDifference("[2]"))
+      d should haveDifference("[1]")
+      d should haveDifference("[2]")
     }
   }
   
@@ -192,7 +192,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should detect that hash sets have the same elements") {
     new Collections {
-      assert(!diff(jSet1, jSet2).hasDifference)
+      diff(jSet1, jSet2) should not (haveDifference)
     }
   }
   
@@ -220,13 +220,13 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should be case sensitive if not specified otherwise") {
     new SimpleBeans {
-      assert(diff(a1a, A1).hasDifference)
+      diff(a1a, A1) should haveDifference
     }
   }
   
   test("should ignore case if requested") {
     new SimpleBeans {
-      assert(!diff(a1a, A1, ignoreCase).hasDifference)
+      diff(a1a, A1, ignoreCase) should not (haveDifference)
     }
   }
   
@@ -263,15 +263,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     new NestedBeans {
       val d = diff(parent1, parent2)
       
-      assert(d.hasDifference)
-      assert(d.hasDifference("child.value"))
-      assert(d.hasDifference("child.name"))
+      d should haveDifference
+      d should haveDifference("child.value")
+      d should haveDifference("child.name")
     }
   }
   
   test("should detect that all properties are equal") {
     new SimpleBeans {
-      assert(!diff(a1a, a1b).hasDifference)
+      diff(a1a, a1b) should not (haveDifference)
     }
   }
   
@@ -279,30 +279,30 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     new SimpleBeans {
       assert(a1a != a1b)
       val d = diff(a1a, a1a)
-      assert(!d.hasDifference)
-      assert(!d.hasDifference("name"))
+      d should not (haveDifference)
+      d should not (haveDifference("name"))
     }
   }
   
   test("should detect difference in simple property") {
     new SimpleBeans {
       val d = diff(a1a, b1)
-      assert(d.hasDifference)
-      assert(d.hasDifference("name"))
+      d should haveDifference
+      d should haveDifference("name")
     }
   }
   
   test("should handle null property on left") {
     new NestedBeans {
       parent1.setChild(null)
-      assert(diff(parent1, parent2).hasDifference("child"))
+      diff(parent1, parent2) should haveDifference("child")
     }
   }
   
   test("should handle null property on right") {
     new NestedBeans {
       parent2.setChild(null)
-      assert(diff(parent1, parent2).hasDifference("child"))
+      diff(parent1, parent2) should haveDifference("child")
     }
   }
   
@@ -310,7 +310,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     new NestedBeans {
       parent1.setChild(null)
       parent2.setChild(null)
-      assert(!diff(parent1, parent2).hasDifference)
+      diff(parent1, parent2) should not (haveDifference)
     }
   }
   
