@@ -66,6 +66,6 @@ class TransformingDiffEngine(
           case Some(t) => acc.without(path, change).withChange(t.translate(change))
           case None => acc
         }
-      }) // FIXME FIXME FIXME breaks when flatchangeset becomes a Diff (Diff(self -> diff(...))). Add tests & fix 
+      }) 
   }
 }
