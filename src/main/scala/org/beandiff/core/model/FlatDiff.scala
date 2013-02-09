@@ -48,7 +48,7 @@ private[model] class FlatDiff(
     if (path != EmptyPath)
       throw new IllegalArgumentException
     else
-      FlatDiff.this // FIXME Self-related confusion
+      this
   }
 
   override def withChanges(path: Path, changes: Diff): Diff = {
@@ -66,7 +66,7 @@ private[model] class FlatDiff(
     if (path == EmptyPath)
       new FlatDiff(target)
     else
-      throw new IllegalArgumentException() // TODO
+      this
   }
 
   override def without(path: Path, change: Change): Diff = {

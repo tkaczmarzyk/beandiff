@@ -88,5 +88,25 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     val diff = new FlatDiff(parent, mockChange())
     
     diff.without(EmptyPath) should be === new FlatDiff(parent)
-  } 
+  }
+  
+  test("removing from a not-Self property should do nothing") {
+    val diff = new FlatDiff(parent, mockChange())
+    
+    diff.without(Property("child")) should be === diff
+  }
+  
+  test("should yield a diff for the new target but with the old changes") {
+    val diff = new FlatDiff(parent, mockChange())
+    val newDiff = diff.forTarget(target)
+    
+    newDiff.target should be === target
+    newDiff.leafChanges should be === diff.leafChanges
+  }
+  
+  test("should yield itself")	{
+    val diff = new FlatDiff(target, mockChange())
+    
+    diff.changes(EmptyPath) should be === diff
+  }
 }
