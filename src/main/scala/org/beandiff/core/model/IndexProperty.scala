@@ -21,7 +21,6 @@ package org.beandiff.core.model
 
 import java.util.List
 import org.beandiff.support.ObjectSupport._
-import org.beandiff.core.TransformedProperty
 
 
 class IndexProperty(val index: Int) extends Property {

@@ -31,30 +31,6 @@ import org.beandiff.core.model.Self
 import org.beandiff.core.model.FlatDiff
 import org.beandiff.core.model.FieldProperty
 
-private class TransformedProperty( // TODO temp aproach, verify & refactor/change
-  original: Property,
-  transformedValue: Any) extends Property {
-
-  var yieldTransformed = true
-
-  override def value(target: Any) = {
-    if (yieldTransformed)
-      transformedValue
-    else
-      original.value(target)
-  }
-
-  override def setValue(target: Any, value: Any) = {
-    if (yieldTransformed)
-      throw new UnsupportedOperationException // TODO
-    else
-      original.setValue(target, value)
-  }
-
-  override def toString = original.toString()
-  override def hashCode() = original.hashCode()
-  override def equals(obj: Any) = original.equals(obj)
-}
 
 class TransformingDiffEngine(
   private val delegate: DiffEngine,
@@ -66,9 +42,7 @@ class TransformingDiffEngine(
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
 
-    val transformedProperty = transformProperty(Self, t1) // TODO after refactoring it seems to be possible to get rid of transformedProperties
-
-    val diff = zero.withChanges(transformedProperty, delegate.calculateDiff(t1, t2)) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
+    val diff = delegate.calculateDiff(t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
 
     val result = diff.changes.foldLeft(zero)( // TODO tests
       (diff, propChanges) => {
@@ -79,10 +53,6 @@ class TransformingDiffEngine(
     //    transformedProperty.yieldTransformed = false // FIXME if set to false, then unable to transform changes from outer collection
 
     result.forTarget(o1)
-  }
-
-  private def transformProperty(prop: Property, transformedValue: Any): TransformedProperty = {
-    new TransformedProperty(prop, transformedValue)
   }
 
   private def transform(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))

@@ -19,7 +19,6 @@
  */
 package org.beandiff.core.model
 
-import org.beandiff.core.TransformedProperty
 
 object Self extends Property {
 
@@ -32,7 +31,6 @@ object Self extends Property {
   
   override def equals(other: Any) = {
     other match {
-      case transformed: TransformedProperty => transformed.equals(this) // FIXME
       case prop: Property => prop eq this
       case _ => false
     }
