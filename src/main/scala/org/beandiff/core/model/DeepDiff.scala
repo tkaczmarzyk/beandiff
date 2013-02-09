@@ -95,10 +95,8 @@ private[model] class DeepDiff(
       val existing = interChangeset(property)
       val merged = {
         if (!existing.hasDifference) subDiff
-        else {
-          subDiff.leafChanges.foldLeft(existing)(
-              (acc:Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
-        }
+        else subDiff.leafChanges.foldLeft(existing)(
+            (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
       }
       new DeepDiff(target, propChanges + (property -> merged))
     }
