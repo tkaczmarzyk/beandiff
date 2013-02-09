@@ -38,13 +38,12 @@ class TransformingDiffEngine(
   private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
-    val zero = Diff(o1)
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
 
     val diff = delegate.calculateDiff(t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
 
-    val result = diff.changes.foldLeft(zero)( // TODO tests
+    val result = diff.changes.foldLeft(Diff(o1))( // TODO tests
       (diff, propChanges) => {
         val transformedChangeset = transform(propChanges._2)
         diff.withChanges(propChanges._1, transformedChangeset)
@@ -56,7 +55,7 @@ class TransformingDiffEngine(
   private def transform(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
     val leafChanges = original.leafChanges
 
-    leafChanges.foldLeft(original)( // TODO check 
+    leafChanges.foldLeft(original)( // FIXME seems that it can translate all leaf changes, but shouldn't (e.g. when target is Set(List()) then changes for the List chould not be translated)
       (acc: Diff, pathChange: (Path, Change)) => {
         val path = pathChange._1
         val change = pathChange._2
