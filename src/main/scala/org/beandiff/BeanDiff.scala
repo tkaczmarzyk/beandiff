@@ -20,7 +20,6 @@
 package org.beandiff
 
 import java.io.PrintWriter
-
 import org.beandiff.TypeDefs.JBigDecimal
 import org.beandiff.core.DelegatingDiffEngine
 import org.beandiff.core.EndOnNullStrategy
@@ -33,6 +32,7 @@ import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
+import java.io.PrintStream
 
 /**
  * A container for syntactic sugar methods
@@ -76,8 +76,14 @@ object BeanDiff {
   def printDiff(o1: Any, o2: Any, modifiers: Any*): Unit =
     printDiff(new PrintWriter(System.out), o1, o2, modifiers : _*)
   
+  def printDiff(out: PrintStream, o1: Any, o2: Any): Unit =
+    printDiff(new PrintWriter(out), o1, o2)
+    
   def printDiff(out: PrintWriter, o1: Any, o2: Any): Unit =
     printDiff(out, o1, o2, List() : _*)
+  
+  def printDiff(out: PrintStream, o1: Any, o2: Any, modifiers: Any*) =
+    print(new PrintWriter(out), diff(o1, o2, modifiers : _*))
     
   def printDiff(out: PrintWriter, o1: Any, o2: Any, modifiers: Any*) =
     print(out, diff(o1, o2, modifiers : _*))
