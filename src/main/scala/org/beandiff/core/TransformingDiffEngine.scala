@@ -50,8 +50,6 @@ class TransformingDiffEngine(
         diff.withChanges(propChanges._1, transformedChangeset)
       })
 
-    //    transformedProperty.yieldTransformed = false // FIXME if set to false, then unable to transform changes from outer collection
-
     result.forTarget(o1)
   }
 
