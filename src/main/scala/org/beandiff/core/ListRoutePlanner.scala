@@ -43,5 +43,5 @@ class ListRoutePlanner extends RoutePlanner {
   }
   
   private def get(list: List[_], index: Int) =
-    if (list.size > index) list.get(index) else null
+    if (list.size > index) list.get(index) else null // TODO sth better than null
 }
