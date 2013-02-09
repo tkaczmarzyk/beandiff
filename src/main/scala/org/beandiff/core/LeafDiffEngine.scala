@@ -31,8 +31,7 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.DeepDiff
 
 private class LeafDiffEngine( // TODO responsibility has been reduced, consider name change
-  private val delegate: DiffEngine,
-  private val eqInvestigators: ClassDictionary[EqualityInvestigator]) extends DiffEngine {
+  private val delegate: DiffEngine) extends DiffEngine {
 
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 

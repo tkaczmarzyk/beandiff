@@ -41,7 +41,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) extends DiffEngine {
 
-  private val engines = (new ClassDictionary(new LeafDiffEngine(DelegatingDiffEngine.this, eqInvestigators)))
+  private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
         new LcsDiffEngine(this, new MemoizedLcsCalc(eqInvestigators.defaultValue))))
     .withEntry(classOf[JSet] ->
