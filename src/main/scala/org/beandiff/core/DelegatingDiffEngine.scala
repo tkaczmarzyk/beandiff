@@ -22,6 +22,7 @@ package org.beandiff.core
 import org.beandiff.TypeDefs.JList
 import org.beandiff.TypeDefs.JSet
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.DescendingHistory
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Self
@@ -50,24 +51,24 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
               classOf[Insertion] -> new InsertionToAddition,
               classOf[Deletion] -> new DeletionToRemoval)))
 
-  private var visited = List[Any]() // FIXME result of first refactoring iteration; factor out to a cycle braking object eventually
+  private var visited = DescendingHistory()
               
   def calculateDiff(o1: Any, o2: Any): Diff = {
     calculateDiff(Diff(o1), Self, o1, o2)
   }
   
   def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff = {
-    if (visited.contains(o1) || !descStrategy.shouldProceed(Path(location), o1, o2)) { //FIXME invalid path for break-cycle
+    if (visited.hasSeen(o1) || !descStrategy.shouldProceed(Path(location), o1, o2)) { //FIXME invalid path for break-cycle
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
         zero.withChange(new NewValue(location, o1, o2))
       } else {
         zero
       }
     } else {
-      visited = visited :+ o1
+      visited = visited.step(o1)
       val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
       val result = engine.calculateDiff(o1, o2)
-      visited = visited.dropRight(1)
+      visited = visited.stepBack
       zero.withChanges(location, result)
     }
   }
