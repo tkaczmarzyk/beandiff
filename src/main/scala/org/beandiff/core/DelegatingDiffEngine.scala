@@ -58,12 +58,11 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
   }
   
   def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff = {
-    if (visited.hasSeen(o1) || !descStrategy.shouldProceed(Path(location), o1, o2)) { //FIXME invalid path for break-cycle
-      if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
+    if (visited.hasSeen(o1) || !descStrategy.shouldProceed(Path(location), o1, o2)) { //FIXME invalid path
+      if (!getEqInvestigator(o1, o2).areEqual(o1, o2))
         zero.withChange(new NewValue(location, o1, o2))
-      } else {
+      else
         zero
-      }
     } else {
       visited = visited.step(o1)
       val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
