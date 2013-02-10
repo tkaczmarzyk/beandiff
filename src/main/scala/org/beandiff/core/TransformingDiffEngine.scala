@@ -33,7 +33,7 @@ import org.beandiff.core.model.FieldProperty
 
 
 class TransformingDiffEngine(
-  private val delegate: DiffEngine,
+  private val delegate: DiffEngineCoordinator,
   private val transformer: ObjectTransformer,
   private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
 
@@ -41,7 +41,7 @@ class TransformingDiffEngine(
     val t1 = transformer.transform(o1)
     val t2 = transformer.transform(o2)
 
-    val diff = delegate.calculateDiff(t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
+    val diff = delegate.calculateDiff(Diff(o1), Self, t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
 
     val result = diff.changes.foldLeft(Diff(o1))( // TODO tests
       (diff, propChanges) => {

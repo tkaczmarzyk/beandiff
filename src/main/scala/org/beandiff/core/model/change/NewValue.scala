@@ -23,16 +23,15 @@ import org.beandiff.core.model.Property
 
 
 class NewValue(
-  val target: Any, // TODO tmp // FIXME target vs (self->FlatCHangeSet[NewValue[1->2]) vs Insertion/Deletion (attached to collection rather to IndexProperty)
+  val property: Property,
   val oldValue: Any, 
   val newValue: Any) extends Change with Equals {
 
   override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
-    throw new IllegalStateException()
+    property.setValue(target, newValue)
   
-  def perform(target: Any, prop: Property) =//FIXME temporary hack during refactoring
-    prop.setValue(target, newValue)
-    
+  override def targetProperty = property
+
   def canEqual(other: Any) = {
     other.isInstanceOf[NewValue]
   }
@@ -49,6 +48,6 @@ class NewValue(
     prime * (prime * (prime + oldValue.hashCode) + newValue.hashCode)
   }
   
-  override def toString = "NewValue[" + oldValue + "->" + newValue + "]"
+  override def toString = "NewValue[" + property + "|" + oldValue + "->" + newValue + "]"
 
 }

@@ -42,7 +42,7 @@ object Path {
     new PathImpl(Vector(properties.dropWhile(_ == Self):_*)) // TODO it's kind of workaround
   }
   
-  val EmptyPath = new PathImpl(Vector())
+  val EmptyPath: Path = new PathImpl(Vector())
 }
 
 abstract class Path {

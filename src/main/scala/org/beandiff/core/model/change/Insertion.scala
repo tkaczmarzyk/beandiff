@@ -19,6 +19,8 @@
  */
 package org.beandiff.core.model.change
 
+import org.beandiff.core.model.IndexProperty
+
 
 case class Insertion(
   private val element: Any,
@@ -31,6 +33,8 @@ case class Insertion(
     val list = target.asInstanceOf[jList]
     list.add(index, element)
   }
+  
+  override def targetProperty = new IndexProperty(index)
 
   override def newValue = element // FIXME
 

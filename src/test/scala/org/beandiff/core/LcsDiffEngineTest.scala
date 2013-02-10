@@ -22,7 +22,9 @@ package org.beandiff.core
 import java.util.Arrays
 import org.beandiff.TestDefs.of
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.Property
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.equality.StdEqualityInvestigator
@@ -37,6 +39,7 @@ import org.mockito.stubbing.Answer
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.TestDefs._
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 
@@ -44,10 +47,10 @@ import org.beandiff.core.model.change.Insertion
 @RunWith(classOf[JUnitRunner])
 class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
 
-  private val mockDelegate = mock(classOf[DiffEngine])
+  private val mockDelegate = mock(classOf[DiffEngineCoordinator])
   
-  when(mockDelegate.calculateDiff(any(), any())).thenAnswer(new Answer[Diff] {
-    override def answer(invocation: InvocationOnMock): Diff = Diff(invocation.getArguments()(0))
+  when(mockDelegate.calculateDiff(anyDiff, any(classOf[Property]), any(), any())).thenAnswer(new Answer[Diff] {
+    override def answer(invocation: InvocationOnMock) = invocation.getArguments()(0).asInstanceOf[Diff]
   })
   
   private val engine = new LcsDiffEngine(mockDelegate, new NaiveLcsCalc(new StdEqualityInvestigator))
@@ -61,21 +64,21 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
   test("should call dlegate on all elements in LCS") {
     val diff = engine.calculateDiff(abc, bcd)
     
-    verify(mockDelegate).calculateDiff(of("b"), of("b"))
-    verify(mockDelegate).calculateDiff(of("c"), of("c"))
+    verify(mockDelegate).calculateDiff(anyDiff, of(Property("[1]")), of("b"), of("b"))
+    verify(mockDelegate).calculateDiff(anyDiff, of(Property("[2]")), of("c"), of("c"))
   }
   
   test("should add insertions for elements at right but not in the LCS") {
     val diff = engine.calculateDiff(bcd, bas)
-    val l = diff.leafChanges
-    assert(diff.leafChanges.toList.contains(EmptyPath -> new Insertion("a", 1)))
-    assert(diff.leafChanges.toList.contains(EmptyPath -> new Insertion("s", 2)))
+    
+    diff.leafChanges should contain ((EmptyPath, new Insertion("a", 1).asInstanceOf[Change])) // TODO eliminate asInstanceOf
+    diff.leafChanges should contain ((EmptyPath, new Insertion("s", 2).asInstanceOf[Change]))
   }
   
   test("should add deletions for elements at left but not in the LCS") {
     val diff = engine.calculateDiff(bcd, bas)
     
-    assert(diff.leafChanges.toList.contains(EmptyPath -> new Deletion("c", 1)))
-    assert(diff.leafChanges.toList.contains(EmptyPath -> new Deletion("d", 2)))
+    diff.leafChanges should contain ((EmptyPath, new Deletion("c", 1).asInstanceOf[Change])) // TODO eliminate asInstanceOf
+    diff.leafChanges should contain ((EmptyPath, new Deletion("d", 2).asInstanceOf[Change]))
   }
 }

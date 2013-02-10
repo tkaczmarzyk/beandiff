@@ -19,17 +19,21 @@
  */
 package org.beandiff.core.model.change
 
+import org.beandiff.core.model.Self
+
 
 @deprecated // used in LeafDiffEngine on lists ?
 class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
     private val deleted: Any,
     private val added: Any) extends Change {
 
-  def perform(target: Any): Unit = {
+  override def perform(target: Any): Unit = {
     val collection = target.asInstanceOf[java.util.Collection[Any]]
     collection.remove(deleted)
     collection.add(added)
   }
+  
+  override def targetProperty = Self
   
   @deprecated
   def newValue: Any = added

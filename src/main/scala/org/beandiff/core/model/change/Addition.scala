@@ -20,14 +20,17 @@
 package org.beandiff.core.model.change
 
 import org.beandiff.TypeDefs._
+import org.beandiff.core.model.Self
 
 
 case class Addition(
     element: Any) extends Change {
 
-  def perform(target: Any) = {
+  override def perform(target: Any) = {
     target.asInstanceOf[JSet].add(element)
   }
+  
+  override def targetProperty = Self
   
   @deprecated
   def newValue: Any = element // FIXME

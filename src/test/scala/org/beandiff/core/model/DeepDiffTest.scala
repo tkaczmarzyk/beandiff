@@ -35,17 +35,13 @@ import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
-class DeepDiffTest extends FunSuite with ShouldMatchers {
+class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasDifference in assertions
 
   val obj = new Object()
   val child = new SimpleJavaBean("aa", 1)
   val parent = new ParentBean("parent", child)
   val grandpa = new ParentBean("grandpa", parent)
   val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1)) // FIXME do not rely on BeanDiff.diff
-  
-  val childNameDiff = new DeepDiff(parent,
-        Map(new FieldProperty("child") -> new DeepDiff(child, 
-            Map(new FieldProperty("name") -> new FlatDiff(null, new NewValue(child, /*new FieldProperty("name"), */"bb", "cc")))))) // FIXME null // TODO simplify the creation (builder?)
   
   
   test("should add all property changes at the path") { // TODO test for withChanges(property, ...)
@@ -54,14 +50,6 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
     
     val merged = parentDiff.withChanges(Path("child"), childDiff)
     merged should haveDifference("child.name")
-  }
-  
-  test("should add change at the path") {
-    val diff = new DeepDiff(parent, Map())
-    val updated = diff.withChange(Path.of("child.name"), new NewValue(child, /*new FieldProperty("name"), */":(", ":)"))
-    
-    val lea = updated.leafChanges
-    assert(updated.leafChanges.exists(_._1 == Path.of("child.name")))
   }
   
   test("there should be no difference in simple property after transformation") {
@@ -77,19 +65,34 @@ class DeepDiffTest extends FunSuite with ShouldMatchers {
   }
   
   test("should remove subdiff on the provided path") {
-    childNameDiff.without(Path("child.name")) should not (haveDifference("child.name"))
+    val grandChildNameDiff = Diff(child, new NewValue(Property("name"), "bb", "cc"))
+    val diff = Diff(grandpa, Map(Property("child") -> Diff(parent,
+        Map(Property("name") -> mockDiff(), Property("child") -> grandChildNameDiff))))
+    
+    diff.without(Path("child.name")) should be === Diff(grandpa, Map(Property("child") -> Diff(parent,
+        Map(Property("child") -> grandChildNameDiff))))
   }
   
-  test("should remove a diff that becomes empty after removal") {
-    childNameDiff.without(Path("child.name")) should not (haveDifference)
+  test("should remove a diff that becomes empty after removal of a last subdiff") {
+    val grandChildNameDiff = Diff(child, new NewValue(Property("name"), "bb", "cc"))
+    val diff = Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> grandChildNameDiff))))
+    
+    diff.without(Path("child.child")) should not (haveDifference)
+  }
+  
+  test("should remove a diff that becomes empty after removal of a last change") {
+    val grandChildNameDiff = Diff(child, new NewValue(Property("name"), "bb", "cc"))
+    val diff = Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> grandChildNameDiff))))
+    
+    diff.without(Path("child.child.name")) should not (haveDifference)
   }
   
   test("should add changes at the specified path") {
-    val diff = Diff(parent)
-    val added = new FlatDiff(null, new NewValue(child,/* new FieldProperty("name"),*/ "bb", "cc"))
-    val modified = diff.withChanges(Path("child.name"), added)
+    val diff = Diff(grandpa)
+    val added = Diff(child, new NewValue(Property("name"), "bb", "cc"))
+    val modified = diff.withChanges(Path("child.child"), added)
     
-    modified should haveDifference("child.name") // TODO better assertion
+    modified should be === Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> added))))
   }
   
   test("should yield the nested diff") {

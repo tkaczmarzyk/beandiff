@@ -22,7 +22,7 @@ package org.beandiff.core
 import org.beandiff.TypeDefs.JList
 import org.beandiff.TypeDefs.JSet
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.DeepDiff
+import org.beandiff.core.model.Property
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.Path
@@ -39,7 +39,7 @@ import org.beandiff.lcs.MemoizedLcsCalc
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
-  private val descStrategy: DescendingStrategy) extends DiffEngine {
+  private val descStrategy: DescendingStrategy) extends DiffEngine with DiffEngineCoordinator {
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
@@ -53,23 +53,22 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
   private var visited = List[Any]() // FIXME result of first refactoring iteration; factor out to a cycle braking object eventually
               
   def calculateDiff(o1: Any, o2: Any): Diff = {
-    if (visited.contains(o1) || !descStrategy.shouldProceed(EmptyPath, o1, o2)) { //FIXME invalid path for break-cycle
-      var lastVisited: Any = null // FIXME
-      if (!visited.isEmpty) {
-        lastVisited = visited.last
-      }
+    calculateDiff(Diff(o1), Self, o1, o2)
+  }
+  
+  def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff = {
+    if (visited.contains(o1) || !descStrategy.shouldProceed(Path(location), o1, o2)) { //FIXME invalid path for break-cycle
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2)) {
-        val propOwner = lastVisited // FIXME
-        Diff(o1, new NewValue(propOwner, o1, o2))
+        zero.withChange(new NewValue(location, o1, o2))
       } else {
-        Diff(o1)
+        zero
       }
     } else {
       visited = visited :+ o1
       val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
       val result = engine.calculateDiff(o1, o2)
       visited = visited.dropRight(1)
-      result
+      zero.withChanges(location, result)
     }
   }
   

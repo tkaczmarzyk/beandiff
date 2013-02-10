@@ -31,7 +31,7 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.DeepDiff
 
 private class LeafDiffEngine( // TODO responsibility has been reduced, consider name change
-  private val delegate: DiffEngine) extends DiffEngine {
+  private val delegate: DiffEngineCoordinator) extends DiffEngine {
 
   private val routePlanners = ObjectWalker.DefaultRoutePlanners // TODO
 
@@ -41,7 +41,7 @@ private class LeafDiffEngine( // TODO responsibility has been reduced, consider 
 
     routes.foldLeft(zero)(
       (accDiff, route) => route match {
-        case (prop, (obj1, obj2)) => accDiff.withChanges(prop, delegate.calculateDiff(obj1, obj2))
+        case (prop, (obj1, obj2)) => delegate.calculateDiff(accDiff, prop, obj1, obj2)
       })
   }
 

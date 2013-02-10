@@ -42,7 +42,12 @@ private[model] class FlatDiff(
       toDiff.withChange(path, change)
   }
 
-  override def hasDifference(pathToFind: Path): Boolean = pathToFind == EmptyPath && !selfChanges.isEmpty
+  override def hasDifference(pathToFind: Path): Boolean = {
+    if (pathToFind == EmptyPath)
+      !selfChanges.isEmpty
+    else
+      (pathToFind.depth == 1) && selfChanges.exists(_.targetProperty == pathToFind.head)
+  }
 
   override def changes(path: Path): Diff = { // TODO is it really needed ? (should be ever called?)
     if (path != EmptyPath)
@@ -59,12 +64,19 @@ private[model] class FlatDiff(
   }
 
   override def without(prop: Property) = {
-    without(Path(prop))
+    if (prop == Self)
+      Diff(target)
+    else {
+      val remainingChanges = selfChanges.filter(_.targetProperty != prop)
+      new FlatDiff(target, remainingChanges)
+    }
   }
   
   override def without(path: Path) = {
     if (path == EmptyPath)
       new FlatDiff(target)
+    else if (path.depth == 1)
+      without(path.head)
     else
       this
   }
@@ -117,18 +129,9 @@ private[model] class FlatDiff(
   
   override def forTarget(newTarget: Any) = new FlatDiff(newTarget, selfChanges)
   
-  override def transformTarget = {
+  override def transformTarget() = {
     for (change <- selfChanges) {
       change.perform(target)
-    }
-  }
-  
-  def transformTarget(target2: Any, prop: Property) = {
-    for (change <- selfChanges) {
-      if (change.isInstanceOf[NewValue])
-        change.asInstanceOf[NewValue].perform(target2, prop)
-      else
-        change.perform(target)
     }
   }
 }

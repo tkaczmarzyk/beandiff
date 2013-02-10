@@ -35,7 +35,7 @@ import org.beandiff.core.model.IndexProperty
 
 
 class LcsDiffEngine(
-  private val delegate: DiffEngine,
+  private val delegate: DiffEngineCoordinator,
   private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
@@ -60,7 +60,7 @@ class LcsDiffEngine(
         (accDiff, occurence) => {
           val ver1 = xs.get(occurence.index1)
           val ver2 = ys.get(occurence.index2)
-          accDiff.withChanges(new IndexProperty(occurence.index1), delegate.calculateDiff(ver1, ver2)) // FIXME redundant when idInvestigator is full-diff-based?
+          delegate.calculateDiff(accDiff, new IndexProperty(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
         }
     )
   }

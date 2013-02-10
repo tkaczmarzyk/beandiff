@@ -17,24 +17,14 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model.change
+package org.beandiff.core
 
-import org.beandiff.TypeDefs.JSet
-import org.beandiff.core.model.Self
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Property
 
 
-case class Removal(
-    element: Any) extends Change {
+// TODO well, naming things is one of the hard things in computer science
+trait DiffEngineCoordinator {
 
-  def perform(target: Any) = {
-    target.asInstanceOf[JSet].remove(element)
-  }
-  
-  override def targetProperty = Self
-  
-  @deprecated
-  def newValue: Any = throw new UnsupportedOperationException // FIXME
-  
-  @deprecated
-  def oldValue: Any = element
+  def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff
 }

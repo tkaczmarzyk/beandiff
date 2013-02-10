@@ -20,6 +20,7 @@
 package org.beandiff.core.model.change
 
 import org.beandiff.TypeDefs._
+import org.beandiff.core.model.IndexProperty
 
 
 case class Deletion(
@@ -30,6 +31,8 @@ case class Deletion(
     target.asInstanceOf[JList].remove(index)
   }
 
+  override def targetProperty = new IndexProperty(index)
+  
   @deprecated
   override def newValue: Any = null
 

@@ -34,7 +34,7 @@ import org.beandiff.core.model.Self
 
 // FIXME: an experimental feature, just a prototype -- if it's OK, then refactor (e.g. move some logic to Changeset.optimize?)
 class LcsResultOptimizer(
-  parent: DiffEngine,
+  parent: DiffEngineCoordinator,
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
@@ -70,14 +70,14 @@ class LcsResultOptimizer(
       } {
         val index = new IndexProperty(change1.asInstanceOf[Deletion].index)
         skip :::= List(change1, change2)
-        result = result.withChanges(index, parent.calculateDiff(change1.oldValue, change2.newValue))
+        result = parent.calculateDiff(result, index, change1.oldValue, change2.newValue)
       }
 
       for ((path, change) <- changeset.leafChanges) {
         if (!skip.contains(change)) {
           if (change.isInstanceOf[NewValue]) {
             val newValue = change.asInstanceOf[NewValue]
-            result = result.withChanges(path.head, parent.calculateDiff(newValue.oldValue, newValue.newValue))
+            result = parent.calculateDiff(result, path.head, newValue.oldValue, newValue.newValue)
           } else {
             result = result.withChange(path, change)
           }

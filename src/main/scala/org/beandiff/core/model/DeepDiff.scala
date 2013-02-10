@@ -36,17 +36,23 @@ private[model] class DeepDiff(
 
   override def changes = propChanges.toList
 
-  override def without(prop: Property) = {
-    val newPropChanges = propChanges - prop
-    if (newPropChanges.isEmpty)
-      Diff(target)
-    else
-      new DeepDiff(target, propChanges - prop)
+  override def without(prop: Property) = { // TODO reduce model complexity -- now the property can be map's key but also targetProperty of a self-change
+    if (propChanges.contains(prop)) {
+      val newPropChanges = propChanges - prop
+      if (newPropChanges.isEmpty) Diff(target)
+      else new DeepDiff(target, newPropChanges)
+    } else if (propChanges.contains(Self)) {
+      val reducedSelf = propChanges(Self).without(prop)
+      if (!reducedSelf.hasDifference)
+        this.without(Self)
+      else
+        this.without(Self).withChanges(Self, reducedSelf)
+    } else this
   }
 
   override def without(path: Path, change: Change): Diff = {// TODO verify // TODO detect when it should become a FlatDiff
     if (path == EmptyPath)
-      new DeepDiff(target, propChanges + (Self -> propChanges(Self).without(EmptyPath, change)))
+      new DeepDiff(target, propChanges + (Self -> propChanges(Self).without(EmptyPath, change))) // FIXME
     else
       without(path.head).withChanges(path.head, propChanges(path.head).without(path.tail, change)) // TODO simplity/decompose
   }
@@ -136,7 +142,7 @@ private[model] class DeepDiff(
   
   override def transformTarget() = {
     propChanges.foreach({
-      case (prop, changeSet) => changeSet.transformTarget(target, prop)
+      case (prop, changeSet) => changeSet.transformTarget()
     })
   }
 
@@ -152,6 +158,4 @@ private[model] class DeepDiff(
   override def forTarget(newTarget: Any) = new DeepDiff(newTarget, propChanges)
   
   override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
-  
-  def transformTarget(target: Any, prop: Property) = transformTarget()
 }
