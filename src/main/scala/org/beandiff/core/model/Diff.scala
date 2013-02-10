@@ -29,6 +29,11 @@ object Diff {
     new FlatDiff(target, allChanges)
   }
   
+  def apply(target: Any, nestedChange: (Property, Diff), nestedChanges: (Property, Diff)*): Diff = {
+    val allChanges = nestedChanges :+ nestedChange
+    new DeepDiff(target, allChanges.toMap)
+  }
+  
   def apply(target: Any, nestedChanges: Map[Property, Diff]): Diff = {
     new DeepDiff(target, nestedChanges)
   }

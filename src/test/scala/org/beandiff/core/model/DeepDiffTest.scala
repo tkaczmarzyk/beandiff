@@ -45,8 +45,8 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   
   
   test("should add all property changes at the path") { // TODO test for withChanges(property, ...)
-    val parentDiff = new DeepDiff(parent, Map(new FieldProperty("name") -> mockDiff()))
-    val childDiff = new DeepDiff(child, Map(new FieldProperty("name") -> mockDiff()))
+    val parentDiff = new DeepDiff(parent, Map(Property("name") -> mockDiff()))
+    val childDiff = new DeepDiff(child, Map(Property("name") -> mockDiff()))
     
     val merged = parentDiff.withChanges(Path("child"), childDiff)
     merged should haveDifference("child.name")
@@ -75,14 +75,14 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   
   test("should remove a diff that becomes empty after removal of a last subdiff") {
     val grandChildNameDiff = Diff(child, new NewValue(Property("name"), "bb", "cc"))
-    val diff = Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> grandChildNameDiff))))
+    val diff = Diff(grandpa, Property("child") -> Diff(parent, Property("child") -> grandChildNameDiff))
     
     diff.without(Path("child.child")) should not (haveDifference)
   }
   
   test("should remove a diff that becomes empty after removal of a last change") {
     val grandChildNameDiff = Diff(child, new NewValue(Property("name"), "bb", "cc"))
-    val diff = Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> grandChildNameDiff))))
+    val diff = Diff(grandpa, Property("child") -> Diff(parent, Property("child") -> grandChildNameDiff))
     
     diff.without(Path("child.child.name")) should not (haveDifference)
   }
@@ -92,14 +92,14 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val added = Diff(child, new NewValue(Property("name"), "bb", "cc"))
     val modified = diff.withChanges(Path("child.child"), added)
     
-    modified should be === Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> added))))
+    modified should be === Diff(grandpa, Property("child") -> Diff(parent, Property("child") -> added))
   }
   
   test("should yield the nested diff") {
     val nestedChanges = mock(classOf[Diff])
     val diff = new DeepDiff(parent,
-        Map(new FieldProperty("child") -> new DeepDiff(child, 
-            Map(new FieldProperty("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
+        Map(Property("child") -> new DeepDiff(child, 
+            Map(Property("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
     
     diff.changes(Path("child.name")) should be === nestedChanges
   }
@@ -108,14 +108,14 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val newChange = mockChange()
     val diff = Diff(grandpa)
     
-    diff.withChange(Path("child.child"), newChange) should be === Diff(grandpa, Map(Property("child") -> Diff(parent, Map(Property("child") -> Diff(child, newChange)))))
+    diff.withChange(Path("child.child"), newChange) should be === Diff(grandpa, Property("child") -> Diff(parent, Property("child") -> Diff(child, newChange)))
   }
   
   test("should add change to the existing subdiff") {
     val oldChange, newChange = mockChange()
-    val diff = Diff(parent, Map(Property("child") -> Diff(child, oldChange)))
+    val diff = Diff(parent, Property("child") -> Diff(child, oldChange))
     
-    diff.withChange(Path("child"), newChange) should be === Diff(parent, Map(Property("child") -> Diff(child, newChange, oldChange)))
+    diff.withChange(Path("child"), newChange) should be === Diff(parent, Property("child") -> Diff(child, newChange, oldChange))
   }
   
   test("should merge the existing subdiff with a new one") {
@@ -125,18 +125,18 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val diff = Diff(parent, Map(Property("child") -> subdiff))
     val newSubdiff = Diff(child, change2)
     
-    diff.withChanges(Property("child"), newSubdiff) should be === Diff(parent, Map(Property("child") -> Diff(child, change2, change1)))
+    diff.withChanges(Property("child"), newSubdiff) should be === Diff(parent, Property("child") -> Diff(child, change2, change1))
   }
   
   test("should remove a subdiff at the path") {
     val change = mockChange()
-    val diff = Diff(parent, Map(Property("child") -> Diff(child, change), Property("name") -> mockDiff()))
+    val diff = Diff(parent, Property("child") -> Diff(child, change), Property("name") -> mockDiff())
     
-    diff.without(Path("name")) should be === Diff(parent, Map(Property("child") -> Diff(child, change)))
+    diff.without(Path("name")) should be === Diff(parent, Property("child") -> Diff(child, change))
   }
   
   test("should become an empty diff if removing the last change") {
-    val diff = Diff(parent, Map(Property("name") -> mockDiff()))
+    val diff = Diff(parent, Property("name") -> mockDiff())
     
     diff.without(Path("name")) should be === Diff(parent)
   }
@@ -150,13 +150,13 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   
   test("should remove the whole branch of subdiffs when the last leaf change is removed") {
     val change = mockChange()
-    val diff = Diff(obj, Map(Property("aaa") -> Diff(null, Map(Property("bbb") -> Diff(null, Map(Property("ccc") -> Diff(null, change)))))))
+    val diff = Diff(obj, Property("aaa") -> Diff(null, Property("bbb") -> Diff(null, Property("ccc") -> Diff(null, change))))
     
     diff.without(Path("aaa.bbb.ccc"), change) should be === Diff(obj)
   }
   
   test("should not add anything if the subdiff to be added is empty") {
-    val diff = Diff(parent, Map(Property("name") -> mockDiff()))
+    val diff = Diff(parent, Property("name") -> mockDiff())
     
     diff.withChanges(Path("child"), Diff(child)) should be === diff
   }
