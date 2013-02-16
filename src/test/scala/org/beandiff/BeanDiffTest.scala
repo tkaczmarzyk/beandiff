@@ -25,6 +25,7 @@ import java.util.HashSet
 import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
+import org.beandiff.core.model._
 import org.beandiff.BeanDiff.ignoreCase
 import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
@@ -167,10 +168,19 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     d should haveDifference("[0][0]")
   }
   
-  test("subsequent calls should return the same result") { // TODO similar test with a difference expected
+  test("subsequent calls should return the same result (difference)") {
     new SimpleBeans {
-      diff(a1a, a1b) should not (haveDifference)
-      diff(a1a, a1b) should not (haveDifference)
+      val engine = BeanDiff.diffEngine()
+      engine.calculateDiff(a1a, b1) should be === Diff(a1a, new NewValue(Property("name"), "a", "b"))
+      engine.calculateDiff(a1a, b1) should be === Diff(a1a, new NewValue(Property("name"), "a", "b"))
+    }
+  }
+  
+  test("subsequent calls should return the same result (no difference)") {
+    new SimpleBeans {
+      val engine = BeanDiff.diffEngine()
+      engine.calculateDiff(a1a, a1b) should not (haveDifference)
+      engine.calculateDiff(a1a, a1b) should not (haveDifference)
     }
   }
   
