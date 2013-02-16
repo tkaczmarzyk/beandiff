@@ -117,4 +117,44 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     //}}
 //    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
   }
+  
+  test("should replace an element of a list") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("A", "b", "c")
+    
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("A", "b", "c")
+  }
+  
+  test("should add multiple elements to a list") {
+    val l1 = JList("c", "d")
+    val l2 = JList("a", "b", "c", "d")
+    
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("a", "b", "c", "d")
+  }
+  
+  test("should correctly handle insert next to delete") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("a", "X", "d")
+    
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("a", "X", "d")
+  }
+  
+  test("should correctly perform delete head with insert last") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "c", "d", "e")
+
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("b", "c", "d", "e")
+  }
+  
+  test("should correctly perform insert as first with delete last") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("X", "a", "b", "c")
+
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("X", "a", "b", "c")
+  }
 }
