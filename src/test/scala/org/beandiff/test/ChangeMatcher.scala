@@ -29,6 +29,6 @@ class ChangeMatcher(
 
   def apply(left: Diff): MatchResult = {
     val filtered = left.leafChanges.filter(pathChange => pathChange._2 == change)
-    MatchResult(!filtered.isEmpty, "Diff doesn't have " + change, "Diff does have " + change)
+    MatchResult(!filtered.isEmpty, "Diff doesn't have " + change + ":\n" + left, "Diff does have " + change + ":\n" + left)
   }
 }
