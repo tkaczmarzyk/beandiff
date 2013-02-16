@@ -27,13 +27,13 @@ object ClassDictionary {
   type Entry[T] = (Class[_], T)
 }
 
-class ClassDictionary[T](final val defaultValue: T) {
+class ClassDictionary[T](
+    final val defaultValue: T,
+    private val content: Map[Class[_], T]) {
 
-  private var map: Map[Class[_], T] = Map()
 
-  def this(defaultValue: T, content: Map[Class[_], T]) = {
-    this(defaultValue)
-    this.map = content
+  def this(defaultValue: T) = {
+    this(defaultValue, Map[Class[_], T]())
   }
   
   def this(defaultValue: T, entries: Iterable[Entry[T]]) = {
@@ -45,24 +45,24 @@ class ClassDictionary[T](final val defaultValue: T) {
   }
   
   def withDefault(defaultValue: T): ClassDictionary[T] = {
-    new ClassDictionary[T](defaultValue, map)
+    new ClassDictionary[T](defaultValue, content)
   }
   
   def withEntry[U >: T](entry: Entry[U]) = {
-    new ClassDictionary(defaultValue, map + entry)
+    new ClassDictionary(defaultValue, content + entry)
   }
   
   def withEntries[U >: T](entries: Iterable[Entry[U]]) = {
-    new ClassDictionary(defaultValue, map ++ entries.toMap)
+    new ClassDictionary(defaultValue, content ++ entries.toMap)
   }
   
   def apply(c: Class[_]): T = {
-    if (map.contains(c))
-      map(c)
+    if (content.contains(c))
+      content(c)
     else { // TODO candidate for performance optimization
-      val supportedSuperTypes = c.allSuperTypes.filter(map.contains(_))
+      val supportedSuperTypes = c.allSuperTypes.filter(content.contains(_))
       if (!supportedSuperTypes.isEmpty)
-        map(supportedSuperTypes.head)
+        content(supportedSuperTypes.head)
       else
         defaultValue
     }
