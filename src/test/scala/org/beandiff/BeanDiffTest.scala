@@ -96,6 +96,37 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  // TODO
+  ignore("should compare elements of different type") {
+    val o1 = new SimpleJavaBean("name", 1)
+    val o2 = new ParentBean("name", 2)
+    
+    val d = diff(o1, o2)
+    d should haveDifference("@type")
+    d should haveDifference("child") // ParentBean's property
+    d should haveDifference("value") // SimpleJavaBean's property
+  }
+  
+  // TODO
+  ignore("should handle elements of different types in a list") {
+    val a = new ParentBean(new NamedBean("a"))
+    val o1 = JList(a, new NamedBean("c"))
+    val b = new NamedBean("b")
+    val o2 = JList(a, b, new NamedBean("c"))
+
+    diff(o1, o2) should haveChange(new Insertion(b, 1))
+    diff(o1, o2).leafChanges should have size 1
+  }
+  
+  test("should detect that just 1 element has been inserted") { // identity of value types = zero diff
+    val o1 = JList(new NamedBean("a"), new NamedBean("c"))
+    val b = new NamedBean("b")
+    val o2 = JList(new NamedBean("a"), b, new NamedBean("c"))
+
+    diff(o1, o2) should haveChange(new Insertion(b, 1))
+    diff(o1, o2).leafChanges should have size 1
+  }
+  
   test("should detect difference of simple types") {
     diff(1, 2) should haveDifference
     diff("aa", "bb") should haveDifference

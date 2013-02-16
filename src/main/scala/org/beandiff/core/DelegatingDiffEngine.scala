@@ -36,6 +36,7 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.translation.InsertionToAddition
 import org.beandiff.core.translation.DeletionToRemoval
 import org.beandiff.lcs.MemoizedLcsCalc
+import org.beandiff.equality.DiffEqualityInvestigator
 
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
@@ -44,7 +45,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
-        new LcsDiffEngine(this, new MemoizedLcsCalc(eqInvestigators.defaultValue))))
+        new LcsDiffEngine(this, new MemoizedLcsCalc(new DiffEqualityInvestigator(this)))))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
           Map(//classOf[NewValue] -> new IndexPropChangeTranslator,
