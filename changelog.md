@@ -1,3 +1,15 @@
+## 0.1.0 (2013-02-??)
+
+* improved, LCS-based, list comparison
+* ability to perform transformation of the diff target (diff=0 after the transformation)
+* refined diff engine and major improvements in the model
+* extended diff API
+* deprecation of `Diff.hasDifference(Path)`
+* removed Guava dependency
+* better cycle detection mechanism
+* extended `BeanDiff` facade API
+* multiple fixes & improvements
+
 ## 0.0.2 (2012-12-01)
 
 * better default support for `BigDecimal`
