@@ -33,6 +33,7 @@ import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
 import java.io.PrintStream
+import org.beandiff.core.DiffEngine
 
 /**
  * A container for syntactic sugar methods
@@ -59,9 +60,13 @@ object BeanDiff {
   }
 
   def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
+    diffEngine(modifiers: _*).calculateDiff(o1, o2)
+  }
+  
+  def diffEngine(modifiers: Any*): DiffEngine = {
     val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
 
-    new DelegatingDiffEngine(eqInvestigators, DefaultDescStrategy).calculateDiff(o1, o2)
+    new DelegatingDiffEngine(eqInvestigators, DefaultDescStrategy)
   }
   
   def print(diff: Diff): Unit = print(new PrintWriter(System.out), diff)
