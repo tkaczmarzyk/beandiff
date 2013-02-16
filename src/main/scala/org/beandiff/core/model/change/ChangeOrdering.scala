@@ -19,35 +19,17 @@
  */
 package org.beandiff.core.model.change
 
-import org.beandiff.core.model.Property
+object ChangeOrdering extends Ordering[Change] {
 
-
-case class NewValue(
-  val property: Property,
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
-
-  override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
-    property.setValue(target, newValue)
-  
-  override def targetProperty = property
-
-  def canEqual(other: Any) = {
-    other.isInstanceOf[NewValue]
-  }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: NewValue => that.canEqual(NewValue.this) && oldValue == that.oldValue && newValue == that.newValue
-      case _ => false
+  def compare(ch1: Change, ch2: Change): Int = {
+    (ch1, ch2) match {
+      case (Deletion(_, _), Insertion(_, _)) => -1
+      case (Insertion(_, _), Deletion(_, _)) => 1
+      case (Insertion(_, idx1), Insertion(_, idx2)) => idx1.compare(idx2)
+      case (Deletion(_, idx1), Deletion(_, idx2)) => - idx1.compareTo(idx2)
+      case (NewValue(_, _, _), _) => -1
+      case (_, NewValue(_, _, _)) => 1
+      case _ => 0
     }
   }
-  
-  override def hashCode() = {
-    val prime = 41
-    prime * (prime * (prime + oldValue.hashCode) + newValue.hashCode)
-  }
-  
-  override def toString = "NewValue[" + property + "|" + oldValue + "->" + newValue + "]"
-
 }

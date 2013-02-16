@@ -49,11 +49,11 @@ class LcsDiffEngine(
 
     val dels = deleted.foldLeft(Diff(o1))( // TODO two similar and quite complex expressions, refactor
         (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
-      case (elem, index) => acc.withChange(new Deletion(elem, index)) // TODO or: location.withIndex(index)
+      case (elem, index) => acc.withChange(new Deletion(elem, index))
     })
     val delsAndInserts = inserted.foldLeft(dels)( // TODO two similar and quite complex expressions, refactor
         (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
-      case (elem, index) => acc.withChange(new Insertion(elem, index)) // TODO or: location.withIndex(index)
+      case (elem, index) => acc.withChange(new Insertion(elem, index))
     })
     
     lcs.foldLeft(delsAndInserts)(

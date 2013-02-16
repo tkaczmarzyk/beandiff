@@ -22,6 +22,8 @@ package org.beandiff.core.model
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.NewValue
+import scala.collection.immutable.SortedSet
+import org.beandiff.core.model.change.ChangeOrdering
 
 private[model] class FlatDiff(
   val target: Any, // TODO decide whether it should be prese, 
@@ -130,7 +132,7 @@ private[model] class FlatDiff(
   override def forTarget(newTarget: Any) = new FlatDiff(newTarget, selfChanges)
   
   override def transformTarget() = {
-    for (change <- selfChanges) {
+    for (change <- selfChanges.sorted(ChangeOrdering)) {
       change.perform(target)
     }
   }

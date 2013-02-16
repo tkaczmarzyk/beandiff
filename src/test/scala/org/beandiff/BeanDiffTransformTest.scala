@@ -126,12 +126,20 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     l1 should be === JList("A", "b", "c")
   }
   
-  test("should add multiple elements to a list") {
+  test("should add sequence of elements to a list") {
     val l1 = JList("c", "d")
     val l2 = JList("a", "b", "c", "d")
     
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "b", "c", "d")
+  }
+  
+  test("should add multiple elements to a list") {
+    val l1 = JList("b", "d")
+    val l2 = JList("a", "b", "c", "d", "e")
+    
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("a", "b", "c", "d", "e")
   }
   
   test("should correctly handle insert next to delete") {
@@ -156,5 +164,21 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(l1, l2).transformTarget()
     l1 should be === JList("X", "a", "b", "c")
+  }
+  
+  test("should delete sequence of elements") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("a", "d")
+    val tmp = diff(l1, l2)
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("a", "d")
+  }
+  
+  test("should delete multiple elements") {
+    val l1 = JList("a", "b", "c", "d", "e")
+    val l2 = JList("a", "c", "e")
+    
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("a", "c", "e")
   }
 }
