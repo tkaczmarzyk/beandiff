@@ -24,7 +24,7 @@ import org.beandiff.core.model.Property
 
 trait RoutePlanner {
   
-  type Route = (Property, (Any, Any)) // FIXME generalize   
+  type Route = (Property, (Any, Any)) // TODO generalize   
 
   def guide(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit
   

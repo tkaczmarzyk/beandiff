@@ -27,7 +27,7 @@ case class NewValue(
   val oldValue: Any, 
   val newValue: Any) extends Change with Equals {
 
-  override def perform(target: Any): Unit = // FIXME target parameter is now not a real target :(
+  override def perform(target: Any): Unit =
     property.setValue(target, newValue)
   
   override def targetProperty = property

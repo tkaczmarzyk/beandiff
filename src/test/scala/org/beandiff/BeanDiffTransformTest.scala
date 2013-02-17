@@ -186,7 +186,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     l1 should be === JList("a", "c", "e")
   }
   
-  test("should detect that an has been modified even though its id is unchanged") {
+  test("should detect that an element has been modified even though its id is unchanged") {
     val a1 = new SimpleJavaBean("a", 1)
     val a2 = new SimpleJavaBean("a", 2)
     val b = new SimpleJavaBean("b", 0)

@@ -55,7 +55,7 @@ trait Diff {
   def changes: Traversable[(Property, Diff)] // TODO
   def changes(path: Path): Diff
   
-  def withChanges(property: Property, changes: Diff): Diff // FIXME inconsistency: merges flat diffs but overwrites a subdiff in a DeepDIff
+  def withChanges(property: Property, changes: Diff): Diff
   def withChanges(path: Path, changes: Diff): Diff
   
   def withChange(change: Change): Diff // TODO?

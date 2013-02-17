@@ -33,6 +33,7 @@ import org.beandiff.TestDefs._
 import org.scalatest.matchers.ShouldMatchers
 import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
 class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasDifference in assertions
@@ -41,7 +42,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   val child = new SimpleJavaBean("aa", 1)
   val parent = new ParentBean("parent", child)
   val grandpa = new ParentBean("grandpa", parent)
-  val simpleDiff = BeanDiff.diff(child, new SimpleJavaBean("bb", 1)) // FIXME do not rely on BeanDiff.diff
+  val simpleDiff = Diff(child, new NewValue(Property("name"), "aa", "bb"))
   
   
   test("should add all property changes at the path") { // TODO test for withChanges(property, ...)

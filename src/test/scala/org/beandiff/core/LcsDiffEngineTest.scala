@@ -61,6 +61,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
   private val engine = new LcsDiffEngine(mockDelegate, new NaiveLcsCalc(new StdEqualityInvestigator))
 
   private val abc = Arrays.asList("a", "b", "c")
+  private val xbc = Arrays.asList("x", "b", "c")
   private val bcd = Arrays.asList("b", "c", "d")
   private val bas = Arrays.asList("b", "a", "s")
 
@@ -84,8 +85,8 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     d should haveDifference("[0].value")
   }
 
-  test("should call dlegate on all elements in LCS") {
-    val diff = engine.calculateDiff(abc, bcd)
+  test("should call delegate on elements in LCS with unchanged index") {
+    val diff = engine.calculateDiff(abc, xbc)
 
     verify(mockDelegate).calculateDiff(anyDiff, of(Property("[1]")), of("b"), of("b"))
     verify(mockDelegate).calculateDiff(anyDiff, of(Property("[2]")), of("c"), of("c"))

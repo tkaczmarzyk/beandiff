@@ -22,4 +22,7 @@ package org.beandiff.lcs
 case class Occurence(
     value: Any,
     index1: Int,
-    index2: Int)
+    index2: Int) {
+  
+  def notMoved = index1 == index2
+}

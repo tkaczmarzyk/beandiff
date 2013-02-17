@@ -58,9 +58,12 @@ class LcsDiffEngine(
     
     lcs.foldLeft(delsAndInserts)(
         (accDiff, occurence) => {
-          val ver1 = xs.get(occurence.index1)
-          val ver2 = ys.get(occurence.index2)
-          delegate.calculateDiff(accDiff, new IndexProperty(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
+          if (occurence.notMoved) {
+            val ver1 = xs.get(occurence.index1)
+            val ver2 = ys.get(occurence.index2)
+            delegate.calculateDiff(accDiff, new IndexProperty(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
+          } else
+            accDiff // TODO (represent as move+diff?)
         }
     )
   }
