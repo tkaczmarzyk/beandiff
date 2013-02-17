@@ -52,7 +52,7 @@ object BeanDiff {
     .withEntry(classOf[JBigDecimal] -> new ComparableEqualityInvestigator)
   	.withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
   
-  val ignoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
+  final val IgnoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
 
     
   def diff(o1: Any, o2: Any): Diff = {

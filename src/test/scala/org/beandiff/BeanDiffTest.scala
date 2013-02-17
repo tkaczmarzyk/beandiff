@@ -26,7 +26,7 @@ import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
 import org.beandiff.core.model._
-import org.beandiff.BeanDiff.ignoreCase
+import org.beandiff.BeanDiff.IgnoreCase
 import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
@@ -267,7 +267,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("should ignore case if requested") {
     new SimpleBeans {
-      diff(a1a, A1, ignoreCase) should not (haveDifference)
+      diff(a1a, A1, IgnoreCase) should not (haveDifference)
     }
   }
   
