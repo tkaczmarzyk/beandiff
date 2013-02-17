@@ -35,6 +35,7 @@ import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Addition
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
@@ -197,7 +198,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("should detect difference in lists of different size") { // TODO should deletion be attached to collection or particular index?
     new Collections {
       val d = diff(jList1, new ArrayList)
-      val selfChanges = d.changes.filter(_._1 == Self).head._2.leafChanges // FIXME simplify
+      val selfChanges = d.changes(EmptyPath).leafChanges
       
       selfChanges should have size 3
       selfChanges should haveDeletionAt(0)
@@ -363,11 +364,11 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val writer = new StringWriter
 
       printDiff(new PrintWriter(writer), jSet1, jSet3)
-      writer.toString() should startWith(" -- added 'ccc'\n -- removed 'aaa'") // TODO [1] vs [2] --> insertion index after or before the deletion?
+      writer.toString() should startWith(" -- added 'ccc'\n -- removed 'aaa'")
     }
   }
   
-  ignore("should correctly present difference between sets (old)") { // FIXME the old way -- rethink & remove/refactor
+  ignore("should correctly present difference between sets (old)") { // TODO the old way -- rethink & remove/refactor
     new Collections {
       val tmp = diff(jSet1, jSet3)
       

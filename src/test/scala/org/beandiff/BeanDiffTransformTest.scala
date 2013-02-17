@@ -20,6 +20,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.test.ObjectTestSupport.convert
 import org.beandiff.TypeDefs._
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
@@ -58,7 +59,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(bean1, bean2).transformTarget()
     
-    val updatedVal = bean1.getChild().asInstanceOf[JSet].iterator().next().asInstanceOf[CollectionBean[JSet]].collection.iterator().next().asInstanceOf[SimpleJavaBean].getName() // FIXME nice way to get it
+    val updatedVal = bean1("child").firstElem("collection").firstElem.get("name")
     updatedVal should be ===  "Sknerus"
   }
 
@@ -114,12 +115,11 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     diff(set1, set2).transformTarget()
     
     // {{ // TODO temporary assertions
-    val set1elem = set1.iterator().next()
-    val set2elem = set2.iterator().next()
     set1 should have size 1
-    set1elem should be === set2elem
+    val set1elem = set1.iterator().next()
+    set1elem should be === JSet("a", "b", "c")
     //}}
-//    set1 should be === JSet(JSet("a", "b", "c")) // FIXME FIXME FIXME fails. ivestigate
+//    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
   }
   
   test("should replace an element of a list") {
