@@ -19,8 +19,16 @@
  */
 package org.beandiff.beans;
 
+import java.util.Comparator;
+
 public class SimpleJavaBean {
 
+	public static Comparator<SimpleJavaBean> orderByName = new Comparator<SimpleJavaBean>() {
+		public int compare(SimpleJavaBean o1, SimpleJavaBean o2) {
+			return o1.name.compareTo(o2.name);
+		}
+	};
+	
 	private String name;
 	
 	private int value;
@@ -43,4 +51,5 @@ public class SimpleJavaBean {
 	public String toString() {
 		return "Bean[" + name + ", " + value + "]";
 	}
+	
 }

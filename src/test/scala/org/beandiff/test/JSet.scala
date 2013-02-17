@@ -21,8 +21,16 @@ package org.beandiff.test
 
 import java.util.HashSet
 import java.util.Arrays
+import java.util.Comparator
+import java.util.TreeSet
 
 object JSet {
 
+  def apply[T](comp: Comparator[T], elems: T*) = {
+    val s = new TreeSet(comp)
+    s.addAll(Arrays.asList(elems:_*))
+    s
+  }
+  
   def apply[T](elems: T*) = new HashSet(Arrays.asList(elems:_*))
 }

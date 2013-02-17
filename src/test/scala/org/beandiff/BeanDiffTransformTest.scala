@@ -27,6 +27,7 @@ import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Path
 import org.beandiff.test.JList
 import org.beandiff.test.JSet
+import org.beandiff.beans.SimpleJavaBean._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -40,7 +41,7 @@ import org.beandiff.lcs.NaiveLcsCalc
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
-  private trait CollectionBeans {
+  private trait Beans {
     val a1 = new SimpleJavaBean("a", 1)
     val a2 = new SimpleJavaBean("a", 2)
     val b1 = new SimpleJavaBean("b", 1)
@@ -138,7 +139,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   }
 
   test("should update property of an element of the list") {
-    new CollectionBeans {
+    new Beans {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(a2, b1, c1)
       
@@ -149,8 +150,20 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     }
   }
   
+  test("should update property of an element of the set") {
+    new Beans {
+      val l1 = JSet(orderByName, a1, b1, c1)
+      val l2 = JSet(orderByName, a2, b1, c1)
+      
+      diff(l1, l2).transformTarget()
+      l1 should be === JSet(orderByName, a1, b1, c1)
+      a1.getName() should be === "a"
+      a1.getValue() should be === 2
+    }
+  }
+  
   test("should update property of the modified element even though other one is to be inserted ahead of it") {
-    new CollectionBeans {
+    new Beans {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(x1, a2, b1, c1)
       
@@ -223,7 +236,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   }
 
   test("should detect that an element has been modified even though its id is unchanged") {
-    new CollectionBeans {
+    new Beans {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(a2, b1, c1)
 
