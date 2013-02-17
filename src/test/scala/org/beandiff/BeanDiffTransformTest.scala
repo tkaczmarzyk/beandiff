@@ -31,6 +31,10 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.CollectionBean
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.core.LcsDiffEngine
+import org.beandiff.core.DiffEngineCoordinator
+import org.beandiff.lcs.NaiveLcsCalc
 
 
 @RunWith(classOf[JUnitRunner])
@@ -115,7 +119,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     set1 should have size 1
     set1elem should be === set2elem
     //}}
-//    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
+//    set1 should be === JSet(JSet("a", "b", "c")) // FIXME FIXME FIXME fails. ivestigate
   }
   
   test("should replace an element of a list") {
@@ -169,7 +173,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   test("should delete sequence of elements") {
     val l1 = JList("a", "b", "c", "d")
     val l2 = JList("a", "d")
-    val tmp = diff(l1, l2)
+    
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "d")
   }
@@ -180,5 +184,29 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "c", "e")
+  }
+  
+  test("should detect that an has been modified even though its id is unchanged") {
+    val a1 = new SimpleJavaBean("a", 1)
+    val a2 = new SimpleJavaBean("a", 2)
+    val b = new SimpleJavaBean("b", 0)
+    val c = new SimpleJavaBean("c", 0)
+
+    val l1 = JList(a1, b, c)
+    val l2 = JList(a2, b, c)
+
+    val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+      new NaiveLcsCalc(new EqualityInvestigator() {
+        def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
+      })) // TODO simplify creation
+
+    engine.calculateDiff(l1, l2).transformTarget()
+    
+    l1 should have size 3
+    l1.get(1) should be === b
+    l1.get(2) should be === c
+    val modA1 = l1.get(0).asInstanceOf[SimpleJavaBean]
+    modA1.getName() should be === "a"
+    modA1.getValue() should be === 2
   }
 }

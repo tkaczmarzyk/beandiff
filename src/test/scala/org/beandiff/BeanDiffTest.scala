@@ -19,32 +19,35 @@
  */
 package org.beandiff
 
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
-import org.beandiff.test.BeanDiffMatchers._
+
+import org.beandiff.BeanDiff.IgnoreCase
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
-import org.beandiff.core.model._
-import org.beandiff.BeanDiff.IgnoreCase
 import org.beandiff.beans.CollectionBean
+import org.beandiff.beans.NamedBean
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
-import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.IndexProperty
-import org.beandiff.core.model.change._
+import org.beandiff.core.model.change.Addition
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Removal
+import org.beandiff.test.BeanDiffMatchers.haveChange
+import org.beandiff.test.BeanDiffMatchers.haveDeletionAt
+import org.beandiff.test.BeanDiffMatchers.haveDifference
+import org.beandiff.test.JList
+import org.beandiff.test.JSet
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import java.io.StringWriter
-import org.beandiff.test.TestConversions._
-import java.io.PrintWriter
-import org.beandiff.test.JSet
-import org.beandiff.test.JList
-import org.beandiff.beans.NamedBean
 
 
 @RunWith(classOf[JUnitRunner])
