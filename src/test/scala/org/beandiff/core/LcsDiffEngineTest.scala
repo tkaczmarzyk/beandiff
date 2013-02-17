@@ -85,8 +85,8 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     d should haveDifference("[0].value")
   }
 
-  test("should call delegate on elements in LCS with unchanged index") {
-    val diff = engine.calculateDiff(abc, xbc)
+  test("should call delegate on elements in LCS") {
+    val diff = engine.calculateDiff(abc, bcd)
 
     verify(mockDelegate).calculateDiff(anyDiff, of(Property("[1]")), of("b"), of("b"))
     verify(mockDelegate).calculateDiff(anyDiff, of(Property("[2]")), of("c"), of("c"))

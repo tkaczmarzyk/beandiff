@@ -33,7 +33,6 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.IndexProperty
 
-
 class LcsDiffEngine(
   private val delegate: DiffEngineCoordinator,
   private val lcsCalc: LcsCalc) extends DiffEngine {
@@ -48,23 +47,20 @@ class LcsDiffEngine(
     val inserted = ys.dropIndices(lcs.map(_.index2))
 
     val dels = deleted.foldLeft(Diff(o1))( // TODO two similar and quite complex expressions, refactor
-        (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
-      case (elem, index) => acc.withChange(new Deletion(elem, index))
-    })
+      (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
+        case (elem, index) => acc.withChange(new Deletion(elem, index))
+      })
     val delsAndInserts = inserted.foldLeft(dels)( // TODO two similar and quite complex expressions, refactor
-        (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
-      case (elem, index) => acc.withChange(new Insertion(elem, index))
-    })
-    
+      (acc: Diff, elemWithIndex: (Any, Int)) => elemWithIndex match {
+        case (elem, index) => acc.withChange(new Insertion(elem, index))
+      })
+
     lcs.foldLeft(delsAndInserts)(
-        (accDiff, occurence) => {
-          if (occurence.notMoved) {
-            val ver1 = xs.get(occurence.index1)
-            val ver2 = ys.get(occurence.index2)
-            delegate.calculateDiff(accDiff, new IndexProperty(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
-          } else
-            accDiff // TODO (represent as move+diff?)
-        }
+      (accDiff, occurence) => {
+        val ver1 = xs.get(occurence.index1)
+        val ver2 = ys.get(occurence.index2)
+        delegate.calculateDiff(accDiff, new IndexProperty(occurence.index1), ver1, ver2) // FIXME redundant when idInvestigator is full-diff-based?
+      }
     )
   }
 }

@@ -37,9 +37,16 @@ import org.beandiff.core.LcsDiffEngine
 import org.beandiff.core.DiffEngineCoordinator
 import org.beandiff.lcs.NaiveLcsCalc
 
-
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
+
+  private trait CollectionBeans {
+    val a1 = new SimpleJavaBean("a", 1)
+    val a2 = new SimpleJavaBean("a", 2)
+    val b1 = new SimpleJavaBean("b", 1)
+    val c1 = new SimpleJavaBean("c", 1)
+    val x1 = new SimpleJavaBean("x", 1)
+  }
 
   test("should update a simple property") {
     val bean1 = new SimpleJavaBean("bean", 1)
@@ -49,7 +56,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     bean1.getValue() should be === 2
   }
-  
+
   test("should update when 2 sets are on the path") {
     val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
     val bean1 = new ParentBean("bean", JSet(col1))
@@ -58,9 +65,9 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     val bean2 = new ParentBean("bean", JSet(col2))
 
     diff(bean1, bean2).transformTarget()
-    
+
     val updatedVal = bean1("child").firstElem("collection").firstElem.get("name")
-    updatedVal should be ===  "Sknerus"
+    updatedVal should be === "Sknerus"
   }
 
   test("should update a property of a nested bean") {
@@ -107,53 +114,83 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     set1 should be === JSet("a", "c")
   }
-  
+
   test("should add element to a set within a set") { // "A feint within a feint within a feint..."
     val set1 = JSet(JSet("a", "b"))
     val set2 = JSet(JSet("a", "b", "c"))
-    
+
     diff(set1, set2).transformTarget()
-    
+
     // {{ // TODO temporary assertions
     set1 should have size 1
     val set1elem = set1.iterator().next()
     set1elem should be === JSet("a", "b", "c")
     //}}
-//    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
+    //    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
   }
-  
+
   test("should replace an element of a list") {
     val l1 = JList("a", "b", "c")
     val l2 = JList("A", "b", "c")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("A", "b", "c")
   }
+
+  test("should update property of an element of the list") {
+    new CollectionBeans {
+      val l1 = JList(a1, b1, c1)
+      val l2 = JList(a2, b1, c1)
+      
+      diff(l1, l2).transformTarget()
+      l1 should be === JList(a1, b1, c1)
+      a1.getName() should be === "a"
+      a1.getValue() should be === 2
+    }
+  }
   
+  test("should update property of the modified element even though other one is to be inserted ahead of it") {
+    new CollectionBeans {
+      val l1 = JList(a1, b1, c1)
+      val l2 = JList(x1, a2, b1, c1)
+      
+      val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+        new NaiveLcsCalc(new EqualityInvestigator() {
+          def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
+        })) // TODO simplify creation
+
+      val tmp = engine.calculateDiff(l1, l2)
+      engine.calculateDiff(l1, l2).transformTarget()
+      l1 should be === JList(x1, a1, b1, c1)
+      a1.getName() should be === "a"
+      a1.getValue() should be === 2
+    }
+  }
+
   test("should add sequence of elements to a list") {
     val l1 = JList("c", "d")
     val l2 = JList("a", "b", "c", "d")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "b", "c", "d")
   }
-  
+
   test("should add multiple elements to a list") {
     val l1 = JList("b", "d")
     val l2 = JList("a", "b", "c", "d", "e")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "b", "c", "d", "e")
   }
-  
+
   test("should correctly handle insert next to delete") {
     val l1 = JList("a", "b", "c", "d")
     val l2 = JList("a", "X", "d")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "X", "d")
   }
-  
+
   test("should correctly perform delete head with insert last") {
     val l1 = JList("a", "b", "c", "d")
     val l2 = JList("b", "c", "d", "e")
@@ -161,7 +198,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     diff(l1, l2).transformTarget()
     l1 should be === JList("b", "c", "d", "e")
   }
-  
+
   test("should correctly perform insert as first with delete last") {
     val l1 = JList("a", "b", "c", "d")
     val l2 = JList("X", "a", "b", "c")
@@ -169,44 +206,38 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     diff(l1, l2).transformTarget()
     l1 should be === JList("X", "a", "b", "c")
   }
-  
+
   test("should delete sequence of elements") {
     val l1 = JList("a", "b", "c", "d")
     val l2 = JList("a", "d")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "d")
   }
-  
+
   test("should delete multiple elements") {
     val l1 = JList("a", "b", "c", "d", "e")
     val l2 = JList("a", "c", "e")
-    
+
     diff(l1, l2).transformTarget()
     l1 should be === JList("a", "c", "e")
   }
-  
+
   test("should detect that an element has been modified even though its id is unchanged") {
-    val a1 = new SimpleJavaBean("a", 1)
-    val a2 = new SimpleJavaBean("a", 2)
-    val b = new SimpleJavaBean("b", 0)
-    val c = new SimpleJavaBean("c", 0)
+    new CollectionBeans {
+      val l1 = JList(a1, b1, c1)
+      val l2 = JList(a2, b1, c1)
 
-    val l1 = JList(a1, b, c)
-    val l2 = JList(a2, b, c)
+      val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+        new NaiveLcsCalc(new EqualityInvestigator() {
+          def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
+        })) // TODO simplify creation
 
-    val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-      new NaiveLcsCalc(new EqualityInvestigator() {
-        def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
-      })) // TODO simplify creation
+      engine.calculateDiff(l1, l2).transformTarget()
 
-    engine.calculateDiff(l1, l2).transformTarget()
-    
-    l1 should have size 3
-    l1.get(1) should be === b
-    l1.get(2) should be === c
-    val modA1 = l1.get(0).asInstanceOf[SimpleJavaBean]
-    modA1.getName() should be === "a"
-    modA1.getValue() should be === 2
+      l1 should be === JList(a1, b1, c1)
+      a1.getName() should be === "a"
+      a1.getValue() should be === 2
+    }
   }
 }
