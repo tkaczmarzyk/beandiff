@@ -110,10 +110,10 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     newDiff.leafChanges should be === diff.leafChanges
   }
   
-  test("should yield itself when removing from empty path")	{
+  test("should yield itself when taking from empty path")	{
     val diff = new FlatDiff(target, mockChange())
     
-    diff.changes(EmptyPath) should be === diff
+    diff.changes(EmptyPath).get should be === diff
   }
   
   test("should indicate difference if has a change with the target property") {

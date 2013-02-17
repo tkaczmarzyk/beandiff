@@ -73,11 +73,13 @@ private[model] class DeepDiff(
       }
   }
 
-  override def changes(path: Path): Diff = {
-    if (path.depth <= 1)
-      propChanges(path.head)
-    else
-      propChanges(path.head).changes(path.tail)
+  override def changes(path: Path): Option[Diff] = {
+    propChanges.get(path.head) match {
+      case Some(subDiff) =>
+        if (path.depth <= 1) Some(subDiff)
+	    else subDiff.changes(path.tail)
+      case None => None
+    }
   }
   
   override def without(path: Path): Diff = {

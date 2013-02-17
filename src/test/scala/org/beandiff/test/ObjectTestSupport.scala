@@ -20,6 +20,7 @@
 package org.beandiff.test
 
 import org.beandiff.core.model.Path
+import org.beandiff.core.model.Path.EmptyPath
 import java.util.Collection
 
 object ObjectTestSupport {
@@ -28,9 +29,15 @@ object ObjectTestSupport {
 
 class ObjectTestSupport[T](val target: T) {
 
-  def apply(pathStr: String) = new ObjectTestSupport(Path(pathStr).value(target))
+  def apply(): T = get(EmptyPath).asInstanceOf[T]
   
-  def get(pathStr: String) = apply(pathStr).target
+  def apply[V](pathStr: String): ObjectTestSupport[V] = apply(Path(pathStr))
+  
+  def apply[V](path: Path): ObjectTestSupport[V] = new ObjectTestSupport(path.value(target).asInstanceOf[V])
+  
+  def get(pathStr: String): T = get(Path(pathStr))
+  
+  def get(path: Path): T = apply(path).target
   
   def firstElem = new ObjectTestSupport(target.asInstanceOf[Collection[_]].iterator().next())
 }

@@ -51,11 +51,11 @@ private[model] class FlatDiff(
       (pathToFind.depth == 1) && selfChanges.exists(_.targetProperty == pathToFind.head)
   }
 
-  override def changes(path: Path): Diff = { // TODO is it really needed ? (should be ever called?)
+  override def changes(path: Path): Option[Diff] = {
     if (path != EmptyPath)
-      throw new IllegalArgumentException
+      None
     else
-      this
+      Some(this)
   }
 
   override def withChanges(path: Path, changes: Diff): Diff = {

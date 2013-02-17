@@ -46,8 +46,7 @@ class LcsResultOptimizer(
     if (!diff.hasDifference)
       diff
     else {
-      val subdiff = diff.changes(EmptyPath) // TODO no longer required as location is always EMptyPath?
-      val optimized = optimize(subdiff.target, subdiff)
+      val optimized = optimize(diff.target, diff)
       if (optimized.leafChanges.isEmpty) // TODO duplicated somewhere else? move to withChanges method
         Diff(diff.target)
       else

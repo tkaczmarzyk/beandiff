@@ -198,7 +198,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("should detect difference in lists of different size") { // TODO should deletion be attached to collection or particular index?
     new Collections {
       val d = diff(jList1, new ArrayList)
-      val selfChanges = d.changes(EmptyPath).leafChanges
+      val selfChanges = d.changes(EmptyPath).get.leafChanges
       
       selfChanges should have size 3
       selfChanges should haveDeletionAt(0)

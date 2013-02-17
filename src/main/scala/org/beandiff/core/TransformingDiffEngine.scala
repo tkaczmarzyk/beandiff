@@ -31,7 +31,6 @@ import org.beandiff.core.model.Self
 import org.beandiff.core.model.FlatDiff
 import org.beandiff.core.model.FieldProperty
 
-
 class TransformingDiffEngine(
   private val delegate: DiffEngineCoordinator,
   private val transformer: ObjectTransformer,
@@ -43,26 +42,27 @@ class TransformingDiffEngine(
 
     val diff = delegate.calculateDiff(Diff(o1), Self, t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
 
-    val result = diff.changes.foldLeft(Diff(o1))( // TODO tests
-      (diff, propChanges) => {
-        val transformedChangeset = transform(propChanges._2)
-        diff.withChanges(propChanges._1, transformedChangeset)
-      })
+    val result = translateSelfChanges(diff)
 
     result.forTarget(o1)
   }
 
-  private def transform(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
-    val leafChanges = original.leafChanges
+  private def translateSelfChanges(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
+    val selfChanges = original.changes(EmptyPath)
 
-    leafChanges.foldLeft(original)( // FIXME seems that it can translate all leaf changes, but shouldn't (e.g. when target is Set(List()) then changes for the List chould not be translated)
-      (acc: Diff, pathChange: (Path, Change)) => {
-        val path = pathChange._1
-        val change = pathChange._2
-        translators.get(change.getClass) match {
-          case Some(t) => acc.without(path, change).withChange(t.translate(change))
-          case None => acc
-        }
-      }) 
+    selfChanges match {
+      case None => original
+      case Some(changes) =>
+        changes.leafChanges.foldLeft(original)(
+          (acc, pathChange) => {
+            val path = pathChange._1
+            val change = pathChange._2
+            translators.get(change.getClass) match {
+              case Some(t) => acc.without(path, change).withChange(path, t.translate(change))
+              case None => acc
+            }
+          }
+        )
+    }
   }
 }

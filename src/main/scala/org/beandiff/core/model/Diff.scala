@@ -53,7 +53,7 @@ trait Diff {
   
   def leafChanges: Traversable[(Path, Change)]
   def changes: Traversable[(Property, Diff)] // TODO
-  def changes(path: Path): Diff
+  def changes(path: Path): Option[Diff]
   
   def withChanges(property: Property, changes: Diff): Diff
   def withChanges(path: Path, changes: Diff): Diff

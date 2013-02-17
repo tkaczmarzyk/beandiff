@@ -25,10 +25,26 @@ import org.mockito.{Matchers => MockitoMatchers}
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.Property
+import scala.collection.immutable.HashMap
+import org.mockito.stubbing.Answer
+import org.mockito.invocation.InvocationOnMock
 
 
 object TestDefs {
 
+  implicit def fun0ToAnswer[R](fun: Function1[InvocationOnMock, R]) = {
+    new Answer[R] {
+      override def answer(invocation: InvocationOnMock) = fun.apply(invocation)
+    }
+  }
+  
+  implicit def fun1ToAnswer[R](fun: Function0[R]) = {
+    new Answer[R] {
+      override def answer(invocation: InvocationOnMock) = fun.apply()
+    }
+  }
+  
   def mockChange() = {
     mock(classOf[Change])
   }
@@ -44,7 +60,18 @@ object TestDefs {
     diff
   }
   
+  def mockMap[K, V](value: V) = {
+    new HashMap[K, V] {
+      override def apply(key: K) = value
+      override def get(key: K) = Some(value)
+    }
+  }
+  
   def anyDiff = any(classOf[Diff])
+  
+  def anyChange = any(classOf[Change])
+  
+  def anyProp = any(classOf[Property])
   
   def of[T](o: T) = MockitoMatchers.eq(o)
 }

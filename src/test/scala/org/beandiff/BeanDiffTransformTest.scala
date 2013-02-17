@@ -159,7 +159,6 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
           def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
         })) // TODO simplify creation
 
-      val tmp = engine.calculateDiff(l1, l2)
       engine.calculateDiff(l1, l2).transformTarget()
       l1 should be === JList(x1, a1, b1, c1)
       a1.getName() should be === "a"
@@ -239,5 +238,17 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       a1.getName() should be === "a"
       a1.getValue() should be === 2
     }
+  }
+  
+  test("should correctly transform list within a set") {
+    val s1 = JSet(JList("a", "b", "c"))
+    val s2 = JSet(JList("a", "x", "b"))
+    
+    diff(s1, s2).transformTarget()
+    
+    //s1 should be === JSet(JList("a", "x", "b")) FIXME: fails, investigate
+    s1 should have size 1
+    s1.getClass() should be === JSet().getClass()
+    s1.firstElem() should be === JList("a", "x", "b")
   }
 }

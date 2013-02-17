@@ -102,7 +102,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
         Map(Property("child") -> new DeepDiff(child, 
             Map(Property("name") -> nestedChanges)))) // TODO simplify the creation (builder?)
     
-    diff.changes(Path("child.name")) should be === nestedChanges
+    diff.changes(Path("child.name")).get should be === nestedChanges
   }
   
   test("should add change at the path and create all intermediate diff object") {
@@ -160,5 +160,11 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val diff = Diff(parent, Property("name") -> mockDiff())
     
     diff.withChanges(Path("child"), Diff(child)) should be === diff
+  }
+  
+  test("should return empty collection if no changes at the path") {
+    val d = Diff(obj, Property("testProp") -> mockDiff())
+    
+    d.changes(EmptyPath) should be ('empty)
   }
 }
