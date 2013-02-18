@@ -76,7 +76,7 @@ private[model] class FlatDiff(
   
   override def without(path: Path) = {
     if (path == EmptyPath)
-      new FlatDiff(target)
+      new FlatDiff(target) // TODO some kind of inconsistency with DeepDiff (or...?)
     else if (path.depth == 1)
       without(path.head)
     else

@@ -167,4 +167,16 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     
     d.changes(EmptyPath) should be ('empty)
   }
+  
+  test("should yield itself if doesnt have a self-change to be removed") {
+    val d = Diff(obj, Property("testProp") -> mockDiff())
+    
+    d.without(EmptyPath, mockChange()) should be === d
+  }
+  
+  test("should yield itself if doesnt have a change to be removed") {
+    val d = Diff(obj, Property("testProp") -> mockDiff())
+    
+    d.without(Path("unexisting"), mockChange()) should be === d
+  }
 }

@@ -51,10 +51,14 @@ private[model] class DeepDiff(
   }
 
   override def without(path: Path, change: Change): Diff = {// TODO verify // TODO detect when it should become a FlatDiff
-    if (path == EmptyPath)
-      new DeepDiff(target, propChanges + (Self -> propChanges(Self).without(EmptyPath, change))) // FIXME
-    else
-      without(path.head).withChanges(path.head, propChanges(path.head).without(path.tail, change)) // TODO simplity/decompose
+    propChanges.get(path.head) match {
+      case None => this
+      case Some(subDiff) =>
+        if (path == EmptyPath)
+          new DeepDiff(target, propChanges + (Self -> subDiff.without(EmptyPath, change)))
+        else
+          without(path.head).withChanges(path.head, subDiff.without(path.tail, change))
+    }
   }
   
   def hasDifference(): Boolean =
