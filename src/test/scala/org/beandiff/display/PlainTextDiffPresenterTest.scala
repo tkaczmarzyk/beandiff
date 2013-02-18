@@ -31,6 +31,10 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.core.model.Self
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -40,18 +44,20 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   val bean1 = new ValueBean[IdBean]("Aaa", new IdBean(17))
   val bean2 = new ValueBean[IdBean]("Bbb", new IdBean(8))
   
-  val valueDiff = Diff(null, Map[Property, Diff](// TODO variance in properties not to require explicit type parameters
-      new FieldProperty("id") -> Diff(bean1, new NewValue(null, /*new FieldProperty("id"), */17, 8))))
-  
-  val valuesDiff = Diff(bean1.values, Map[Property, Diff](
-      new IndexProperty(0) -> valueDiff))
-  
-  val diff1 = Diff(bean1, Map[Property, Diff]( // TODO reduce verbosity and dependency to other functionality
-      new FieldProperty("name") -> Diff(bean1, new NewValue(null,/* new FieldProperty("name"), */"Aaa", "Bbb")),
-      new FieldProperty("values") -> valuesDiff))
+  val valueDiff = Diff(bean1.values.get(0), new NewValue(Property("id"), 17, 8))
+  val valuesDiff = Diff(bean1.values, new IndexProperty(0) -> valueDiff)
+  val diff1 = Diff(bean1, 
+      Self -> Diff(bean1, new NewValue(Property("name"), "Aaa", "Bbb")), Property("values") -> valuesDiff)
   
   
   test("should display simple properties") {
-    presenter.present(diff1) should be === "name -- 'Aaa' vs 'Bbb'\n" + "values[0].id -- '17' vs '8'\n"
+    presenter.present(diff1) should be === "values[0].id -- '17' vs '8'\n" + "name -- 'Aaa' vs 'Bbb'\n"
+  }
+  
+  test("should present operations on list") {
+    val diff = Diff(null, Self -> Diff(null, new Insertion("a", 0)),
+        Property("[0]") -> Diff(null, new NewValue(Property("name"), "aa", "bb")))
+        
+    presenter.present(diff) should be === "[0].name -- 'aa' vs 'bb'\n" + ". -- inserted 'a' at [0]\n"
   }
 }

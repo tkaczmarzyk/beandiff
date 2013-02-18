@@ -364,7 +364,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       val writer = new StringWriter
 
       printDiff(new PrintWriter(writer), jSet1, jSet3)
-      writer.toString() should startWith(" -- added 'ccc'\n -- removed 'aaa'")
+      writer.toString() should startWith(". -- added 'ccc'\n. -- removed 'aaa'")
     }
   }
   

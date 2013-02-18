@@ -38,28 +38,38 @@ class PlainTextDiffPresenter(
       val result = new StringBuilder
 
       for ((path, change) <- d.leafChanges) { // TODO temporary amendments to the new model
+        val pathStr = if (path == EmptyPath) "." else path.toString()
+        
         change match { // TODO better hierarchy for changes // TODO use sealed classes?
           case Deletion(x, index) => {
             result.append(path.withIndex(index)).append(pathValueSeparator).append("deleted")
           }
           
           case Insertion(x, index) => {
-            result.append(path.withIndex(index)).append(pathValueSeparator)
+            result.append(pathStr).append(pathValueSeparator)
             result.append("inserted ").append(valueQuote).append(x).append(valueQuote)
+            result.append(" at [").append(index).append("]")
           }
           
           case Addition(x) => {
-            result.append(path).append(pathValueSeparator);
+            result.append(pathStr).append(pathValueSeparator);
             result.append("added ").append(valueQuote).append(x).append(valueQuote)
           }
           
           case Removal(x) => {
-            result.append(path).append(pathValueSeparator);
+            result.append(pathStr).append(pathValueSeparator);
             result.append("removed ").append(valueQuote).append(x).append(valueQuote)
           }
           
+          case NewValue(prop, oldVal, newVal) => {
+            result.append(path.step(prop)).append(pathValueSeparator)
+	        result.append(valueQuote).append(change.oldValue).append(valueQuote)
+	        result.append(valuesSeparator)
+	        result.append(valueQuote).append(change.newValue).append(valueQuote)
+          }
+          
           case x => {
-            result.append(path).append(pathValueSeparator)
+            result.append(pathStr).append(pathValueSeparator)
 	        result.append(valueQuote).append(change.oldValue).append(valueQuote)
 	        result.append(valuesSeparator)
 	        result.append(valueQuote).append(change.newValue).append(valueQuote)
