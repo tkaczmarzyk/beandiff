@@ -73,7 +73,10 @@ private[model] class DeepDiff(
     else
       propChanges.get(pathToFind.head) match {
         case Some(changeset) => changeset.hasDifference(pathToFind.tail)
-        case None => false
+        case None => propChanges.get(Self) match {
+          case None => false
+          case Some(diff) => diff.hasDifference(pathToFind)
+        }
       }
   }
 

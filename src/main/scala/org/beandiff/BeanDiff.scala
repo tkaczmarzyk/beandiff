@@ -69,6 +69,8 @@ object BeanDiff {
     new DelegatingDiffEngine(eqInvestigators, DefaultDescStrategy)
   }
   
+  def mkString(diff: Diff) = DefaultPresenter.present(diff)
+  
   def print(diff: Diff): Unit = print(new PrintWriter(System.out), diff)
   
   def print(out: PrintWriter, diff: Diff): Unit = {

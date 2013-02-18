@@ -36,6 +36,7 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.TestDefs._
 import org.scalatest.FunSuite
 import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
 
 
 @RunWith(classOf[JUnitRunner])

@@ -24,7 +24,6 @@ import java.io.StringWriter
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
-
 import org.beandiff.BeanDiff.IgnoreCase
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
@@ -49,6 +48,7 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.Node
 
 
 @RunWith(classOf[JUnitRunner])
@@ -391,5 +391,24 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("an instertion to the list should be detected as a single difference") {
     val d = diff(Arrays.asList("default"), Arrays.asList("backgammon", "default"));
     d.changes should have size 1
+  }
+  
+  test("example from site should work as described") {
+    val a = new Node("a");
+    val b = new Node("b");
+    val c = new Node("c");
+    val x = new Node("x");
+
+    val parent1 = new Node("parent1", a, b, c);
+    val parent2 = new Node("parent2", a, x, c);
+
+    val diff = BeanDiff.diff(parent1, parent2);
+    
+    diff should haveDifference
+    diff should haveDifference("name")
+    diff should not (haveDifference("children[0]"))
+    diff should haveDifference("children[1].name")
+    
+    BeanDiff.mkString(diff) should be === "name -- 'parent1' vs 'parent2'\n" + "children[1].name -- 'b' vs 'x'\n"
   }
 }

@@ -179,4 +179,10 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     
     d.without(Path("unexisting"), mockChange()) should be === d
   }
+  
+  test("should indicate difference if has a change with the target property") {
+    val diff = new DeepDiff(parent, Map(Self -> new FlatDiff(parent, new NewValue(Property("name"), "parent", "newName"))))
+    
+    diff should haveDifference(Path("name"))
+  }
 }
