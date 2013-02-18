@@ -19,14 +19,18 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.core.model.Path.EmptyPath
+
 object DescendingHistory {
-  def apply(): DescendingHistory = new DescendingHistoryImpl()
+  def apply(): DescendingHistory = new DescendingHistoryImpl(EmptyPath)
 }
 
 trait DescendingHistory {
 
-  def step(elem: Any): DescendingHistory
+  def step(prop: Property, elem: Any): DescendingHistory
   def stepBack: DescendingHistory
   
   def hasSeen(elem: Any): Boolean
+  
+  def currentPath: Path
 }

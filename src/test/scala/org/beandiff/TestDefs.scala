@@ -73,5 +73,7 @@ object TestDefs {
   
   def anyProp = any(classOf[Property])
   
+  def anyPath = any(classOf[Path])
+  
   def of[T](o: T) = MockitoMatchers.eq(o)
 }

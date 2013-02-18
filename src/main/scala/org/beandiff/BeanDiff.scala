@@ -48,7 +48,7 @@ object BeanDiff {
   
   final val DefaultPresenter = new PlainTextDiffPresenter
   
-  final val DefaultEqInvestigators = new ClassDictionary(new StdEqualityInvestigator)
+  final val DefaultEqInvestigators: ClassDictionary[EqualityInvestigator] = new ClassDictionary(new StdEqualityInvestigator)
     .withEntry(classOf[JBigDecimal] -> new ComparableEqualityInvestigator)
   	.withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
   

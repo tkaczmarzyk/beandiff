@@ -21,12 +21,13 @@ package org.beandiff.core.model
 
 
 private class DescendingHistoryImpl(
+    override val currentPath: Path,
     private val historyReversed: List[Any] = List()) extends DescendingHistory {
 
   
-  override def step(elem: Any) = new DescendingHistoryImpl(elem :: historyReversed)
+  override def step(prop: Property, elem: Any) = new DescendingHistoryImpl(currentPath.step(prop), elem :: historyReversed)
   
-  override def stepBack = new DescendingHistoryImpl(historyReversed.tail)
+  override def stepBack = new DescendingHistoryImpl(currentPath.stepBack, historyReversed.tail)
   
   override def hasSeen(elem: Any) = historyReversed.exists(_ == elem)
 }
