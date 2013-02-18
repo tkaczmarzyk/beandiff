@@ -1,4 +1,4 @@
-## 0.1.0 (2013-02-??)
+## 0.1.0 (2013-02-18)
 
 * improved, LCS-based, list comparison
 * ability to perform transformation of the diff target (diff=0 after the transformation)
