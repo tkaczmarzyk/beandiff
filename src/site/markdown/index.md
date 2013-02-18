@@ -18,23 +18,23 @@ The following example will help you to start using BeanDiff. Consider the follow
 
 	public class Node {
 		private String name;
-		private Set<Node> children;
+		private List<Node> children;
 
 		public Node(String name, Node... children) {
 			this.name = name;
-			this.children = new HashSet<>(Arrays.asList(children));
+			this.children = new ArrayList<>(Arrays.asList(children));
 		}
 	}
 
 And the instances to be compared:
 
 	Node a = new Node("a");
-	Node a2 = new Node("a");
 	Node b = new Node("b");
-	Node b2 = new Node("b");
+	Node c = new Node("c");
+	Node x = new Node("x");
 
-	Node parent1 = new Node("parent1", a, a2, b);
-	Node parent2 = new Node("parent2", a, b, b2);
+	Node parent1 = new Node("parent1", a, b, c);
+	Node parent2 = new Node("parent2", a, x, c);
 
 Then you can use BeanDiff as follows:
 
@@ -46,10 +46,18 @@ Of course you need the possibility to inspect the result:
 
 	diff.hasDifference(); // returns true
 	diff.hasDifference("name"); // returns true
-	diff.hasDifference("children[0].name"); // returns false
-	diff.hasDifference("children[1]"); // returns true
+	diff.hasDifference("children[0]"); // returns false
+	diff.hasDifference("children[1].name"); // returns true
 
 If you want you can also print the diff in human-readable format using <tt>BeanDiff</tt>'s method <tt>printDiff</tt>. For the case above it would yield something similar to:
 
 	name -- 'parent1' vs 'parent2'
-	children[1].name -- 'a' vs 'b'
+	children[1].name -- 'a' vs 'x'
+
+Once diff is calculated, you can transfom the target:
+
+	diff.transformTarget();
+
+After the transformation there will be no difference between <tt>parent1</tt> and <tt>parent2</tt>, i.e. <tt>parent1.name</tt> will be set to `parent2` and <tt>b.name</tt> will be set to `x`.
+
+
