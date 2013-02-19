@@ -41,7 +41,7 @@ class KeyProperty(val key: String) extends Property {
     key.hashCode
   }
   
-  override def toString() = {
-    "[" + key + "]"
-  }
+  override def toString() = mkString
+  
+  override def mkString = "[" + key + "]"
 }

@@ -39,9 +39,9 @@ class FieldProperty(val name: String) extends Property with Equals {
     }
   }
   
-  override def toString() = {
-    name
-  }
+  override def toString() = mkString
+  
+  override val mkString = name
   
   def canEqual(other: Any) = {
     other.isInstanceOf[FieldProperty]

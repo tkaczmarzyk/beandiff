@@ -74,4 +74,6 @@ abstract class Path {
   def tail: Path
   
   def isPrefixOf(other: Path): Boolean
+  
+  def mkString: String
 }

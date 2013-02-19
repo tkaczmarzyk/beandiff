@@ -50,7 +50,7 @@ class IndexProperty(val index: Int) extends Property {
     index.hashCode
   }
   
-  override def toString() = {
-    "[" + index + "]"
-  }
+  override def toString() = mkString
+  
+  override def mkString = "[" + index + "]"
 }

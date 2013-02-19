@@ -27,7 +27,9 @@ object Self extends Property {
   def setValue(target: Any, value: Any) =
     throw new UnsupportedOperationException("Self.setValue")
   
-  override def toString = ""
+  override def toString = "Self"
+    
+  override def mkString = ""
   
   override def equals(other: Any) = {
     other match {

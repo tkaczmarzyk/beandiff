@@ -53,7 +53,7 @@ class PathTest extends FunSuite with ShouldMatchers {
   }
   
   test("toString should return parseable representation") {
-    assert(Path.of("values[0].id").toString === "values[0].id")
+    assert(Path.of("values[0].id").mkString === "values[0].id")
   }
   
   test("empty + empty = empty") {
@@ -76,5 +76,27 @@ class PathTest extends FunSuite with ShouldMatchers {
   
   test("aa.bb.cc is not a prefix of aa.bb") {
     Path.of("aa.bb.cc").isPrefixOf(Path.of("aa.bb")) should be === false
+  }
+  
+  test("there should be a dot between index and field") {
+    val path = new PathImpl(Vector(new IndexProperty(0), new FieldProperty("name")))
+    
+    path.mkString should be === "[0].name"
+  }
+  
+  test("there should not be a dot between field and index") {
+    val path = new PathImpl(Vector(new FieldProperty("collection"), new IndexProperty(0)))
+    
+    path.mkString should be === "collection[0]"
+  }
+  
+  test("there should be no dot between two indices") {
+    val path = new PathImpl(Vector(new IndexProperty(0), new IndexProperty(1)))
+    
+    path.mkString should be === "[0][1]"
+  }
+  
+  test("empty path should be presented as dot") {
+    EmptyPath.mkString should be === "."
   }
 }

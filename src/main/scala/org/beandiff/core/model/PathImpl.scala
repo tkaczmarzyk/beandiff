@@ -66,16 +66,18 @@ final class PathImpl(
         false
   }
     
-  override def toString() = { // TODO
+  override def toString() = "Path[" + mkString + "]"
+  
+  override def mkString = { // TODO
     if (depth == 0)
-      ""
+      "."
     else
-      head.toString + {
+      head.mkString + {
         if (tail.depth > 0)
           if (tail.head.isInstanceOf[FieldProperty]) // FIXME avoid type check
-            Path.FieldSeparator + tail.toString
+            Path.FieldSeparator + tail.mkString
           else
-            tail.toString
+            tail.mkString
         else ""
       }
   }
