@@ -24,8 +24,8 @@ import org.beandiff.core.model.IndexProperty
 
 
 case class Deletion(
-  private val deleted: Any, // TODO it's only for presentation -- eliminate?, 
-  val index: Int) extends Change with Equals { // FIXME temporary public
+  deleted: Any, // TODO it's only for presentation -- eliminate?, 
+  index: Int) extends Change with Equals {
 
   override def perform(target: Any): Unit = {
     target.asInstanceOf[JList].remove(index)
@@ -33,13 +33,10 @@ case class Deletion(
 
   override def targetProperty = new IndexProperty(index)
   
-  @deprecated
-  override def newValue: Any = null
+  override def newValue = None
 
-  @deprecated
-  override def oldValue: Any = deleted
+  override def oldValue = Some(deleted)
 
-  
   override def toString = "Deletion[" + deleted + ", " + index + "]"
 
   override def canEqual(other: Any) = {

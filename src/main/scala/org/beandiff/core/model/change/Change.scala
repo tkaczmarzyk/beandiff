@@ -23,13 +23,11 @@ import org.beandiff.core.model.Property
 
 trait Change {
 
-  def perform(target: Any): Unit // TODO better name
+  def perform(target: Any): Unit
   
   def targetProperty: Property
   
-  @deprecated
-  def newValue: Any // FIXME tmp
+  def newValue: Option[Any]
   
-  @deprecated
-  def oldValue: Any //FIXME tmp
+  def oldValue: Option[Any]
 }

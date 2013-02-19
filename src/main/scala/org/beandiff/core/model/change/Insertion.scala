@@ -20,25 +20,24 @@
 package org.beandiff.core.model.change
 
 import org.beandiff.core.model.IndexProperty
-
+import org.beandiff.TypeDefs.JList
 
 case class Insertion(
   private val element: Any,
   val index: Int) extends Change with Equals { // FIXME temp public
 
-  type jList = java.util.List[Any] // FIXME
 
   override def perform(target: Any): Unit = {
-    require(target.isInstanceOf[jList])
-    val list = target.asInstanceOf[jList]
+    require(target.isInstanceOf[JList])
+    val list = target.asInstanceOf[JList]
     list.add(index, element)
   }
   
   override def targetProperty = new IndexProperty(index)
 
-  override def newValue = element // FIXME
+  override def newValue = Some(element)
 
-  override def oldValue() = "_tmp_[NOTHING]"
+  override def oldValue() = None
 
 
   override def toString = "Insertion[" + element + ", " + index + "]"

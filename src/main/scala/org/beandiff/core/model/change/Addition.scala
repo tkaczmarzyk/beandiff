@@ -32,9 +32,7 @@ case class Addition(
   
   override def targetProperty = Self
   
-  @deprecated
-  def newValue: Any = element // FIXME
+  def newValue = Some(element)
   
-  @deprecated
-  def oldValue: Any = throw new UnsupportedOperationException // FIXME
+  def oldValue = None
 }

@@ -35,9 +35,7 @@ class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
   
   override def targetProperty = Self
   
-  @deprecated
-  def newValue: Any = added
+  override def newValue = Some(added)
   
-  @deprecated
-  def oldValue: Any = deleted
+  override def oldValue = Some(deleted)
 }

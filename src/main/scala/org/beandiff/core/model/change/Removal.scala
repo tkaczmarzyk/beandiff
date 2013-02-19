@@ -32,9 +32,7 @@ case class Removal(
   
   override def targetProperty = Self
   
-  @deprecated
-  def newValue: Any = throw new UnsupportedOperationException // FIXME
+  override def newValue = None
   
-  @deprecated
-  def oldValue: Any = element
+  override def oldValue = Some(element)
 }

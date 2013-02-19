@@ -61,9 +61,9 @@ class PlainTextDiffPresenter(
           
           case NewValue(prop, oldVal, newVal) => {
             result.append(path.step(prop).mkString).append(pathValueSeparator)
-	        result.append(valueQuote).append(change.oldValue).append(valueQuote)
+	        result.append(valueQuote).append(oldVal).append(valueQuote)
 	        result.append(valuesSeparator)
-	        result.append(valueQuote).append(change.newValue).append(valueQuote)
+	        result.append(valueQuote).append(newVal).append(valueQuote)
           }
           
           case x => {

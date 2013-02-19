@@ -23,14 +23,14 @@ import org.beandiff.core.model.Property
 
 
 case class NewValue(
-  val property: Property,
-  val oldValue: Any, 
-  val newValue: Any) extends Change with Equals {
+  property: Property,
+  oldVal: Any, 
+  newVal: Any) extends Change with Equals {
 
   override def perform(target: Any): Unit =
-    property.setValue(target, newValue)
+    property.setValue(target, newVal)
   
-  override def targetProperty = property
+  override val targetProperty = property
 
   def canEqual(other: Any) = {
     other.isInstanceOf[NewValue]
@@ -38,16 +38,20 @@ case class NewValue(
   
   override def equals(other: Any) = {
     other match {
-      case that: NewValue => that.canEqual(NewValue.this) && oldValue == that.oldValue && newValue == that.newValue
+      case that: NewValue => that.canEqual(NewValue.this) && oldVal == that.oldVal && newVal == that.newVal
       case _ => false
     }
   }
   
+  override def oldValue = Some(oldVal)
+  
+  override def newValue = Some(newVal)
+  
   override def hashCode() = {
     val prime = 41
-    prime * (prime * (prime + oldValue.hashCode) + newValue.hashCode)
+    prime * (prime * (prime + oldVal.hashCode) + newVal.hashCode)
   }
   
-  override def toString = "NewValue[" + property + "|" + oldValue + "->" + newValue + "]"
+  override def toString = "NewValue[" + property + "|" + oldVal + "->" + newVal + "]"
 
 }

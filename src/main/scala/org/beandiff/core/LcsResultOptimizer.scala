@@ -45,45 +45,30 @@ class LcsResultOptimizer(
   private def optimizeDiff(diff: Diff): Diff = {
     if (!diff.hasDifference)
       diff
-    else {
-      val optimized = optimize(diff.target, diff)
-      if (optimized.leafChanges.isEmpty) // TODO duplicated somewhere else? move to withChanges method
-        Diff(diff.target)
-      else
-        optimized
-    }
+    else
+      optimize(diff)
   }
   
   // FIXME temporary, ugly prototype
-  private def optimize(target: Any, changeset: Diff): Diff = {
-//    if (!changeset.isInstanceOf[FlatDiff]) { // FIXME
-//      changeset
-//    } else {
-      var result: Diff = Diff(target)
+  private def optimize(diff: Diff): Diff = {
+      var result: Diff = Diff(diff.target)
 
       var skip = List[Change]()
 
       for {
-        (path1, change1) <- changeset.leafChanges if change1.isInstanceOf[Deletion]
-        (path2, change2) <- changeset.leafChanges if change2.isInstanceOf[Insertion] && change1.asInstanceOf[Deletion].index == change2.asInstanceOf[Insertion].index
+        (path1, change1) <- diff.leafChanges if change1.isInstanceOf[Deletion]
+        (path2, change2) <- diff.leafChanges if change2.isInstanceOf[Insertion] && change1.targetProperty == change2.targetProperty
       } {
-        val index = new IndexProperty(change1.asInstanceOf[Deletion].index)
         skip :::= List(change1, change2)
-        result = parent.calculateDiff(result, index, change1.oldValue, change2.newValue)
+        result = parent.calculateDiff(result, change1.targetProperty, change1.oldValue.get, change2.newValue.get)
       }
 
-      for ((path, change) <- changeset.leafChanges) {
+      for ((path, change) <- diff.leafChanges) {
         if (!skip.contains(change)) {
-          if (change.isInstanceOf[NewValue]) {
-            val newValue = change.asInstanceOf[NewValue]
-            result = parent.calculateDiff(result, path.head, newValue.oldValue, newValue.newValue)
-          } else {
             result = result.withChange(path, change)
-          }
         }
       }
 
       result
-//    }
   }
 }

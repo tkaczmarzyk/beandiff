@@ -37,5 +37,5 @@ class PathDifferenceMatcher(
     if (path == EmptyPath)
       prefix + ":\n" + target
     else
-      prefix + " on " + path + ":\n" + target
+      prefix + " on " + path.mkString + ":\n" + target
 }
