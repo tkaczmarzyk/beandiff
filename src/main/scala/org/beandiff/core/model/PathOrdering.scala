@@ -17,20 +17,11 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model.change
+package org.beandiff.core.model
 
-object ChangeOrdering extends Ordering[Change] {
+object PathOrdering extends Ordering[Path] {
 
-  def compare(ch1: Change, ch2: Change): Int = {
-    (ch1, ch2) match {
-      case (Deletion(_, _), Insertion(_, _)) => -1
-      case (Insertion(_, _), Deletion(_, _)) => 1
-      case (Insertion(_, idx1), Insertion(_, idx2)) => idx1.compare(idx2)
-      case (Deletion(_, idx1), Deletion(_, idx2)) => - idx1.compareTo(idx2)
-      case (NewValue(p1, _, _), NewValue(p2, _, _)) => p1.mkString.compareTo(p2.mkString)
-      case (NewValue(_, _, _), _) => -1
-      case (_, NewValue(_, _, _)) => 1
-      case _ => 0
-    }
+  override def compare(p1: Path, p2: Path) = {
+    p1.mkString.compareTo(p2.mkString)
   }
 }

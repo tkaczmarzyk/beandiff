@@ -35,6 +35,16 @@ import org.beandiff.core.model.Self
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -51,13 +61,35 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
   
   
   test("should display simple properties") {
-    presenter.present(diff1) should be === "values[0].id -- '17' vs '8'\n" + "name -- 'Aaa' vs 'Bbb'\n"
+    presenter.present(diff1) should be === "name -- 'Aaa' vs 'Bbb'\n" + "values[0].id -- '17' vs '8'\n"
   }
   
   test("should present operations on list") {
     val diff = Diff(null, Self -> Diff(null, new Insertion("a", 0)),
         Property("[0]") -> Diff(null, new NewValue(Property("name"), "aa", "bb")))
         
-    presenter.present(diff) should be === "[0].name -- 'aa' vs 'bb'\n" + ". -- inserted 'a' at [0]\n"
+    presenter.present(diff) should be === ". -- inserted 'a' at [0]\n" + "[0].name -- 'aa' vs 'bb'\n"
+  }
+  
+  test("should order by insertion index, not by the value") {
+    val diff = Diff(null, new Insertion("a", 1), new Insertion("b", 0))
+    
+    presenter.present(diff) should be === ". -- inserted 'b' at [0]\n" + ". -- inserted 'a' at [1]\n"
+  }
+  
+  test("should present the full path of a nested change") {
+    val diff = Diff(null, Property("children") -> Diff(null, Property("[0]") -> Diff(null, new NewValue(Property("name"), "a", "b"))))
+  
+    presenter.present(diff) should be === "children[0].name -- 'a' vs 'b'\n"
+  }
+  
+  test("should order the changes lexicographically") {
+    val diff = Diff(null, Self -> Diff(null, new Insertion("a", 1), new Insertion("b", 0), new NewValue(Property("name"), "old", "new")),
+        Property("children") -> Diff(null, Property("[1]") -> Diff(null, new NewValue(Property("name"), "c", "d")),
+            Property("[0]") -> Diff(null, new NewValue(Property("value"), 2, 3),
+                new NewValue(Property("age"), 0, 1), new NewValue(Property("time"), 1, 2))))
+            
+    presenter.present(diff) should be === "name -- 'old' vs 'new'\n" + ". -- inserted 'b' at [0]\n" + ". -- inserted 'a' at [1]\n" +
+        "children[0].age -- '0' vs '1'\n" + "children[0].time -- '1' vs '2'\n" + "children[0].value -- '2' vs '3'\n" + "children[1].name -- 'c' vs 'd'\n"
   }
 }

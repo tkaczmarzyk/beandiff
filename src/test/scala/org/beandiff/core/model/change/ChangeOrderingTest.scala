@@ -48,4 +48,8 @@ class ChangeOrderingTest extends FunSuite with ShouldMatchers {
   test("insertion with lower index should be first") {
     ChangeOrdering.compare(new Insertion(o, 1), new Insertion(o, 2)) should be < 0
   }
+  
+  test("new-values should be ordered by property") {
+    ChangeOrdering.compare(new NewValue(Property("aaa"), 1, 2), new NewValue(Property("bbb"), 1, 2)) should be < 0
+  }
 }
