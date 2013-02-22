@@ -22,6 +22,7 @@ package org.beandiff.core
 import org.beandiff.BeanDiff
 import org.beandiff.TestDefs.anyPath
 import org.beandiff.TestDefs.fun0ToAnswer
+import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.of
 import org.beandiff.beans.IdBean
 import org.beandiff.beans.ParentBean
@@ -29,7 +30,6 @@ import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
@@ -41,7 +41,7 @@ import org.scalatest.matchers.ShouldMatchers
 @RunWith(classOf[JUnitRunner])
 class DelegatingDiffEngineTest extends FunSuite with ShouldMatchers {
 
-  val descStrategy = mock(classOf[DescendingStrategy])
+  val descStrategy = mock[DescendingStrategy]
   val engine = new DelegatingDiffEngine(BeanDiff.DefaultEqInvestigators, descStrategy)
   
   when(descStrategy.shouldProceed(anyPath, any, any))

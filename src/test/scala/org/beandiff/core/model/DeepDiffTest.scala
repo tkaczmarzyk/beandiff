@@ -31,7 +31,6 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.beandiff.TestDefs._
 import org.scalatest.matchers.ShouldMatchers
-import org.mockito.Mockito.mock
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.NewValue
 
@@ -59,7 +58,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   }
   
   test("should return a single leaf change") {
-    val change = mock(classOf[NewValue])
+    val change = mock[NewValue]
     val diff = new DeepDiff(null, Map(new IndexProperty(0) -> new FlatDiff(1, change)))
     
     diff.leafChanges should be === List((Path("[0]"), change))
@@ -97,7 +96,7 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
   }
   
   test("should yield the nested diff") {
-    val nestedChanges = mock(classOf[Diff])
+    val nestedChanges = mock[Diff]
     val diff = new DeepDiff(parent,
         Map(Property("child") -> new DeepDiff(child, 
             Map(Property("name") -> nestedChanges)))) // TODO simplify the creation (builder?)

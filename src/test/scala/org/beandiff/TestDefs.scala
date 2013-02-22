@@ -29,6 +29,7 @@ import org.beandiff.core.model.Property
 import scala.collection.immutable.HashMap
 import org.mockito.stubbing.Answer
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.Mockito
 
 
 object TestDefs {
@@ -45,18 +46,16 @@ object TestDefs {
     }
   }
   
-  def mockChange() = {
-    mock(classOf[Change])
-  }
+  def mockChange() = mock[Change]
   
   def mockChange(name: String) = {
-    mock(classOf[Change], name)
+    Mockito.mock(classOf[Change], name)
   }
   
   def mockDiff() = {
-    val diff = mock(classOf[Diff])
+    val diff = mock[Diff]
     when(diff.hasDifference).thenReturn(true)
-    when(diff.hasDifference(any(classOf[Path]))).thenReturn(true)
+    when(diff.hasDifference(any[Path])).thenReturn(true)
     diff
   }
   
@@ -67,13 +66,25 @@ object TestDefs {
     }
   }
   
-  def anyDiff = any(classOf[Diff])
+  def mock[T](implicit m: Manifest[T]): T = {
+    Mockito.mock(m.erasure).asInstanceOf[T]
+  }
   
-  def anyChange = any(classOf[Change])
+  def mock[T](name: String)(implicit m: Manifest[T]): T = {
+    Mockito.mock(m.erasure, name).asInstanceOf[T]
+  }
   
-  def anyProp = any(classOf[Property])
+  def anyDiff = any[Diff]
   
-  def anyPath = any(classOf[Path])
+  def anyChange = any[Change]
+  
+  def anyProp = any[Property]
+  
+  def anyPath = any[Path]
+  
+  def any[T](implicit m: Manifest[T]): T = {
+    MockitoMatchers.any(m.erasure).asInstanceOf[T]
+  }
   
   def of[T](o: T) = MockitoMatchers.eq(o)
 }

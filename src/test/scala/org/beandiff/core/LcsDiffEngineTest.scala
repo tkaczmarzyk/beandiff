@@ -20,18 +20,26 @@
 package org.beandiff.core
 
 import java.util.Arrays
+
+import org.beandiff.BeanDiff
+import org.beandiff.TestDefs.anyDiff
+import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.of
+import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.change.Insertion
-import org.beandiff.core.model.Property
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.Property
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.lcs.NaiveLcsCalc
+import org.beandiff.test.BeanDiffMatchers.haveDifference
+import org.beandiff.test.JList
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
@@ -39,22 +47,13 @@ import org.mockito.stubbing.Answer
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.TestDefs._
-import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.model.change.Insertion
-import org.beandiff.beans.SimpleJavaBean
-import org.beandiff.test.JList
-import org.beandiff.BeanDiff
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.test.BeanDiffMatchers._
 
 @RunWith(classOf[JUnitRunner])
 class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
 
-  private val mockDelegate = mock(classOf[DiffEngineCoordinator])
+  private val mockDelegate = mock[DiffEngineCoordinator]
 
-  when(mockDelegate.calculateDiff(anyDiff, any(classOf[Property]), any(), any())).thenAnswer(new Answer[Diff] {
+  when(mockDelegate.calculateDiff(anyDiff, any[Property], any(), any())).thenAnswer(new Answer[Diff] {
     override def answer(invocation: InvocationOnMock) = invocation.getArguments()(0).asInstanceOf[Diff]
   })
 

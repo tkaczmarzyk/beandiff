@@ -19,13 +19,14 @@
  */
 package org.beandiff.support
 
+import org.beandiff.TestDefs.mock
+import org.beandiff.TypeDefs._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSuite
 import java.util.ArrayList
 import java.util.AbstractList
 import java.util.LinkedList
-import org.mockito.Mockito.mock
 import java.util.TreeSet
 import java.util.HashSet
 import java.util.AbstractSequentialList
@@ -33,13 +34,13 @@ import java.util.AbstractSequentialList
 @RunWith(classOf[JUnitRunner])
 class ClassDictionaryTest extends FunSuite {
 
-  val defaultVal = mock(classOf[Object], "defaultVal")
-  val valForSets = mock(classOf[Object], "valForSets")
-  val valForSortedSets = mock(classOf[Object], "valForSortedSets")
-  val valForLists = mock(classOf[Object], "valForLists")
-  val valForAbstractSeqLists = mock(classOf[Object], "valForAbstractSeqLists")
-  val valForArrayList = mock(classOf[Object], "valForArrayList")
-  val valForString = mock(classOf[Object], "valForString")
+  val defaultVal = mock[Object]("defaultVal")
+  val valForSets = mock[Object]("valForSets")
+  val valForSortedSets = mock[Object]("valForSortedSets")
+  val valForLists = mock[Object]("valForLists")
+  val valForAbstractSeqLists = mock[Object]("valForAbstractSeqLists")
+  val valForArrayList = mock[Object]("valForArrayList")
+  val valForString = mock[Object]("valForString")
   
   val dict = new ClassDictionary(defaultVal,
       (classOf[java.util.List[_]] -> valForLists),
@@ -70,12 +71,12 @@ class ClassDictionaryTest extends FunSuite {
   }
   
   test("should find value for superclass'es interface") {
-    val mockHashSet = mock(classOf[HashSet[_]])
+    val mockHashSet = mock[HashSet[_]]
     assert(dict(mockHashSet.getClass()) === valForSets)    
   }
   
   test("should find value for interface") {
-    val mockList = mock(classOf[java.util.List[_]])
+    val mockList = mock[JList]
     assert(dict(mockList.getClass) === valForLists)
   }
   

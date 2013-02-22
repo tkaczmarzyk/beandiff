@@ -19,39 +19,34 @@
  */
 package org.beandiff.core
 
-import org.beandiff.TestDefs._
-import org.beandiff.TestDefs.of
+import org.beandiff.TestDefs.anyChange
+import org.beandiff.TestDefs.anyDiff
+import org.beandiff.TestDefs.anyProp
+import org.beandiff.TestDefs.fun1ToAnswer
+import org.beandiff.TestDefs.mock
+import org.beandiff.TestDefs.mockChange
+import org.beandiff.TestDefs.mockMap
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.core.model.change.Change
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.equality.StdEqualityInvestigator
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.test.BeanDiffMatchers._
+import org.beandiff.core.model.Property
+import org.beandiff.core.model.Self
+import org.beandiff.core.translation.ChangeTranslation
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import org.mockito.Mockito.never
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
-import org.scalatest.FunSuite
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.core.translation.ChangeTranslation
-import org.beandiff.core.model.Diff
-import org.beandiff.core.model.Self
-import org.beandiff.core.model.Property
-import scala.collection.immutable.HashMap
-import org.mockito.invocation.InvocationOnMock
-import org.beandiff.core.model.Path
 
 
 @RunWith(classOf[JUnitRunner])
 class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
   
-  private val delegate = mock(classOf[DiffEngineCoordinator])
-  private val translation = mock(classOf[ChangeTranslation])
+  private val delegate = mock[DiffEngineCoordinator]
+  private val translation = mock[ChangeTranslation]
   private val engine = new TransformingDiffEngine(delegate, NoopTransformer, mockMap(translation))
   
   private val o1 = new Object
