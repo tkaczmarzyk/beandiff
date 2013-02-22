@@ -19,6 +19,7 @@
  */
 package org.beandiff.support
 
+import java.lang.Number
 import java.lang.Object
 
 import org.beandiff.support.ObjectSupport.convert
@@ -34,5 +35,13 @@ class ObjectSupportTest extends FunSuite with ShouldMatchers {
     "aaa".allClasses should have size 2
     assert("aaa".allClasses.contains(classOf[String]))
     assert("aaa".allClasses.contains(classOf[Object]))
+  }
+  
+  test("Integer.allClasses == (Integer, Number, Object)") {
+    val classes = 1.allClasses
+    classes should have size 3
+    assert(classes.contains(classOf[Integer]))
+    assert(classes.contains(classOf[Number]))
+    assert(classes.contains(classOf[Object]))
   }
 }
