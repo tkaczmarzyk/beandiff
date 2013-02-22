@@ -19,33 +19,43 @@
  */
 package org.beandiff.support
 
+import java.lang.Object
 import java.lang.reflect.Field
 
-
 object ObjectSupport {
-  
+
   implicit def convert(o: Any) = new ObjectSupport(o)
 }
 
 class ObjectSupport(val target: Any) {
-  
+
   def hasField(name: String) = {
     target.getClass.getDeclaredFields().exists((f: Field) => f.getName == name)
   }
-  
+
   def getFieldVal(name: String) = {
     getField(name).get(target)
   }
-  
+
   def getField(name: String) = {
     val f = target.getClass.getDeclaredField(name)
     f.setAccessible(true)
     f
   }
-  
+
   def setFieldVal(fieldName: String, value: Any) = {
     getField(fieldName).set(target, value)
   }
-  
+
+  def allClasses: List[Class[_]] = {
+    def allClasses(c: Class[_]): List[Class[_]] = {
+      if (c == classOf[Object])
+        List(c)
+      else
+        c :: allClasses(c.getSuperclass())
+    }
+    allClasses(target.getClass)
+  }
+
   def apply(index: Int) = target.asInstanceOf[java.util.List[_]].get(index).asInstanceOf[Object]
 }
