@@ -54,6 +54,7 @@
 
         <menu name="Info &amp; guides">
             <item name="Home" href="index.html"/>
+            <item name="Download" href="download.html"/>
 			<!--<item name="FAQ" href="faq.html"/>-->
         </menu>
 
