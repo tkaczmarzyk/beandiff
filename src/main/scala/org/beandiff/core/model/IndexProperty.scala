@@ -19,21 +19,27 @@
  */
 package org.beandiff.core.model
 
-import java.util.List
+import org.beandiff.TypeDefs.JList
 import org.beandiff.support.ObjectSupport._
 
 
 class IndexProperty(val index: Int) extends Property {
   
   override def value(o: Any) = {
-    if (o.isInstanceOf[List[_]])
+    if (o.isInstanceOf[JList])
       o(index)
     else null //TODO
   }
   
+  override def get(o: Any) = {
+    if (o.isInstanceOf[JList])
+      Some(o(index))
+    else None
+  }
+  
   override def setValue(target: Any, value: Any) = {
-    if (target.isInstanceOf[List[_]]) {
-      target.asInstanceOf[List[Any]].set(index, value)
+    if (target.isInstanceOf[JList]) {
+      target.asInstanceOf[JList].set(index, value)
     } else {
       throw new IllegalArgumentException("expected List but was: " + target)
     }

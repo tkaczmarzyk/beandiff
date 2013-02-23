@@ -36,6 +36,7 @@ object Property {
 trait Property {
   
   def value(target: Any): Any
+  def get(target: Any): Option[Any]
   
   def setValue(target: Any, value: Any)
   

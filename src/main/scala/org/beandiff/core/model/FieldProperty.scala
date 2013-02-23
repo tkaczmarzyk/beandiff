@@ -31,6 +31,12 @@ class FieldProperty(val name: String) extends Property with Equals {
     else null
   }
   
+  override def get(o: Any) = {
+    if (o != null && (o hasField name))
+      Some(o getFieldVal name)
+    else None
+  }
+  
   override def setValue(target: Any, value: Any) = {
     if (target hasField name)
       target.setFieldVal(name, value)

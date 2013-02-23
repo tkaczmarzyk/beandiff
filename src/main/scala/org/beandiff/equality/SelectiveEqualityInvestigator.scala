@@ -17,26 +17,29 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.equality
 
+import org.beandiff.core.model.Path
 
-object Self extends Property {
+class SelectiveEqualityInvestigator private () extends BaseEqInvestigator {
 
-  override def value(target: Any) = target
-  
-  override def get(target: Any) = Some(target)
-  
-  def setValue(target: Any, value: Any) =
-    throw new UnsupportedOperationException("Self.setValue")
-  
-  override def toString = "Self"
-    
-  override def mkString = ""
-  
-  override def equals(other: Any) = {
-    other match {
-      case prop: Property => prop eq this
-      case _ => false
-    }
+  private var paths: Seq[Path] = null
+
+  def this(pathStr: String, pathStrs: String*) = {
+    this()
+    this.paths = (pathStrs :+ pathStr).map(Path(_))
+  }
+
+  def this(path: Path, paths: Path*) = {
+    this()
+    this.paths = (paths :+ path)
+  }
+
+  override def objsAreEqual(o1: Any, o2: Any) = {
+    paths.forall((p: Path) =>
+      (p.get(o1), p.get(o2)) match {
+        case (Some(v1), Some(v2)) => (v1 == v2)
+        case _ => false
+      })
   }
 }

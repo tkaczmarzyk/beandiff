@@ -24,6 +24,8 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import Path.EmptyPath
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.ParentBean
+import org.beandiff.beans.SimpleJavaBean
 
 @RunWith(classOf[JUnitRunner])
 class PathTest extends FunSuite with ShouldMatchers {
@@ -98,5 +100,15 @@ class PathTest extends FunSuite with ShouldMatchers {
   
   test("empty path should be presented as dot") {
     EmptyPath.mkString should be === "."
+  }
+  
+  test("should return None if path doesn't exist in the object tree") {
+    val o = new ParentBean("homer", new SimpleJavaBean("bart", 10))
+    Path("child.nickname").get(o) should be === None
+  }
+  
+  test("should return Some with the value at the path") {
+    val o = new ParentBean("homer", new SimpleJavaBean("bart", 10))
+    Path("child.name").get(o) should be === Some("bart")
   }
 }

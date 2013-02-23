@@ -52,6 +52,7 @@ abstract class Path {
   def withIndex(i: Int): Path = step(new IndexProperty(i))
 
   def value(o: Any): Any
+  def get(o: Any): Option[Any]
 
   def step(p: Property): Path
   def stepBack: Path

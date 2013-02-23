@@ -17,26 +17,25 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model
+package org.beandiff.equality
 
+protected abstract class BaseEqInvestigator extends EqualityInvestigator {
 
-object Self extends Property {
-
-  override def value(target: Any) = target
+  def objsAreEqual(o1: Any, o2: Any): Boolean
   
-  override def get(target: Any) = Some(target)
+  override final def areEqual(o1: Any, o2: Any) = {
+    if (identical(o1, o2)) true
+    else if (o1 == null || o2 == null) false
+    else if (o1.getClass != o2.getClass) false
+    else objsAreEqual(o1, o2)
+  }
   
-  def setValue(target: Any, value: Any) =
-    throw new UnsupportedOperationException("Self.setValue")
-  
-  override def toString = "Self"
-    
-  override def mkString = ""
-  
-  override def equals(other: Any) = {
-    other match {
-      case prop: Property => prop eq this
-      case _ => false
-    }
+  private def identical(o1: Any, o2: Any) = {
+    if (o1 == null && o2 == null) true
+    else if (o1.isInstanceOf[AnyRef] && o2.isInstanceOf[AnyRef]) 
+      (o1.asInstanceOf[AnyRef] eq o2.asInstanceOf[AnyRef])
+    else if (!o1.isInstanceOf[AnyRef] && !o2.isInstanceOf[AnyRef])
+      o1 == o2
+    else false
   }
 }

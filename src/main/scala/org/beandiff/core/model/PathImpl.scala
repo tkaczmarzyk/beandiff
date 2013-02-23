@@ -36,6 +36,14 @@ final class PathImpl(
     else
       tail.value(props.head.value(o))
   }
+  
+  override def get(o: Any) = {
+    if (props.isEmpty) Some(o)
+    else props.head.get(o) match {
+      case None => None
+      case Some(x) => tail.get(x)
+    }
+  }
 
   override def head = 
     if (props.isEmpty) Self else props.head
