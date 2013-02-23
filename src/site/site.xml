@@ -49,6 +49,7 @@
     
         <links>
             <item name="source control" href="http://github.com/tkaczmarzyk/beandiff"/>
+            <item name="continous integration" href="https://travis-ci.org/tkaczmarzyk/beandiff" />
         </links>
 
         <menu name="Info &amp; guides">
