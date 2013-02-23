@@ -24,6 +24,11 @@
       		</twitter>
 	    	<topBarEnabled>false</topBarEnabled>
 	        <sideBarEnabled>true</sideBarEnabled>
+			<gitHub>
+				<projectId>tkaczmarzyk/beandiff</projectId>
+				<ribbonOrientation>right</ribbonOrientation>
+				<ribbonColor>black</ribbonColor>
+			</gitHub>
 	    </fluidoSkin>
 	</custom>
 
