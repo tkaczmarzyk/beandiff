@@ -39,17 +39,33 @@ class ChangeOrderingTest extends FunSuite with ShouldMatchers {
     ChangeOrdering.compare(new Deletion(o, 1), new Insertion(o, 2)) should be < 0
     ChangeOrdering.compare(new Deletion(o, 2), new Insertion(o, 1)) should be < 0
     ChangeOrdering.compare(new Deletion(o, 0), new Insertion(o, 0)) should be < 0
+    
+    ChangeOrdering.compare(new Insertion(o, 2), new Deletion(o, 1)) should be > 0
+    ChangeOrdering.compare(new Insertion(o, 1), new Deletion(o, 2)) should be > 0
+    ChangeOrdering.compare(new Insertion(o, 0), new Deletion(o, 0)) should be > 0
   }
   
   test("new-value should be before any other change") {
-    ChangeOrdering.compare(new NewValue(Property("test"), o, o), mockChange()) should be < 0
+    val newValue = new NewValue(Property("test"), o, o)
+    ChangeOrdering.compare(newValue, mockChange()) should be < 0
+    ChangeOrdering.compare(mockChange(), newValue) should be > 0
   }
   
   test("insertion with lower index should be first") {
-    ChangeOrdering.compare(new Insertion(o, 1), new Insertion(o, 2)) should be < 0
+    val i1 = new Insertion(o, 1)
+    val i2 = new Insertion(o, 2)
+    ChangeOrdering.compare(i1, i2) should be < 0
+    ChangeOrdering.compare(i2, i1) should be > 0
   }
   
   test("new-values should be ordered by property") {
     ChangeOrdering.compare(new NewValue(Property("aaa"), 1, 2), new NewValue(Property("bbb"), 1, 2)) should be < 0
+  }
+  
+  test("removal should be before addition") {
+    val rm = new Removal(new Object)
+    val add = new Addition(new Object)
+    ChangeOrdering.compare(rm, add) should be < 0
+    ChangeOrdering.compare(add, rm) should be > 0
   }
 }
