@@ -37,6 +37,7 @@ import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.core.LcsDiffEngine
 import org.beandiff.core.DiffEngineCoordinator
 import org.beandiff.lcs.NaiveLcsCalc
+import org.beandiff.equality.SelectiveEqualityInvestigator
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -168,9 +169,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l2 = JList(x1, a2, b1, c1)
       
       val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-        new NaiveLcsCalc(new EqualityInvestigator() {
-          def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
-        })) // TODO simplify creation
+        new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()
       l1 should be === JList(x1, a1, b1, c1)
@@ -241,9 +240,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l2 = JList(a2, b1, c1)
 
       val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-        new NaiveLcsCalc(new EqualityInvestigator() {
-          def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
-        })) // TODO simplify creation
+        new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()
 

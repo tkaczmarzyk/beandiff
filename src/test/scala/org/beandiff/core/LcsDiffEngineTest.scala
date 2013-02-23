@@ -20,7 +20,6 @@
 package org.beandiff.core
 
 import java.util.Arrays
-
 import org.beandiff.BeanDiff
 import org.beandiff.TestDefs.anyDiff
 import org.beandiff.TestDefs.mock
@@ -47,6 +46,7 @@ import org.mockito.stubbing.Answer
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.equality.SelectiveEqualityInvestigator
 
 @RunWith(classOf[JUnitRunner])
 class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
@@ -74,9 +74,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     val l2 = JList(a2, b, c)
 
     val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-      new NaiveLcsCalc(new EqualityInvestigator() {
-        def areEqual(o1: Any, o2: Any) = Path("name").value(o1) == Path("name").value(o2)
-      })) // TODO simplify creation
+      new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
 
     val d = engine.calculateDiff(l1, l2)
     
