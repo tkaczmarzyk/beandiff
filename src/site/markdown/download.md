@@ -1,7 +1,7 @@
 Download 
 ========
 
-Stable releases of BeanDiff are available in the Maven Central Repository. Check it out at [search.maven.org](http://http://search.maven.org/#search|ga|1|a%3A%22beandiff%22%20g%3A%22org.beandiff%22) or just copy-paste the following snippet to your <tt>pom.xml</tt>:
+Stable releases of BeanDiff are available in the Maven Central Repository. Check it out at [search.maven.org](http://search.maven.org/#search|ga|1|g%3A%22org.beandiff%22%20AND%20a%3A%22beandiff%22) or just copy-paste the following snippet to your <tt>pom.xml</tt>:
 
 	<dependency>
 		<groupId>org.beandiff</groupId>
