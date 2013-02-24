@@ -87,4 +87,10 @@ object TestDefs {
   }
   
   def of[T](o: T) = MockitoMatchers.eq(o)
+  
+  def unchangedDiff() = new Answer[Diff] {
+    override def answer(inv: InvocationOnMock) = {
+      inv.getArguments()(0).asInstanceOf[Diff]
+    }
+  }
 }

@@ -17,15 +17,30 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.lcs
+package org.beandiff.core.model.change
 
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.equality.ObjectType
+import org.beandiff.test.JList
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
 
+@RunWith(classOf[JUnitRunner])
+class ShiftTest extends FunSuite with ShouldMatchers {
 
-trait LcsCalc {
-
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
+  test("should move to greater index") {
+    val list = JList("a", "b", "c", "d")
+    val shift = new Shift("b", 1, 3)
+    
+    shift.perform(list)
+    list should be === JList("a", "c", "d", "b")
+  }
   
-  def objType: ObjectType // FIXME temporary, add global engine configuration // TODO determine common super type of collection elements 
+  test("should move to lowe index") {
+    val list = JList("a", "b", "c", "d")
+    val shift = new Shift("c", 2, 1)
+    
+    shift.perform(list)
+    list should be === JList("a", "c", "b", "d")
+  }
 }

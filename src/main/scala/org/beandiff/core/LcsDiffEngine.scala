@@ -63,4 +63,6 @@ class LcsDiffEngine(
       }
     )
   }
+  
+  def objType = lcsCalc.objType //FIXME FIXME FIXME the same as in lcsCalc
 }

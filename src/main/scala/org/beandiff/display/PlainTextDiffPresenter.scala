@@ -32,23 +32,14 @@ class PlainTextDiffPresenter(
   private val valueQuote: String = "'",
   private val differenceSeparator: String = "\n") extends DiffPresenter {
 
-  private val ordering = new Ordering[(Path, Change)] {
-    def compare(o1: (Path, Change), o2: (Path, Change)) = {
-      val byPath = PathOrdering.compare(o1._1, o2._1)
-      if (byPath == 0)
-        ChangeOrdering.compare(o1._2, o2._2)
-      else
-        byPath
-    }
-  }
-  
+
   override def present(d: Diff): String = {
     if (!d.hasDifference)
       ""
     else {
       val result = new StringBuilder
 
-      for ((path, change) <- d.leafChanges.toList.sorted(ordering)) { // TODO temporary amendments to the new model
+      for ((path, change) <- d.leafChanges.sorted(PathChangeOrdering)) { // TODO temporary amendments to the new model
         change match { // TODO better hierarchy for changes // TODO use sealed classes?
           case Deletion(x, index) => {
             result.append(path.withIndex(index).mkString).append(pathValueSeparator).append("deleted")

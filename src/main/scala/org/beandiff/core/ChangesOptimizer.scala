@@ -17,15 +17,15 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.lcs
+package org.beandiff.core
 
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.equality.ObjectType
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
 
+trait ChangesOptimizer {
 
-trait LcsCalc {
-
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
+  def optimize(diff: Diff, path: Path, changes: (Change, Change)): Diff
   
-  def objType: ObjectType // FIXME temporary, add global engine configuration // TODO determine common super type of collection elements 
+  def supports(changes: (Change, Change)): Boolean
 }

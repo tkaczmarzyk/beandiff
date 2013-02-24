@@ -22,6 +22,7 @@ package org.beandiff.lcs
 import org.beandiff.TypeDefs.JList
 import org.beandiff.support.:+
 import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.equality.Value
 
 class NaiveLcsCalc(
     private val id: EqualityInvestigator) extends LcsCalc {
@@ -44,4 +45,6 @@ class NaiveLcsCalc(
         }
     }
   }
+  
+  override val objType = Value(id) // FIXME
 }

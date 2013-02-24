@@ -17,15 +17,18 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.lcs
+package org.beandiff.core.model
 
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.equality.ObjectType
+import org.beandiff.core.model.change.ChangeOrdering
+import org.beandiff.core.model.change.Change
 
+object PathChangeOrdering extends Ordering[(Path, Change)] {
 
-trait LcsCalc {
-
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
-  
-  def objType: ObjectType // FIXME temporary, add global engine configuration // TODO determine common super type of collection elements 
+  override def compare(o1: (Path, Change), o2: (Path, Change)) = {
+      val byPath = PathOrdering.compare(o1._1, o2._1)
+      if (byPath == 0)
+        ChangeOrdering.compare(o1._2, o2._2)
+      else
+        byPath
+    }
 }

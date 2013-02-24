@@ -17,15 +17,16 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.lcs
+package org.beandiff.equality
 
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.equality.ObjectType
+sealed trait ObjectType {
+  def areEqual(o1: Any, o2: Any): Boolean
+}
 
-
-trait LcsCalc {
-
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
+case class Entity(idDef: EqualityInvestigator) extends ObjectType {
+  override def areEqual(o1: Any, o2: Any) = idDef.areEqual(o1, o2)
+}
   
-  def objType: ObjectType // FIXME temporary, add global engine configuration // TODO determine common super type of collection elements 
+case class Value(eqDef: EqualityInvestigator) extends ObjectType {
+  override def areEqual(o1: Any, o2: Any) = eqDef.areEqual(o1, o2)
 }

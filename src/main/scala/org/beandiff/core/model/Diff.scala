@@ -20,6 +20,7 @@
 package org.beandiff.core.model
 
 import org.beandiff.core.model.change.Change
+import scala.collection.immutable.LinearSeq
 
 
 object Diff {
@@ -51,7 +52,7 @@ trait Diff {
   @deprecated("might lead to unexpected result when collection with insertion/deletion changes is on the path")
   def hasDifference(p: Path): Boolean
   
-  def leafChanges: Traversable[(Path, Change)]
+  def leafChanges: List[(Path, Change)]
   def changes: Traversable[(Property, Diff)] // TODO
   def changes(path: Path): Option[Diff]
   

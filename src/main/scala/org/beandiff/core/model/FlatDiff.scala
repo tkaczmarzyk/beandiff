@@ -33,7 +33,7 @@ private[model] class FlatDiff(
     this(target, List(changes: _*))
   }
 
-  override def leafChanges: Traversable[(Path, Change)] = selfChanges.map(ch => (Path(Self), ch))
+  override def leafChanges = selfChanges.map(ch => (Path(Self), ch))
 
   override def withChange(change: Change) = withChange(Self, change)
 

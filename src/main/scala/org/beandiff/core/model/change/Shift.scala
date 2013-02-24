@@ -22,39 +22,40 @@ package org.beandiff.core.model.change
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.TypeDefs.JList
 
-case class Insertion(
-  element: Any,
-  index: Int) extends Change with Equals {
 
+case class Shift(
+  element: Any, 
+  from: Int, 
+  to: Int) extends Change with Equals {
 
-  override def perform(target: Any): Unit = {
+  override def perform(target: Any) = {
     require(target.isInstanceOf[JList])
+
     val list = target.asInstanceOf[JList]
-    list.add(index, element)
+    list.remove(from)
+    list.add(to, element)
   }
+
+  override def targetProperty = new IndexProperty(from)
+
+  override def newValue = Some(element) // TODO 
+
+  override def oldValue = Some(element) // TODO
   
-  override def targetProperty = new IndexProperty(index)
-
-  override def newValue = Some(element)
-
-  override def oldValue() = None
-
-
-  override def toString = "Insertion[" + element + ", " + index + "]"
   
   def canEqual(other: Any) = {
-    other.isInstanceOf[Insertion]
+    other.isInstanceOf[Shift]
   }
-
+  
   override def equals(other: Any) = {
     other match {
-      case that: Insertion => that.canEqual(Insertion.this) && element == that.element && index == that.index
+      case that: Shift => that.canEqual(Shift.this) && element == that.element && from == that.from && to == that.to
       case _ => false
     }
   }
-
+  
   override def hashCode() = {
     val prime = 41
-    prime * (prime + element.hashCode) + index.hashCode
+    prime * (prime * (prime + element.hashCode) + from.hashCode) + to.hashCode
   }
 }

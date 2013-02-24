@@ -31,44 +31,60 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Shift
+import org.beandiff.core.model.change.ChangeOrdering
+import org.beandiff.core.model.PathChangeOrdering
+import org.beandiff.equality.Entity
+import org.beandiff.equality.Entity
+import org.beandiff.equality.Value
 
-// FIXME: an experimental feature, just a prototype -- if it's OK, then refactor (e.g. move some logic to Changeset.optimize?)
 class LcsResultOptimizer(
   parent: DiffEngineCoordinator,
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
+  private def objType = lcsEngine.objType // FIXME the same as in lcs engine, lcs calc
+
   def calculateDiff(o1: Any, o2: Any) = {
     val diff = lcsEngine.calculateDiff(o1, o2)
-    optimizeDiff(diff)
+    optimize(diff)
   }
 
-  private def optimizeDiff(diff: Diff): Diff = {
-    if (!diff.hasDifference)
-      diff
-    else
-      optimize(diff)
-  }
-  
-  // FIXME temporary, ugly prototype
   private def optimize(diff: Diff): Diff = {
-      var result: Diff = Diff(diff.target)
+    var result = diff
 
-      var skip = List[Change]()
+    var skip = List[Change]()
 
-      for {
-        (path1, change1) <- diff.leafChanges if change1.isInstanceOf[Deletion]
-        (path2, change2) <- diff.leafChanges if change2.isInstanceOf[Insertion] && change1.targetProperty == change2.targetProperty
-      } {
-        skip :::= List(change1, change2)
-        result = parent.calculateDiff(result, change1.targetProperty, change1.oldValue.get, change2.newValue.get)
-      }
-
-      for ((path, change) <- diff.leafChanges) {
-        if (!skip.contains(change)) {
-            result = result.withChange(path, change)
+    for {
+      (path, change1) <- diff.leafChanges.sorted(PathChangeOrdering)
+      (path, change2) <- diff.leafChanges.sorted(PathChangeOrdering)
+    } {
+      if (!(skip.contains(change1) || skip.contains(change2))) {
+        (change1, change2) match {
+          case (Deletion(x, idx), Insertion(y, idx2)) if idx == idx2 => { // TODO high complexity, factor out some stuff
+            val allowed = objType match {
+              case Entity(id) => id.areEqual(x, y)
+              case Value(_) => true
+            }
+            if (allowed) {
+              result = result.without(path, change1).without(path, change2)
+              result = parent.calculateDiff(result, change1.targetProperty, change1.oldValue.get, change2.newValue.get)
+              skip = change1 :: change2 :: skip
+            }
+          }
+          case (Deletion(x, idx), Insertion(y, idx2)) if objType.areEqual(x, y) => {
+            result = result.without(path, change1).without(path, change2) // TODO add without(path, changes*)
+            result = result.withChange(path, new Shift(x, idx, idx2))
+            result = parent.calculateDiff(result, change1.targetProperty, x, y)
+            skip = change1 :: change2 :: skip
+          }
+          case _ => {}
         }
       }
+    }
 
-      result
+    result
   }
+
 }

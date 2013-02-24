@@ -26,5 +26,5 @@ import org.beandiff.core.model.Property
 // TODO well, naming things is one of the hard things in computer science
 trait DiffEngineCoordinator {
 
-  def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff
+  def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff // TODO better name of method & params
 }

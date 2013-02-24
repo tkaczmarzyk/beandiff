@@ -29,7 +29,7 @@ private[model] class DeepDiff(
   private val propChanges: Map[Property, Diff]) extends Diff {
 
 
-  override def leafChanges: Traversable[(Path, Change)] = // TODO generic method for traversation (with break option)
+  override def leafChanges = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
       case (prop, changeSet) => changeSet.leafChanges.map(pathChange => (Path(prop) ++ pathChange._1, pathChange._2))
     })
