@@ -30,16 +30,20 @@ import org.beandiff.core.LimitedDepthStrategy
 import org.beandiff.core.CompositeDescendingStrategy
 import org.beandiff.core.EndOnNullStrategy
 import org.beandiff.core.EndOnSimpleTypeStrategy
+import scala.annotation.varargs
+import java.lang.annotation.Annotation
 
 
 object DiffEngineBuilder {
   
-  def aDiffEngine(): DiffEngineBuilder = null
+  def apply() = aDiffEngine()
+  
+  def aDiffEngine(): DiffEngineBuilder = new DiffEngineBuilder
   
   implicit def builder2engine(builder: DiffEngineBuilder) = builder.build() 
 }
 
-class DiffEngineBuilder {
+class DiffEngineBuilder private () {
 
   private var eqInvestigators: ClassDictionary[EqualityInvestigator] = BeanDiff.DefaultEqInvestigators
   private var descStrategy: DescendingStrategy = BeanDiff.DefaultDescStrategy
@@ -52,6 +56,41 @@ class DiffEngineBuilder {
   
   def withDepthLimit(maxDepth: Int) = {
     descStrategy = CompositeDescendingStrategy.allOf(new LimitedDepthStrategy(maxDepth), BeanDiff.DefaultDescStrategy)
+    this
+  }
+  
+  @varargs
+  def withEntity[T](clazz: Class[T])(idField: String, idFields: String*) = {
+    // TODO
+    this
+  }
+  
+  def withEntity[T, A <: Annotation](clazz: Class[T])(idAnno: Class[A]) = {
+    // TODO
+    this
+  }
+  
+  def withEntity[T](clazz: Class[T])(idDef: EqualityInvestigator) = {
+    // TODO
+    this
+  }
+  
+  def withEndType[T](clazz: Class[T]) = {
+    // TODO
+    this
+  }
+  
+  def withEndType[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
+    // TODO
+    this
+  }
+  
+  def `with`[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
+    withEqualityDef(clazz)(eqDef)
+  }
+  
+  def withEqualityDef[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
+    // TODO
     this
   }
   
