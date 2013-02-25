@@ -29,5 +29,10 @@ private class DescendingHistoryImpl(
   
   override def stepBack = new DescendingHistoryImpl(currentPath.stepBack, historyReversed.tail)
   
-  override def hasSeen(elem: Any) = historyReversed.exists(_ == elem)
+  override def hasSeen(elem: Any) = {
+    val isRef = elem.isInstanceOf[AnyRef]
+    historyReversed.exists((o: Any) =>
+      if (isRef) o.isInstanceOf[AnyRef] && (o.asInstanceOf[AnyRef] eq elem.asInstanceOf[AnyRef])
+      else elem == o)
+  }
 }
