@@ -21,9 +21,7 @@ package org.beandiff
 
 import java.io.PrintStream
 import java.io.PrintWriter
-
 import scala.annotation.varargs
-
 import org.beandiff.TypeDefs.JBigDecimal
 import org.beandiff.core.DelegatingDiffEngine
 import org.beandiff.core.DiffEngine
@@ -37,6 +35,10 @@ import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.Value
+import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.equality.DiffEqualityInvestigator
 
 /**
  * A container for syntactic sugar methods

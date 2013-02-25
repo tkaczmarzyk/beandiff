@@ -19,21 +19,29 @@
  */
 package org.beandiff
 
-import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.mockito.{Matchers => MockitoMatchers}
+import scala.collection.immutable.HashMap
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
-import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.Property
-import scala.collection.immutable.HashMap
-import org.mockito.stubbing.Answer
-import org.mockito.invocation.InvocationOnMock
+import org.beandiff.core.model.change.Change
+import org.beandiff.equality.Entity
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.support.ClassDictionary
+import org.mockito.{Matchers => MockitoMatchers}
 import org.mockito.Mockito
+import org.mockito.Mockito.when
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import org.beandiff.equality.Value
 
 
 object TestDefs {
 
+  final val EverythingIsSimpleVal = new ClassDictionary[ObjectType](Value(new SelectiveEqualityInvestigator("name")))
+  
+  final val NameIsId = new ClassDictionary[ObjectType](Entity(new SelectiveEqualityInvestigator("name")))
+  
   implicit def fun0ToAnswer[R](fun: Function1[InvocationOnMock, R]) = {
     new Answer[R] {
       override def answer(invocation: InvocationOnMock) = fun.apply(invocation)

@@ -37,15 +37,21 @@ import org.beandiff.core.translation.InsertionToAddition
 import org.beandiff.core.translation.DeletionToRemoval
 import org.beandiff.lcs.MemoizedLcsCalc
 import org.beandiff.equality.DiffEqualityInvestigator
+import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.Value
+import org.beandiff.equality.StdEqualityInvestigator
 
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy) extends DiffEngine with DiffEngineCoordinator {
 
+  private val objTypeDefs = new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
+  
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
-        new LcsDiffEngine(this, new MemoizedLcsCalc(new DiffEqualityInvestigator(this)))))
+        new LcsDiffEngine(this, objTypeDefs, new MemoizedLcsCalc)))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
           Map(//classOf[NewValue] -> new IndexPropChangeTranslator,

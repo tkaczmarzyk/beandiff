@@ -44,7 +44,6 @@ class LcsResultOptimizer(
   parent: DiffEngineCoordinator,
   lcsEngine: LcsDiffEngine) extends DiffEngine {
 
-  private def objType = lcsEngine.objType // FIXME the same as in lcs engine, lcs calc
 
   def calculateDiff(o1: Any, o2: Any) = {
     val diff = lcsEngine.calculateDiff(o1, o2)
@@ -63,7 +62,7 @@ class LcsResultOptimizer(
       if (!(skip.contains(change1) || skip.contains(change2))) {
         (change1, change2) match {
           case (Deletion(x, idx), Insertion(y, idx2)) if idx == idx2 => { // TODO high complexity, factor out some stuff
-            val allowed = objType match {
+            val allowed = lcsEngine.objTypes(x.getClass) match {
               case Entity(id) => id.areEqual(x, y)
               case Value(_) => true
             }
@@ -73,7 +72,7 @@ class LcsResultOptimizer(
               skip = change1 :: change2 :: skip
             }
           }
-          case (Deletion(x, idx), Insertion(y, idx2)) if objType.areEqual(x, y) => {
+          case (Deletion(x, idx), Insertion(y, idx2)) if lcsEngine.objTypes(x.getClass).areEqual(x, y) => {
             result = result.without(path, change1).without(path, change2) // TODO add without(path, changes*)
             result = result.withChange(path, new Shift(x, idx, idx2))
             result = parent.calculateDiff(result, change1.targetProperty, x, y)

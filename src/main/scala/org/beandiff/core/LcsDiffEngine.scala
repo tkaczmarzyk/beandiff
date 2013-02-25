@@ -32,16 +32,19 @@ import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.IndexProperty
+import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.ObjectType
 
 class LcsDiffEngine(
   private val delegate: DiffEngineCoordinator,
+  val objTypes: ClassDictionary[ObjectType],
   private val lcsCalc: LcsCalc) extends DiffEngine {
 
   def calculateDiff(o1: Any, o2: Any) = {
     val xs = o1.asInstanceOf[JList]
     val ys = o2.asInstanceOf[JList]
 
-    val lcs = lcsCalc.lcs(xs, ys)
+    val lcs = lcsCalc.lcs(xs, ys)(objTypes)
 
     val deleted = xs.dropIndices(lcs.map(_.index1))
     val inserted = ys.dropIndices(lcs.map(_.index2))
@@ -63,6 +66,4 @@ class LcsDiffEngine(
       }
     )
   }
-  
-  def objType = lcsCalc.objType //FIXME FIXME FIXME the same as in lcsCalc
 }

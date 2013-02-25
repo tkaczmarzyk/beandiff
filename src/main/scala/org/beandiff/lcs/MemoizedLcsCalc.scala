@@ -21,13 +21,15 @@ package org.beandiff.lcs
 
 import java.util.HashMap
 import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.ObjectType
 
-class MemoizedLcsCalc(
-    id: EqualityInvestigator) extends NaiveLcsCalc(id) {
+class MemoizedLcsCalc extends NaiveLcsCalc {
 
   private var cache = new HashMap[(Seq[Any], Seq[Any]), Seq[Occurence]]()
   
-  override def lcs(xs: Seq[Any], ys: Seq[Any]) = {
+  override def lcs(xs: Seq[Any], ys: Seq[Any])(implicit objTypes: ClassDictionary[ObjectType]) = {
     if (cache.containsKey((xs, ys))) {
       cache.get((xs, ys))
     } else {

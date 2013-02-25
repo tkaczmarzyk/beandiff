@@ -24,6 +24,8 @@ import org.beandiff.BeanDiff
 import org.beandiff.TestDefs.anyDiff
 import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.of
+import org.beandiff.TestDefs.NameIsId
+import org.beandiff.TestDefs.EverythingIsSimpleVal
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
@@ -47,6 +49,9 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.Entity
 
 @RunWith(classOf[JUnitRunner])
 class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
@@ -57,7 +62,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     override def answer(invocation: InvocationOnMock) = invocation.getArguments()(0).asInstanceOf[Diff]
   })
 
-  private val engine = new LcsDiffEngine(mockDelegate, new NaiveLcsCalc(new StdEqualityInvestigator))
+  private val engine = new LcsDiffEngine(mockDelegate, EverythingIsSimpleVal, new NaiveLcsCalc())
 
   private val abc = Arrays.asList("a", "b", "c")
   private val xbc = Arrays.asList("x", "b", "c")
@@ -74,7 +79,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     val l2 = JList(a2, b, c)
 
     val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-      new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
+      NameIsId, new NaiveLcsCalc()) // TODO simplify creation
 
     val d = engine.calculateDiff(l1, l2)
     

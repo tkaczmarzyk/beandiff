@@ -21,11 +21,11 @@ package org.beandiff.lcs
 
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.ObjectType
+import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.ObjectType
 
 
 trait LcsCalc {
 
-  def lcs(xs: Seq[Any], ys: Seq[Any]): Seq[Occurence]
-  
-  def objType: ObjectType // FIXME temporary, add global engine configuration // TODO determine common super type of collection elements 
+  def lcs(xs: Seq[Any], ys: Seq[Any])(implicit objTypes: ClassDictionary[ObjectType]): Seq[Occurence] // TODO consider swapping the param lists
 }

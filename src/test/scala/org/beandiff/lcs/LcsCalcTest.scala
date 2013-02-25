@@ -23,29 +23,29 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.TestDefs.EverythingIsSimpleVal
 
 
 @RunWith(classOf[JUnitRunner])
 class LcsCalcTest extends FunSuite with ShouldMatchers {
 
-  private val calc = new NaiveLcsCalc(new StdEqualityInvestigator)
+  private val calc = new NaiveLcsCalc
   
 
   test("lcs of empty lists should be empty") {
-    calc.lcs(List(), List()) should be === List()
+    calc.lcs(List(), List())(EverythingIsSimpleVal) should be === List()
   }
   
   test("lcs of empty and non-empty should be empty") {
-    calc.lcs(List(1, 2, 3), List()) should be === List()
+    calc.lcs(List(1, 2, 3), List())(EverythingIsSimpleVal) should be === List()
   }
   
   test("lcs of a seq and its copy should be the whole seq") {
-    calc.lcs("abc", "abc") should be === List(Occurence('a', 0, 0), Occurence('b', 1, 1), Occurence('c', 2, 2))
+    calc.lcs("abc", "abc")(EverythingIsSimpleVal) should be === List(Occurence('a', 0, 0), Occurence('b', 1, 1), Occurence('c', 2, 2))
   }
   
   test("lcs(human, chimpanzee) should be hman") {
-    calc.lcs("human", "chimpanzee") should be ===
+    calc.lcs("human", "chimpanzee")(EverythingIsSimpleVal) should be ===
       List(Occurence('h', 0, 1), Occurence('m', 2, 3), Occurence('a', 3, 5), Occurence('n', 4, 6))
   }
 }

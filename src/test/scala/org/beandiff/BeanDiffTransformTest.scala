@@ -20,6 +20,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.TestDefs.NameIsId
 import org.beandiff.test.ObjectTestSupport.convert
 import org.beandiff.TypeDefs._
 import org.beandiff.beans.ParentBean
@@ -169,7 +170,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l2 = JList(x1, a2, b1, c1)
       
       val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-        new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
+        NameIsId, new NaiveLcsCalc()) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()
       l1 should be === JList(x1, a1, b1, c1)
@@ -240,7 +241,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l2 = JList(a2, b1, c1)
 
       val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-        new NaiveLcsCalc(new SelectiveEqualityInvestigator("name"))) // TODO simplify creation
+        NameIsId, new NaiveLcsCalc()) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()
 
