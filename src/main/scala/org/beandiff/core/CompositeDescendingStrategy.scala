@@ -21,9 +21,14 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Path
 
-class EndOnNullStrategy extends DescendingStrategy {
+object CompositeDescendingStrategy {
 
-  def shouldProceed(path: Path, o1: Any, o2: Any): Boolean = {
-    o1 != null && o2 != null
+  def allOf(strategy: DescendingStrategy, strategies: DescendingStrategy*) = {
+    val allStrategies = strategy +: strategies
+    new DescendingStrategy {
+      override def shouldProceed(path: Path, obj1: Any, obj2: Any) = {
+        allStrategies.forall(_.shouldProceed(path, obj1, obj2))
+      }
+    }
   }
 }

@@ -45,9 +45,12 @@ import org.beandiff.equality.StdEqualityInvestigator
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
-  private val descStrategy: DescendingStrategy) extends DiffEngine with DiffEngineCoordinator {
+  private val descStrategy: DescendingStrategy,
+  typeDefs: ClassDictionary[ObjectType] = null) extends DiffEngine with DiffEngineCoordinator {
 
-  private val objTypeDefs = new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
+  private val objTypeDefs = 
+    if (typeDefs != null) typeDefs
+    else new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
   
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,

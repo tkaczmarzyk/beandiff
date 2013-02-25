@@ -20,6 +20,16 @@
 package org.beandiff
 
 import org.beandiff.core.DiffEngine
+import org.beandiff.core.DescendingStrategy
+import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.core.DelegatingDiffEngine
+import org.beandiff.core.DiffEngine
+import org.beandiff.equality.ObjectType
+import org.beandiff.core.LimitedDepthStrategy
+import org.beandiff.core.CompositeDescendingStrategy
+import org.beandiff.core.EndOnNullStrategy
+import org.beandiff.core.EndOnSimpleTypeStrategy
 
 
 object DiffEngineBuilder {
@@ -31,9 +41,20 @@ object DiffEngineBuilder {
 
 class DiffEngineBuilder {
 
-  private var engine: DiffEngine = null
+  private var eqInvestigators: ClassDictionary[EqualityInvestigator] = BeanDiff.DefaultEqInvestigators
+  private var descStrategy: DescendingStrategy = BeanDiff.DefaultDescStrategy
+  private var objTypes: ClassDictionary[ObjectType] = null
   
+  def ignoringCase = {
+    eqInvestigators = eqInvestigators.withEntry(BeanDiff.IgnoreCase)
+    this
+  }
   
-  def build() = engine
+  def withDepthLimit(maxDepth: Int) = {
+    descStrategy = CompositeDescendingStrategy.allOf(new LimitedDepthStrategy(maxDepth), BeanDiff.DefaultDescStrategy)
+    this
+  }
+  
+  def build(): DiffEngine = new DelegatingDiffEngine(eqInvestigators, descStrategy)
   
 }

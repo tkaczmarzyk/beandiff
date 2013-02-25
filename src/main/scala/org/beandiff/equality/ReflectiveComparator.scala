@@ -26,6 +26,7 @@ import org.beandiff.core.ObjectWalker
 import org.beandiff.core.EndOnNullStrategy
 import org.beandiff.support.ClassDictionary
 import org.beandiff.core.NoopTransformer
+import org.beandiff.core.CompositeDescendingStrategy
 
 /**
  * <p>
@@ -115,7 +116,7 @@ class ReflectiveComparator extends Comparator[Any] {
       } else { //FIXME var and dependency to core
         var result = 0
         
-        new ObjectWalker(new EndOnNullStrategy(new OldBreakCycleStrategy(EndOnSimpleTypeStrategy)), //TODO add it as comparator's parameters?
+        new ObjectWalker(CompositeDescendingStrategy.allOf(new EndOnNullStrategy(), new OldBreakCycleStrategy(EndOnSimpleTypeStrategy)), //TODO add it as comparator's parameters?
             ObjectWalker.DefaultRoutePlanners.withDefault(FieldRoutePlannerWithCache),
             new ClassDictionary(NoopTransformer),
           (path, val1, val2, isLeaf) =>

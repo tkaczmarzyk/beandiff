@@ -34,6 +34,7 @@ import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.beandiff.equality.Value
+import org.beandiff.core.DescendingStrategy
 
 
 object TestDefs {
@@ -82,6 +83,8 @@ object TestDefs {
     Mockito.mock(m.erasure, name).asInstanceOf[T]
   }
   
+  def mock() = Mockito.mock(classOf[Object])
+  
   def anyDiff = any[Diff]
   
   def anyChange = any[Change]
@@ -95,6 +98,12 @@ object TestDefs {
   }
   
   def of[T](o: T) = MockitoMatchers.eq(o)
+  
+  def mockDescStrategy(fixedResult: Boolean) = {
+    val m = mock[DescendingStrategy]
+    when(m.shouldProceed(anyPath, any, any)).thenReturn(fixedResult)
+    m
+  }
   
   def unchangedDiff() = new Answer[Diff] {
     override def answer(inv: InvocationOnMock) = {

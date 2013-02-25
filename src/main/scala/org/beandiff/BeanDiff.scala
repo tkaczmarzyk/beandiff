@@ -39,6 +39,7 @@ import org.beandiff.equality.ObjectType
 import org.beandiff.equality.Value
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.equality.DiffEqualityInvestigator
+import org.beandiff.core.CompositeDescendingStrategy
 
 /**
  * A container for syntactic sugar methods
@@ -49,7 +50,8 @@ object BeanDiff {
 
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
 
-  final val DefaultDescStrategy = new EndOnNullStrategy(EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal]))
+  final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
+      new EndOnNullStrategy(), EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal]))
 
   final val DefaultPresenter = new PlainTextDiffPresenter
 
