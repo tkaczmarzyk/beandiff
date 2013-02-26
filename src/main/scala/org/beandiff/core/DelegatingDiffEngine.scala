@@ -42,31 +42,35 @@ import org.beandiff.equality.ObjectType
 import org.beandiff.equality.Value
 import org.beandiff.equality.StdEqualityInvestigator
 
-
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy,
   typeDefs: ClassDictionary[ObjectType] = null) extends DiffEngine with DiffEngineCoordinator {
 
-  private val objTypeDefs = 
-    if (typeDefs != null) typeDefs
-    else new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
-  
+  private val objTypeDefs =
+    if (typeDefs != null)
+      if (typeDefs.defaultValue == null)
+        typeDefs.withDefault(Value(new DiffEqualityInvestigator(this)))
+      else
+        typeDefs
+    else
+      new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
+
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
-        new LcsDiffEngine(this, objTypeDefs, new MemoizedLcsCalc)))
+      new LcsDiffEngine(this, objTypeDefs, new MemoizedLcsCalc)))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
-          Map(//classOf[NewValue] -> new IndexPropChangeTranslator,
-              classOf[Insertion] -> new InsertionToAddition,
-              classOf[Deletion] -> new DeletionToRemoval)))
+        Map( //classOf[NewValue] -> new IndexPropChangeTranslator,
+          classOf[Insertion] -> new InsertionToAddition,
+          classOf[Deletion] -> new DeletionToRemoval)))
 
   private var visited = DescendingHistory()
-              
+
   def calculateDiff(o1: Any, o2: Any): Diff = {
     calculateDiff(Diff(o1), Self, o1, o2)
   }
-  
+
   def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff = {
     if (visited.hasSeen(o1) || !descStrategy.shouldProceed(visited.currentPath.step(location), o1, o2)) {
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2))
@@ -81,7 +85,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
       zero.withChanges(location, result)
     }
   }
-  
+
   private def getEqInvestigator(val1: Any, val2: Any) = { // TODO: move null-checks to ClassDictionary ?
     if (val1 == null && val2 == null)
       eqInvestigators.defaultValue

@@ -19,81 +19,93 @@
  */
 package org.beandiff
 
-import org.beandiff.core.DiffEngine
-import org.beandiff.core.DescendingStrategy
-import org.beandiff.support.ClassDictionary
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.DelegatingDiffEngine
-import org.beandiff.core.DiffEngine
-import org.beandiff.equality.ObjectType
-import org.beandiff.core.LimitedDepthStrategy
-import org.beandiff.core.CompositeDescendingStrategy
-import org.beandiff.core.EndOnNullStrategy
-import org.beandiff.core.EndOnSimpleTypeStrategy
-import scala.annotation.varargs
 import java.lang.annotation.Annotation
+
+import scala.annotation.varargs
+
+import org.beandiff.core.CompositeDescendingStrategy
+import org.beandiff.core.DelegatingDiffEngine
+import org.beandiff.core.DescendingStrategy
+import org.beandiff.core.DiffEngine
+import org.beandiff.core.EndOnNullStrategy
+import org.beandiff.core.LimitedDepthStrategy
+import org.beandiff.equality.AnnotationEqualityInvestigator
+import org.beandiff.equality.Entity
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.support.ClassDictionary
 
 
 object DiffEngineBuilder {
-  
+
   def apply() = aDiffEngine()
-  
+
   def aDiffEngine(): DiffEngineBuilder = new DiffEngineBuilder
-  
-  implicit def builder2engine(builder: DiffEngineBuilder) = builder.build() 
+
+  implicit def builder2engine(builder: DiffEngineBuilder) = builder.build()
 }
 
 class DiffEngineBuilder private () {
 
   private var eqInvestigators: ClassDictionary[EqualityInvestigator] = BeanDiff.DefaultEqInvestigators
-  private var descStrategy: DescendingStrategy = BeanDiff.DefaultDescStrategy
-  private var objTypes: ClassDictionary[ObjectType] = null
-  
+  private var endTypes = BeanDiff.DefaultEndTypes
+  private var additionalDescStrategy: DescendingStrategy = null
+  private var objTypes = new ClassDictionary[ObjectType]()
+
   def ignoringCase = {
     eqInvestigators = eqInvestigators.withEntry(BeanDiff.IgnoreCase)
     this
   }
-  
+
   def withDepthLimit(maxDepth: Int) = {
-    descStrategy = CompositeDescendingStrategy.allOf(new LimitedDepthStrategy(maxDepth), BeanDiff.DefaultDescStrategy)
+    additionalDescStrategy = new LimitedDepthStrategy(maxDepth)
     this
   }
-  
+
   @varargs
   def withEntity[T](clazz: Class[T])(idField: String, idFields: String*) = {
-    // TODO
+    objTypes = objTypes.withEntry(clazz -> Entity(new SelectiveEqualityInvestigator(idField, idFields: _*)))
     this
   }
-  
-  def withEntity[T, A <: Annotation](clazz: Class[T])(idAnno: Class[A]) = {
-    // TODO
+
+  def withEntity[T, A <: Annotation](clazz: Class[T])(idAnno: Class[A])(implicit m: Manifest[A]) = {
+    objTypes = objTypes.withEntry(clazz -> Entity(new AnnotationEqualityInvestigator(idAnno)))
     this
   }
-  
+
   def withEntity[T](clazz: Class[T])(idDef: EqualityInvestigator) = {
-    // TODO
+    objTypes = objTypes.withEntry(clazz -> Entity(idDef))
     this
   }
-  
+
   def withEndType[T](clazz: Class[T]) = {
-    // TODO
+    endTypes = endTypes.withLeaf(clazz)
     this
   }
-  
-  def withEndType[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
-    // TODO
-    this
+
+  def withEndType[T](clazz: Class[T])(eqDef: EqualityInvestigator): DiffEngineBuilder = {
+    withEqualityDef(clazz)(eqDef).withEndType(clazz)
   }
-  
+
   def `with`[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
     withEqualityDef(clazz)(eqDef)
   }
-  
+
   def withEqualityDef[T](clazz: Class[T])(eqDef: EqualityInvestigator) = {
-    // TODO
+    eqInvestigators = eqInvestigators.withEntry(clazz -> eqDef)
     this
   }
-  
-  def build(): DiffEngine = new DelegatingDiffEngine(eqInvestigators, descStrategy)
+
+  def build(): DiffEngine = {
+    new DelegatingDiffEngine(eqInvestigators, descendingStrategy(), objTypes)
+  }
+
+  private def descendingStrategy() = {
+    if (additionalDescStrategy == null)
+      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, endTypes)
+    else
+      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, additionalDescStrategy, endTypes)
+  }
   
 }

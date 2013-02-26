@@ -50,8 +50,10 @@ object BeanDiff {
 
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
 
+  final val DefaultEndTypes = EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal])
+  
   final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
-      new EndOnNullStrategy(), EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal]))
+      new EndOnNullStrategy(), DefaultEndTypes)
 
   final val DefaultPresenter = new PlainTextDiffPresenter
 
@@ -106,6 +108,8 @@ object BeanDiff {
   def printDiff(out: PrintWriter, o1: Any, o2: Any, modifiers: Any*) =
     print(out, diff(o1, o2, modifiers: _*))
 
+  def aDiffEngine() = DiffEngineBuilder.aDiffEngine()
+    
   private def getEqInvestigatorMappings(objects: List[_]) = {
     objects.filter(_.isInstanceOf[EqInvestigatorBinding])
       .asInstanceOf[Iterable[EqInvestigatorBinding]]
