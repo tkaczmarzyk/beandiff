@@ -39,6 +39,8 @@ import org.beandiff.core.model.PathChangeOrdering
 import org.beandiff.equality.Entity
 import org.beandiff.equality.Entity
 import org.beandiff.equality.Value
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.IndexProperty
 
 class LcsResultOptimizer(
   parent: DiffEngineCoordinator,
@@ -62,19 +64,18 @@ class LcsResultOptimizer(
       if (!(skip.contains(change1) || skip.contains(change2))) {
         (change1, change2) match {
           case (Deletion(x, idx), Insertion(y, idx2)) if idx == idx2 => { // TODO high complexity, factor out some stuff
-            val allowed = lcsEngine.objTypes(x.getClass) match {
-              case Entity(id) => id.areEqual(x, y)
-              case Value(_) => true
-            }
-            if (allowed) {
-              result = result.without(path, change1).without(path, change2)
+            result = result.without(path, change1).without(path, change2)
+            skip = change1 :: change2 :: skip
+            
+            if (lcsEngine.objTypes(x.getClass).allowedToDiff(x, y)) { // FIXME what if y is entity here?
               result = parent.calculateDiff(result, change1.targetProperty, change1.oldValue.get, change2.newValue.get)
-              skip = change1 :: change2 :: skip
+            } else {
+              result = result.withChange(path, NewValue(IndexProperty(idx), x, y))
             }
           }
           case (Deletion(x, idx), Insertion(y, idx2)) if lcsEngine.objTypes(x.getClass).areEqual(x, y) => {
             result = result.without(path, change1).without(path, change2) // TODO add without(path, changes*)
-            result = result.withChange(path, new Shift(x, idx, idx2))
+            result = result.withChange(path, Shift(x, idx, idx2))
             result = parent.calculateDiff(result, change1.targetProperty, x, y)
             skip = change1 :: change2 :: skip
           }

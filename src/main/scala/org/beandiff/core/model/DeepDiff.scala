@@ -103,6 +103,10 @@ private[model] class DeepDiff(
     }
   }
   
+  override def withChanges(path: Path, changes: Seq[Change]) = {
+    changes.foldLeft[Diff](this)((acc: Diff, change: Change) => acc.withChange(path, change))
+  }
+  
   override def withChanges(property: Property, subDiff: Diff) = {
     if (!subDiff.hasDifference)
       this

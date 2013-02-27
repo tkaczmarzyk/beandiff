@@ -52,28 +52,33 @@ import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.beans.Simpsons
 
 @RunWith(classOf[JUnitRunner])
-class LcsResultOptimizerTest extends FunSuite with ShouldMatchers {
+class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons {
 
   private final val EverythingIsAValueWithNameId = new ClassDictionary[ObjectType](Value(new SelectiveEqualityInvestigator("name")))
   
   private val lcsEngine = mock[LcsDiffEngine]
   private val parent = mock[DiffEngineCoordinator]
   
-  when(lcsEngine.objTypes).thenReturn(NameIsId)
+  when(lcsEngine.objTypes).thenReturn(EverythingIsEntityWithNameId)
   
   private val optimizer = new LcsResultOptimizer(parent, lcsEngine)
   
-  private val bart = new SimpleJavaBean("bart", 10)
-  private val lisa = new SimpleJavaBean("lisa", 8)
-  private val lisa2 = new SimpleJavaBean("lisa", 9)
-  private val maggie = new SimpleJavaBean("maggie", 1)
-  private val maggie2 = new SimpleJavaBean("maggie", 2)
-  private val milhouse = new SimpleJavaBean("milhouse", 10)
   private val simpsons = JList(bart, lisa, maggie)
-  
 
+  
+  test("should merge insertion and deletion into new-value when index property is the same and identity different") {
+    val children = JList(bart, lisa, milhouse)
+    when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(Diff(simpsons,
+        new Deletion(maggie, 2), new Insertion(milhouse, 2)))
+    
+    val expectedDiff = Diff(simpsons, NewValue(Property("[2]"), maggie, milhouse))
+        
+    optimizer.calculateDiff(simpsons, children) should be === expectedDiff
+  }
+  
   test("should merge insert with delete into sub-diff when index and identity are the same") {
     val simps2 = JList(bart, lisa, maggie2)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
@@ -84,14 +89,6 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers {
     when(parent.calculateDiff(Diff(simpsons), Property("[2]"), maggie, maggie2)).thenReturn(expectedDiff)
         
     optimizer.calculateDiff(simpsons, simps2) should be === expectedDiff
-  }
-  
-  test("should not merge insert with delete when identity is not the same") {
-    val children = JList(bart, lisa, milhouse)
-    val rawDiff = Diff(simpsons, new Deletion(maggie, 2), new Insertion(milhouse, 2))
-    when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(rawDiff)
-    
-    optimizer.calculateDiff(simpsons, children) should be === rawDiff
   }
   
   test("should merge insert with delete into shift when indentity is the same") {

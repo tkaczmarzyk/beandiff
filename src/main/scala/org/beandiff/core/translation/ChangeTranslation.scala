@@ -24,5 +24,5 @@ import org.beandiff.core.model.change.Change
 
 trait ChangeTranslation { // TODO type parameters
 
-  def translate(change: Change): Change
+  def translate(change: Change): Seq[Change]
 }

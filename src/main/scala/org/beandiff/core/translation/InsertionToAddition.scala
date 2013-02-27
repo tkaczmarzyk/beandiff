@@ -29,7 +29,7 @@ class InsertionToAddition extends ChangeTranslation {
 
   override def translate(insert: Change) = {
     if (insert.isInstanceOf[Insertion])
-      new Addition(insert.newValue.get)
+      List(new Addition(insert.newValue.get))
     else
       throw new IllegalArgumentException("expected insertion but was: " + insert)
   }

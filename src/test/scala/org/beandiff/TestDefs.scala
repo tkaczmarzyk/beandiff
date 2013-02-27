@@ -41,7 +41,7 @@ object TestDefs {
 
   final val EverythingIsSimpleVal = new ClassDictionary[ObjectType](Value(new SelectiveEqualityInvestigator("name")))
   
-  final val NameIsId = new ClassDictionary[ObjectType](Entity(new SelectiveEqualityInvestigator("name")))
+  final val EverythingIsEntityWithNameId = new ClassDictionary[ObjectType](Entity(new SelectiveEqualityInvestigator("name")))
   
   implicit def fun0ToAnswer[R](fun: Function1[InvocationOnMock, R]) = {
     new Answer[R] {

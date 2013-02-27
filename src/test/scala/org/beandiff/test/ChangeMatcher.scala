@@ -20,15 +20,18 @@
 package org.beandiff.test
 
 import org.beandiff.core.model._
+import org.beandiff.core.model.Path.EmptyPath
 import org.scalatest.matchers._
 import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.Deletion
 
 class ChangeMatcher(
-    change: Change) extends Matcher[Diff] {
+    change: Change,
+    path: Path = EmptyPath) extends Matcher[Diff] {
 
   def apply(left: Diff): MatchResult = {
-    val filtered = left.leafChanges.filter(pathChange => pathChange._2 == change)
-    MatchResult(!filtered.isEmpty, "Diff doesn't have " + change + ":\n" + left, "Diff does have " + change + ":\n" + left)
+    val filtered = left.leafChanges.filter(pathChange => pathChange._1 == path && pathChange._2 == change)
+    MatchResult(!filtered.isEmpty, "Diff doesn't have " + change + " at " + path.mkString + ":\n" + left,
+        "Diff does have " + change + " at " + path.mkString + ":\n" + left)
   }
 }

@@ -28,7 +28,7 @@ class DeletionToRemoval extends ChangeTranslation {
   
   def translate(del: Change) = {
     if (del.isInstanceOf[Deletion])
-      new Removal(del.oldValue.get)
+      List(new Removal(del.oldValue.get))
     else
       throw new IllegalArgumentException("expected Deletion but was: " + del)
   }

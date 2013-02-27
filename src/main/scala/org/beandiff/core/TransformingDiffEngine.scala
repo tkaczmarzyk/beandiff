@@ -58,7 +58,7 @@ class TransformingDiffEngine(
             val path = pathChange._1
             val change = pathChange._2
             translators.get(change.getClass) match {
-              case Some(t) => acc.without(path, change).withChange(path, t.translate(change))
+              case Some(t) => acc.without(path, change).withChanges(path, t.translate(change))
               case None => acc
             }
           }

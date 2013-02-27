@@ -24,7 +24,7 @@ import org.beandiff.BeanDiff
 import org.beandiff.TestDefs.anyDiff
 import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.of
-import org.beandiff.TestDefs.NameIsId
+import org.beandiff.TestDefs.EverythingIsEntityWithNameId
 import org.beandiff.TestDefs.EverythingIsSimpleVal
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Diff
@@ -79,7 +79,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     val l2 = JList(a2, b, c)
 
     val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
-      NameIsId, new NaiveLcsCalc()) // TODO simplify creation
+      EverythingIsEntityWithNameId, new NaiveLcsCalc()) // TODO simplify creation
 
     val d = engine.calculateDiff(l1, l2)
     

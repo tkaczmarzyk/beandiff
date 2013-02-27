@@ -58,6 +58,7 @@ trait Diff {
   
   def withChanges(property: Property, changes: Diff): Diff
   def withChanges(path: Path, changes: Diff): Diff
+  def withChanges(path: Path, changes: Seq[Change]): Diff
   
   def withChange(change: Change): Diff // TODO?
   def withChange(path: Path, change: Change): Diff

@@ -37,6 +37,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
+import org.beandiff.test.BeanDiffMatchers._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
@@ -56,7 +57,7 @@ class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
   private val ch3 = mockChange("ch3")
   private val testDiff = Diff(o1, Self -> Diff(o1, ch1, ch2), Property("name") -> Diff(null, ch3))
   
-  when(translation.translate(anyChange)).thenAnswer(() => mockChange("translated"))
+  when(translation.translate(anyChange)).thenReturn(Seq(mockChange("translated")))
   when(delegate.calculateDiff(anyDiff, anyProp, any, any)).thenReturn(testDiff)
   
   
@@ -86,5 +87,16 @@ class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
     engine.calculateDiff(o1, o2)
     
     verify(translation, never).translate(ch3)
+  }
+  
+  test("should add all the result changes to the diff") {
+    val ch4 = mockChange("ch4")
+    val ch5 = mockChange("ch5")
+    when(translation.translate(ch1)).thenReturn(Seq(ch4, ch5))
+    
+    val d = engine.calculateDiff(o1, o2)
+    
+    d should haveChange(ch4)
+    d should haveChange(ch5)
   }
 }

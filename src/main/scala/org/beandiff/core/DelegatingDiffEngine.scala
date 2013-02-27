@@ -41,6 +41,7 @@ import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.Value
 import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.core.translation.NewValueToRmAdd
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
@@ -61,7 +62,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
       new LcsDiffEngine(this, objTypeDefs, new MemoizedLcsCalc)))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
-        Map( //classOf[NewValue] -> new IndexPropChangeTranslator,
+        Map(classOf[NewValue] -> new NewValueToRmAdd,
           classOf[Insertion] -> new InsertionToAddition,
           classOf[Deletion] -> new DeletionToRemoval)))
 

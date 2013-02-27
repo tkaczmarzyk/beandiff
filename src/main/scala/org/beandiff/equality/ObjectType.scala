@@ -19,14 +19,18 @@
  */
 package org.beandiff.equality
 
-sealed trait ObjectType {
+sealed trait ObjectType { // TODO move to core?
   def areEqual(o1: Any, o2: Any): Boolean
+  
+  def allowedToDiff(o1: Any, o2: Any): Boolean
 }
 
 case class Entity(idDef: EqualityInvestigator) extends ObjectType {
   override def areEqual(o1: Any, o2: Any) = idDef.areEqual(o1, o2)
+  override def allowedToDiff(o1: Any, o2: Any) = idDef.areEqual(o1, o2) 
 }
   
 case class Value(eqDef: EqualityInvestigator) extends ObjectType {
   override def areEqual(o1: Any, o2: Any) = eqDef.areEqual(o1, o2)
+  override def allowedToDiff(o1: Any, o2: Any) = true
 }

@@ -169,7 +169,10 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     val d = diff(set1, set2)
     
-    d should haveDifference("[0][0]")
+    //d should haveDifference("[0][0]") // old way
+    d should haveDifference("[0]")
+    d should haveChange("[0]", Removal(1))
+    d should haveChange("[0]", Addition(2))
   }
   
   test("subsequent calls should return the same result (difference)") {

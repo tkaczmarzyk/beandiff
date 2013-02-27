@@ -17,25 +17,13 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.model.change
+package org.beandiff.beans
 
-import org.beandiff.core.model.Self
-
-
-@deprecated // used in LeafDiffEngine on lists ?
-class DelAdd( // FIXME should 2 objects (Deletion and Addition) be used instead?
-    private val deleted: Any,
-    private val added: Any) extends Change {
-
-  override def perform(target: Any): Unit = {
-    val collection = target.asInstanceOf[java.util.Collection[Any]]
-    collection.remove(deleted)
-    collection.add(added)
-  }
-  
-  override def targetProperty = Self
-  
-  override def newValue = Some(added)
-  
-  override def oldValue = Some(deleted)
+trait Simpsons {
+  val bart = new SimpleJavaBean("bart", 10)
+  val lisa = new SimpleJavaBean("lisa", 8)
+  val lisa2 = new SimpleJavaBean("lisa", 9)
+  val maggie = new SimpleJavaBean("maggie", 1)
+  val maggie2 = new SimpleJavaBean("maggie", 2)
+  val milhouse = new SimpleJavaBean("milhouse", 10)
 }

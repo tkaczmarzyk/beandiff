@@ -58,6 +58,10 @@ private[model] class FlatDiff(
       Some(this)
   }
 
+  override def withChanges(path: Path, changes: Seq[Change]) = { // FXIME implementation is duplicated in DeepDiff
+    changes.foldLeft[Diff](this)((acc: Diff, change: Change) => acc.withChange(path, change))
+  }
+  
   override def withChanges(path: Path, changes: Diff): Diff = {
     if (path.depth <= 1)
       withChanges(path.head, changes)

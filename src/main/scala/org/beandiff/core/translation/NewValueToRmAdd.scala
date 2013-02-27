@@ -17,26 +17,21 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.test
+package org.beandiff.core.translation
 
-import org.scalatest.matchers.Matcher
-import org.beandiff.core.model.Diff
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Removal
+import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.change.Addition
 
+class NewValueToRmAdd extends ChangeTranslation {
 
-object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (make it have-word compatible if possible)
-
-  def haveDifference: Matcher[Diff] = haveDifference(EmptyPath)
-  
-  def haveDifference(pathDef: String) = new PathDifferenceMatcher(pathDef)
-  
-  def haveDifference(path: Path) = new PathDifferenceMatcher(path)
-  
-  def haveDeletionAt(index: Int) = new DeletionMatcher(index) // TODO refactor to have(new Deletion(...)
-  
-  def haveChange(change: Change) = new ChangeMatcher(change)
-  
-  def haveChange(pathStr: String, change: Change) = new ChangeMatcher(change, Path(pathStr))
+  override def translate(change: Change) = {
+    change match {
+      case NewValue(IndexProperty(idx), oldVal, newVal) =>
+        List(Removal(oldVal), Addition(newVal))
+      case _ => throw new IllegalArgumentException("expected NewValue on an index property but was " + change)
+    }
+  }
 }

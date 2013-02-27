@@ -39,8 +39,6 @@ import org.beandiff.support.ClassDictionary
 
 object DiffEngineBuilder {
 
-  def apply() = aDiffEngine()
-
   def aDiffEngine(): DiffEngineBuilder = new DiffEngineBuilder
 
   implicit def builder2engine(builder: DiffEngineBuilder) = builder.build()
@@ -63,18 +61,22 @@ class DiffEngineBuilder private () {
     this
   }
 
+  def withEntity[T](idField: String, idFields: String*)(implicit m: Manifest[T]): DiffEngineBuilder = {
+    withEntity(m.erasure)(idField, idFields: _*)
+  }
+  
   @varargs
   def withEntity[T](clazz: Class[T])(idField: String, idFields: String*) = {
     objTypes = objTypes.withEntry(clazz -> Entity(new SelectiveEqualityInvestigator(idField, idFields: _*)))
     this
   }
 
-  def withEntity[T, A <: Annotation](clazz: Class[T])(idAnno: Class[A])(implicit m: Manifest[A]) = {
+  def withEntity[T, A <: Annotation](clazz: Class[T], idAnno: Class[A])(implicit m: Manifest[A]) = {
     objTypes = objTypes.withEntry(clazz -> Entity(new AnnotationEqualityInvestigator(idAnno)))
     this
   }
 
-  def withEntity[T](clazz: Class[T])(idDef: EqualityInvestigator) = {
+  def withEntity[T](clazz: Class[T], idDef: EqualityInvestigator) = {
     objTypes = objTypes.withEntry(clazz -> Entity(idDef))
     this
   }
