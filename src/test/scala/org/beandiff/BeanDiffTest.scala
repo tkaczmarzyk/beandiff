@@ -397,15 +397,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   }
   
   test("example from site should work as described") {
-    val a = new Node("a");
-    val b = new Node("b");
-    val c = new Node("c");
-    val x = new Node("x");
+    val a = new Node("a")
+    val b = new Node("b")
+    val c = new Node("c")
+    val x = new Node("x")
 
-    val parent1 = new Node("parent1", a, b, c);
-    val parent2 = new Node("parent2", a, x, c);
+    val parent1 = new Node("parent1", a, b, c)
+    val parent2 = new Node("parent2", a, x, c)
 
-    val diff = BeanDiff.diff(parent1, parent2);
+    val diff = BeanDiff.diff(parent1, parent2)
     
     diff should haveDifference
     diff should haveDifference("name")
