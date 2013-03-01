@@ -386,7 +386,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       maggie.getValue() should be === 2
     }
   }
-
+  
   test("should be able to transform a list to any of its permutations") {
     val list = List("a", "b", "c", "d", "e")
     val l1 = JList.withElems(list)
@@ -397,44 +397,6 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       diff(l1, l2).transformTarget()
 
       assert(l1 === l2, "Error for permutation: " + perm)
-    }
-  }
-
-  test("should be able to transform a list to any permutation of its sublists") {
-    val list = List("a", "b", "c", "d", "e")
-    val l1 = JList.withElems(list)
-
-    for {
-      n <- 0 to list.size
-      subList <- list.combinations(n)
-      subPerm <- subList.permutations
-    } {
-      val l2 = JList.withElems(subPerm)
-
-      diff(l1, l2).transformTarget()
-
-      assert(l1 === l2, "Error for transformation: " + l2)
-    }
-  }
-  
-  ignore("should be able to transform a list to any of its permutations with insertions") { // long execution time
-    val list = List("a", "b", "c", "d", "e")
-    val other = List("x", "y", "z")
-    
-    val l1 = JList.withElems(list)
-
-    for {
-      n1 <- 0 to list.size
-      subList <- list.combinations(n1)
-      n2 <- 0 to other.size
-      addons <- other.combinations(n2)
-      subPerm <- (subList ++ addons).permutations
-    } {
-      val l2 = JList.withElems(subPerm)
-
-      diff(l1, l2).transformTarget()
-
-      assert(l1 === l2, "Error for transformation: " + l2)
     }
   }
 }
