@@ -20,9 +20,7 @@
 package org.beandiff
 
 import java.lang.annotation.Annotation
-
 import scala.annotation.varargs
-
 import org.beandiff.core.CompositeDescendingStrategy
 import org.beandiff.core.DelegatingDiffEngine
 import org.beandiff.core.DescendingStrategy
@@ -35,6 +33,7 @@ import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.support.ClassDictionary
+import org.beandiff.equality.StdEqualityInvestigator
 
 
 object DiffEngineBuilder {
@@ -76,6 +75,10 @@ class DiffEngineBuilder private () {
     this
   }
 
+  def withEntity[T](idDef: EqualityInvestigator)(implicit m: Manifest[T]): DiffEngineBuilder = {
+    withEntity(m.erasure, idDef)
+  }
+  
   def withEntity[T](clazz: Class[T], idDef: EqualityInvestigator) = {
     objTypes = objTypes.withEntry(clazz -> Entity(idDef))
     this

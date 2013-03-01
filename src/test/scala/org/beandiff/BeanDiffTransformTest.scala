@@ -20,6 +20,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.DiffEngineBuilder._
 import org.beandiff.TestDefs.EverythingIsEntityWithNameId
 import org.beandiff.test.ObjectTestSupport.convert
 import org.beandiff.TypeDefs._
@@ -39,6 +40,9 @@ import org.beandiff.core.LcsDiffEngine
 import org.beandiff.core.DiffEngineCoordinator
 import org.beandiff.lcs.NaiveLcsCalc
 import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.beans.Simpsons
+import java.util.ArrayList
+import java.util.Arrays
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -131,13 +135,13 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     //}}
     //    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
   }
-  
+
   test("should remove an element from a set within a set") {
     val set1 = JSet(JSet("a", "b"))
     val set2 = JSet(JSet("b"))
-    
+
     diff(set1, set2).transformTarget()
-    
+
     // {{ // TODO temporary assertions
     set1 should have size 1
     val set1elem = set1.iterator().next()
@@ -145,13 +149,13 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     //}}
     // set1 should be === JSet(JSet("b")) // TODO fails. ivestigate
   }
-  
+
   test("should replace element of a set within a set") {
     val set1 = JSet(JSet("a"))
     val set2 = JSet(JSet("b"))
-    
+
     diff(set1, set2).transformTarget()
-    
+
     // {{ // TODO temporary assertions
     set1 should have size 1
     val set1elem = set1.iterator().next()
@@ -172,31 +176,31 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     new Beans {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(a2, b1, c1)
-      
+
       diff(l1, l2).transformTarget()
       l1 should be === JList(a1, b1, c1)
       a1.getName() should be === "a"
       a1.getValue() should be === 2
     }
   }
-  
+
   test("should update property of an element of the set") {
     new Beans {
       val l1 = JSet(orderByName, a1, b1, c1)
       val l2 = JSet(orderByName, a2, b1, c1)
-      
+
       diff(l1, l2).transformTarget()
       l1 should be === JSet(orderByName, a1, b1, c1)
       a1.getName() should be === "a"
       a1.getValue() should be === 2
     }
   }
-  
+
   test("should update property of the modified element even though other one is to be inserted ahead of it") {
     new Beans {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(x1, a2, b1, c1)
-      
+
       val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
         EverythingIsEntityWithNameId, new NaiveLcsCalc()) // TODO simplify creation
 
@@ -278,16 +282,159 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       a1.getValue() should be === 2
     }
   }
-  
+
   test("should correctly transform list within a set") {
     val s1 = JSet(JList("a", "b", "c"))
     val s2 = JSet(JList("a", "x", "b"))
-    
+
     diff(s1, s2).transformTarget()
-    
+
     //s1 should be === JSet(JList("a", "x", "b")) FIXME: fails, investigate
     s1 should have size 1
     s1.getClass() should be === JSet().getClass()
     s1.firstElem() should be === JList("a", "x", "b")
+  }
+
+  test("should shift an element in a list") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("a", "c", "b")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("a", "c", "b")
+  }
+
+  test("should perform multiple changes in a list (3)") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("c", "b", "a")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("c", "b", "a")
+  }
+
+  test("should perform multiple changes in a list") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("c", "x", "a")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("c", "x", "a")
+  }
+
+  test("should perform shift and new-value on a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("x", "a", "c", "d")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("x", "a", "c", "d")
+  }
+
+  test("should perform shift and insertion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "c", "d", "a", "x")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("b", "c", "d", "a", "x")
+  }
+
+  test("should perform shift and deletion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "c", "a")
+
+    diff(l1, l2).transformTarget()
+
+    l1 should be === JList("b", "c", "a")
+  }
+
+  test("should perform shift and deletion in a list (2)") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "d", "a")
+
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("b", "d", "a")
+  }
+
+  test("should perform multiple changes in a list (2)") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "d", "a")
+
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("b", "d", "a")
+  }
+
+  test("should perfrom new-value and insertion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("x", "b", "c", "d", "a")
+
+    diff(l1, l2).transformTarget()
+    l1 should be === JList("x", "b", "c", "d", "a")
+  }
+
+  test("should perform changes on the shifted element") {
+    new Simpsons {
+      val engine = aDiffEngine.withEntity[SimpleJavaBean]("name")
+
+      val l1 = JList(maggie, lisa, bart)
+      val l2 = JList(lisa, bart, maggie2)
+
+      engine.calculateDiff(l1, l2).transformTarget()
+
+      l1 should be === JList(lisa, bart, maggie)
+      maggie.getValue() should be === 2
+    }
+  }
+
+  test("should be able to transform a list to any of its permutations") {
+    val list = List("a", "b", "c", "d", "e")
+    val l1 = JList.withElems(list)
+
+    for (perm <- list.permutations) {
+      val l2 = JList.withElems(perm)
+
+      diff(l1, l2).transformTarget()
+
+      assert(l1 === l2, "Error for permutation: " + perm)
+    }
+  }
+
+  test("should be able to transform a list to any permutation of its sublists") {
+    val list = List("a", "b", "c", "d", "e")
+    val l1 = JList.withElems(list)
+
+    for {
+      n <- 0 to list.size
+      subList <- list.combinations(n)
+      subPerm <- subList.permutations
+    } {
+      val l2 = JList.withElems(subPerm)
+
+      diff(l1, l2).transformTarget()
+
+      assert(l1 === l2, "Error for transformation: " + l2)
+    }
+  }
+  
+  ignore("should be able to transform a list to any of its permutations with insertions") { // long execution time
+    val list = List("a", "b", "c", "d", "e")
+    val other = List("x", "y", "z")
+    
+    val l1 = JList.withElems(list)
+
+    for {
+      n1 <- 0 to list.size
+      subList <- list.combinations(n1)
+      n2 <- 0 to other.size
+      addons <- other.combinations(n2)
+      subPerm <- (subList ++ addons).permutations
+    } {
+      val l2 = JList.withElems(subPerm)
+
+      diff(l1, l2).transformTarget()
+
+      assert(l1 === l2, "Error for transformation: " + l2)
+    }
   }
 }

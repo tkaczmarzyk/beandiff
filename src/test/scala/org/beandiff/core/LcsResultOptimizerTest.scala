@@ -53,6 +53,8 @@ import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.beans.Simpsons
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.PathChangeOrdering
 
 @RunWith(classOf[JUnitRunner])
 class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons {
@@ -72,7 +74,7 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should merge insertion and deletion into new-value when index property is the same and identity different") {
     val children = JList(bart, lisa, milhouse)
     when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(Diff(simpsons,
-        new Deletion(maggie, 2), new Insertion(milhouse, 2)))
+        Deletion(maggie, 2), Insertion(milhouse, 2)))
     
     val expectedDiff = Diff(simpsons, NewValue(Property("[2]"), maggie, milhouse))
         
@@ -82,9 +84,9 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should merge insert with delete into sub-diff when index and identity are the same") {
     val simps2 = JList(bart, lisa, maggie2)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
-        new Deletion(maggie, 2), new Insertion(maggie2, 2)))
+        Deletion(maggie, 2), Insertion(maggie2, 2)))
     
-    val expectedDiff = Diff(simpsons, Property("[2]") -> Diff(maggie, new NewValue(Property("value"), 1, 2)))
+    val expectedDiff = Diff(simpsons, Property("[2]") -> Diff(maggie, NewValue(Property("value"), 1, 2)))
         
     when(parent.calculateDiff(Diff(simpsons), Property("[2]"), maggie, maggie2)).thenReturn(expectedDiff)
         
@@ -94,9 +96,9 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should merge insert with delete into shift when indentity is the same") {
     val simps2 = JList(bart, maggie, lisa)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
-        new Deletion(lisa, 1), new Insertion(lisa, 2)))
+        Deletion(lisa, 1), Insertion(lisa, 2)))
     
-    val expectedDiff = Diff(simpsons, new Shift(lisa, 1, 2))
+    val expectedDiff = Diff(simpsons, Shift(lisa, 1, 2))
         
     when(parent.calculateDiff(anyDiff, anyProp, any, any)).thenAnswer(unchangedDiff())
         
@@ -106,9 +108,9 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should calculate a subdiff for the shifted element") {
     val simps2 = JList(bart, maggie, lisa2)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
-        new Deletion(lisa, 1), new Insertion(lisa2, 2)))
+        Deletion(lisa, 1), Insertion(lisa2, 2)))
     
-    val expectedShift = Diff(simpsons, new Shift(lisa, 1, 2))
+    val expectedShift = Diff(simpsons, Shift(lisa, 1, 2))
     val expectedDiff = expectedShift.withChange(Path("[1]"), new NewValue(Property("value"), 8, 9))
         
     when(parent.calculateDiff(expectedShift, Property("[1]"), lisa, lisa2)).thenReturn(expectedDiff)
@@ -119,10 +121,10 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should not use the same change in 2 optimizations") {
     val simps2 = JList(bart, lisa2, maggie, lisa)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
-        new Deletion(lisa, 1), new Insertion(lisa2, 1), new Insertion(lisa, 3)))
+        Deletion(lisa, 1), Insertion(lisa2, 1), Insertion(lisa, 3)))
     
-    val subDiff = Diff(lisa, new NewValue(Property("value"), 8, 9))
-    val expectedDiff = Diff(simpsons, Self -> Diff(simpsons, new Insertion(lisa, 3)),
+    val subDiff = Diff(lisa, NewValue(Property("value"), 8, 9))
+    val expectedDiff = Diff(simpsons, Self -> Diff(simpsons, Insertion(lisa, 3)),
         Property("[1]") -> subDiff)
     
     when(parent.calculateDiff(anyDiff, of(Property("[1]")), of(lisa), of(lisa2))).thenAnswer(
@@ -134,10 +136,10 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
   test("should prefer merging into subdiff than into shift") {
     val simps2 = JList(bart, lisa2, maggie, lisa)
     when(lcsEngine.calculateDiff(simpsons, simps2)).thenReturn(Diff(simpsons,
-        new Deletion(lisa, 1), new Insertion(lisa, 3), new Insertion(lisa2, 1))) // traversation in this order would cause finding shift pair first
+        new Deletion(lisa, 1), Insertion(lisa, 3), Insertion(lisa2, 1))) // traversation in this order would cause finding shift pair first
     
-    val subDiff = Diff(lisa, new NewValue(Property("value"), 8, 9))
-    val expectedDiff = Diff(simpsons, Self -> Diff(simpsons, new Insertion(lisa, 3)),
+    val subDiff = Diff(lisa, NewValue(Property("value"), 8, 9))
+    val expectedDiff = Diff(simpsons, Self -> Diff(simpsons, Insertion(lisa, 3)),
         Property("[1]") -> subDiff)
     
     when(parent.calculateDiff(anyDiff, of(Property("[1]")), of(lisa), of(lisa2))).thenAnswer(
@@ -151,13 +153,25 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
     
     val children = JList(bart, lisa, milhouse)
     when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(Diff(simpsons,
-        new Deletion(maggie, 2), new Insertion(milhouse, 2)))
+        Deletion(maggie, 2), Insertion(milhouse, 2)))
     
     val expectedDiff = Diff(simpsons, Property("[2]") -> Diff(maggie,
-        new NewValue(Property("name"), "maggie", "milhouse"), new NewValue(Property("value"), 1, 10)))
+        NewValue(Property("name"), "maggie", "milhouse"), NewValue(Property("value"), 1, 10)))
         
     when(parent.calculateDiff(Diff(simpsons), Property("[2]"), maggie, milhouse)).thenReturn(expectedDiff)
         
     optimizer.calculateDiff(simpsons, children) should be === expectedDiff
   }
+  
+  test("should not optimize into shift if there are other changes between each pair") { // otherwise the order would be incorrect
+    val children = JList(maggie, milhouse, bart)
+    val rawDiff = Diff(simpsons,
+        Deletion(bart, 0), Deletion(lisa, 1), Insertion(milhouse, 1), Insertion(bart, 2))
+        
+    when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(rawDiff)
+    
+    optimizer.calculateDiff(simpsons, children) should be === rawDiff
+  }
+  
+  // TODO should perform new-value even though... as long as...
 }

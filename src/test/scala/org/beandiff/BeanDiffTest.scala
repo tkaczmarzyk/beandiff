@@ -49,6 +49,11 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.Node
+import org.beandiff.core.model.change.Shift
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
 
 
 @RunWith(classOf[JUnitRunner])
@@ -121,6 +126,84 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
 
     diff(o1, o2) should haveChange(new Insertion(b, 1))
     diff(o1, o2).leafChanges should have size 1
+  }
+  
+  test("should detect 2 new-values") {
+    val l1 = JList("a", "b")
+    val l2 = JList("x", "y")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(NewValue(Property("[0]"), "a", "x"))
+    d should haveChange(NewValue(Property("[1]"), "b", "y"))
+  }
+  
+  test("should detect shift and insertion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "c", "d", "a", "x")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(Shift("a", 0, 3))
+    d should haveChange(Insertion("x", 4))
+  }
+  
+  test("should detect new-value and insertion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("x", "b", "c", "d", "a")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(Insertion("a", 4))
+    d should haveChange(NewValue(Property("[0]"), "a", "x"))
+  }
+  
+  test("should detect shift and deletion in a list") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "c", "a")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(Shift("a", 0, 2))
+    d should haveChange(Deletion("d", 3))
+  }
+  
+  test("should detect shift and deletion in a list (2)") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("b", "d", "a")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(Shift("a", 0, 2))
+    d should haveChange(Deletion("c", 2))
+  }
+  
+  test("should detect that an element was shifted") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("a", "c", "b")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 1
+    d should haveChange(Shift("b", 1, 2))
+  }
+  
+  ignore("should detect multiple shifts in a list") {
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("c", "b", "a")
+    
+    val d = diff(l1, l2)
+    d.leafChanges should have size 2
+    d should haveChange(Shift("c", 2, 0))
+    d should haveChange(Shift("a", 0, 2))
+  }
+  
+  ignore("should detect multiple changes in a list") { // TODO detecting swap
+    val l1 = JList("a", "b", "c")
+    val l2 = JList("c", "x", "a")
+
+    val d = diff(l1, l2)
+    
+    fail("todo")
   }
   
   test("should detect that just 1 element has been inserted") { // identity of value types = zero diff
