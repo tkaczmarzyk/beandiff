@@ -389,10 +389,10 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   
   test("should be able to transform a list to any of its permutations") {
     val list = List("a", "b", "c", "d", "e")
-    val l1 = JList.withElems(list)
+    val l1 = JList(list: _*)
 
     for (perm <- list.permutations) {
-      val l2 = JList.withElems(perm)
+      val l2 = JList(perm: _*)
 
       diff(l1, l2).transformTarget()
 

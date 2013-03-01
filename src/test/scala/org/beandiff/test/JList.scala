@@ -27,11 +27,4 @@ object JList {
 
   def apply[T](elems: T*): List[T] = new ArrayList[T](Arrays.asList(elems:_*))
   
-  def withElems[T](list: scala.collection.immutable.List[T]) = {
-    val result = new ArrayList[T]
-    for (elem <- list) {
-      result.add(elem)
-    }
-    result
-  }
 }

@@ -47,18 +47,18 @@ import org.scalatest.FunSuite
 
 
 @RunWith(classOf[JUnitRunner])
-class CollectionTransfromConsistencyTest extends FunSuite with ShouldMatchers {
+class ListTransfromationConsistencyTest extends FunSuite with ShouldMatchers {
   
   test("should be able to transform a list to any permutation of its sublists") {
     val list = List("a", "b", "c", "d", "e")
-    val l1 = JList.withElems(list)
+    val l1 = JList(list: _*)
 
     for {
       n <- 0 to list.size
       subList <- list.combinations(n)
       subPerm <- subList.permutations
     } {
-      val l2 = JList.withElems(subPerm)
+      val l2 = JList(subPerm: _*)
 
       diff(l1, l2).transformTarget()
 
@@ -70,7 +70,7 @@ class CollectionTransfromConsistencyTest extends FunSuite with ShouldMatchers {
     val list = List("a", "b", "c", "d")
     val other = List("x", "y", "z", "$")
 
-    val l1 = JList.withElems(list)
+    val l1 = JList(list: _*)
 
     for {
       n1 <- 0 to list.size
@@ -79,7 +79,7 @@ class CollectionTransfromConsistencyTest extends FunSuite with ShouldMatchers {
       addons <- other.combinations(n2)
       subPerm <- (subList ++ addons).permutations
     } {
-      val l2 = JList.withElems(subPerm)
+      val l2 = JList(subPerm: _*)
 
       diff(l1, l2).transformTarget()
 
