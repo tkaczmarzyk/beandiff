@@ -20,51 +20,29 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.beans.scala.Parent
 import org.beandiff.test.JList
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 
-
 @RunWith(classOf[JUnitRunner])
-class ListTransfromationConsistencyTest extends FunSuite with ShouldMatchers {
+class TransformationConsistencyTest extends FunSuite with TransformationCheckUtils {
   
-  test("should be able to transform a list to any permutation of its sublists") {
-    val list = List("a", "b", "c", "d", "e")
-    val l1 = JList(list: _*)
-
-    for {
-      n <- 0 to list.size
-      subList <- list.combinations(n)
-      subPerm <- subList.permutations
-    } {
-      val l2 = JList(subPerm: _*)
-
-      diff(l1, l2).transformTarget()
-
-      assert(l1 === l2, "Error for transformation: " + l2)
-    }
+  test("BeanDiff.diff.transformTarget should transform a collection of Ints into other collection of Ints") {
+    check((a: List[Int], b: List[Int]) => transformsJCollections(a, b))
   }
 
-  test("should be able to transform a list to any of its permutations with insertions") { // long execution time
-    val list = List("a", "b", "c", "d")
-    val other = List("x", "y", "z", "$")
-
-    val l1 = JList(list: _*)
-
-    for {
-      n1 <- 0 to list.size
-      subList <- list.combinations(n1)
-      n2 <- 0 to other.size
-      addons <- other.combinations(n2)
-      subPerm <- (subList ++ addons).permutations
-    } {
-      val l2 = JList(subPerm: _*)
-
-      diff(l1, l2).transformTarget()
-
-      assert(l1 === l2, "Error for transformation: " + l2)
-    }
+  test("BeanDiff.diff.transformTarget should transform a collection of Strings into other collection of Strings") {
+    check((a: List[String], b: List[String]) => transformsJCollections(a, b))
+  }
+  
+  test("BeanDiff.diff.transformTarget should transform a collection of Ints into a collection of Strings") {
+    check((a: List[Int], b: List[String]) => transformsJCollections(a, b))
+  }
+  
+  test("BeanDiff.diff.transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
+    check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b))
   }
 }

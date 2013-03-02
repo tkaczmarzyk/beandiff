@@ -20,30 +20,11 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
-import org.beandiff.DiffEngineBuilder._
-import org.beandiff.TestDefs.EverythingIsEntityWithNameId
-import org.beandiff.test.ObjectTestSupport.convert
-import org.beandiff.TypeDefs._
-import org.beandiff.beans.ParentBean
-import org.beandiff.beans.SimpleJavaBean
-import org.beandiff.core.model.Path
-import org.beandiff.test.JList
 import org.beandiff.test.JSet
-import org.beandiff.beans.SimpleJavaBean._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.beans.CollectionBean
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.LcsDiffEngine
-import org.beandiff.core.DiffEngineCoordinator
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.equality.SelectiveEqualityInvestigator
-import org.beandiff.beans.Simpsons
-import java.util.ArrayList
-import java.util.Arrays
-import org.scalatest.FunSuite
 
 
 @RunWith(classOf[JUnitRunner])
