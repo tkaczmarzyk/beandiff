@@ -24,8 +24,8 @@ import org.beandiff.core.model.Path
 class LimitedDepthStrategy(maxDepth: Int) extends DescendingStrategy {
 
   require(maxDepth >= 1)
-  
+
   override def shouldProceed(path: Path, o1: Any, o2: Any) = {
-    path.depth <= maxDepth
+    path.depth < maxDepth
   }
 }

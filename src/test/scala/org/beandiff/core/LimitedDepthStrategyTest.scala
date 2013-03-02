@@ -31,6 +31,9 @@ class LimitedDepthStrategyTest extends FunSuite with ShouldMatchers {
   private val o1 = new Object
   private val o2 = new Object
   
+  private val limit3 = new LimitedDepthStrategy(3)
+  
+  
   test("should throw exception if depth = zero") {
     intercept[IllegalArgumentException] {
       new LimitedDepthStrategy(0)
@@ -43,18 +46,19 @@ class LimitedDepthStrategyTest extends FunSuite with ShouldMatchers {
     }
   }
   
-  test("should return true if path.depth = max") {
-    val strategy = new LimitedDepthStrategy(2)
-    strategy.shouldProceed(Path("aaa.bbb"), o1, o2) should be === true
+  test("should return false if path.depth after step is = max") {
+    // TODO might be counter-intuitive: 
+    // when the strategy prevents proceeding,
+    // then equality is checked and a NewValue might be added which effectively increases the depth by 1
+    limit3.shouldProceed(Path("aaa.bbb.ccc"), o1, o2) should be === false
   }
   
-  test("should return false if reached max depth") {
-    val strategy = new LimitedDepthStrategy(2)
-    strategy.shouldProceed(Path("aaa.bbb.ccc"), o1, o2) should be === false
+  test("should return false if depth greater than limit") { // should not happen normally
+    limit3.shouldProceed(Path("aaa.bbb.ccc.ddd"), o1, o2) should be === false
   }
   
   test("should return true if max depth not reached yet") {
-    val strategy = new LimitedDepthStrategy(2)
-    strategy.shouldProceed(Path("aaa"), o1, o2) should be === true
+    limit3.shouldProceed(Path("aaa"), o1, o2) should be === true
+    limit3.shouldProceed(Path("aaa.bbb"), o1, o2) should be === true
   }
 }

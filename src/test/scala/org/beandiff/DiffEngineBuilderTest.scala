@@ -21,16 +21,23 @@ package org.beandiff
 
 import org.beandiff.DiffEngineBuilder.aDiffEngine
 import org.beandiff.DiffEngineBuilder.builder2engine
+import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.beans.Simpsons
-import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.change.Addition
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Removal
+import org.beandiff.core.model.change.Shift
+import org.beandiff.core.model.change.Shift
+import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.test.BeanDiffMatchers.haveDifference
 import org.beandiff.test.JList
 import org.beandiff.test.JSet
@@ -38,13 +45,7 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.equality.StdEqualityInvestigator
-import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.model.change.Shift
-import org.beandiff.core.model.change.NewValue
-import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Path
-import org.beandiff.core.model.change.Shift
 
 
 @RunWith(classOf[JUnitRunner])
@@ -94,6 +95,18 @@ class DiffEngineBuilderTest extends FunSuite with ShouldMatchers with Simpsons {
       d should haveChange("[0]", NewValue(Property("value"), 1, 2))
       d should haveChange(Shift(maggie, 0, 2))
     }
+  }
+  
+  test("should not step any deeper when reached the limit") {
+    val engine = aDiffEngine.withDepthLimit(2)
+    
+    val p1 = new ParentBean("grandpa", new ParentBean("homer", bart))
+    val p2 = new ParentBean("grandpa", new ParentBean("homer", lisa))
+    
+    val d = engine.calculateDiff(p1, p2)
+    
+    d.leafChanges should have size 1
+    d should haveChange(Path("child"), NewValue(Property("child"), bart, lisa))
   }
   
   // TODO
