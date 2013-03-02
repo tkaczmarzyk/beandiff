@@ -128,26 +128,16 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(set1, set2).transformTarget()
 
-    // {{ // TODO temporary assertions
-    set1 should have size 1
-    val set1elem = set1.iterator().next()
-    set1elem should be === JSet("a", "b", "c")
-    //}}
-    //    set1 should be === JSet(JSet("a", "b", "c")) // TODO fails. ivestigate
+    set1 should be === JSet(JSet("a", "b", "c"))
   }
 
   test("should remove an element from a set within a set") {
     val set1 = JSet(JSet("a", "b"))
     val set2 = JSet(JSet("b"))
-
+    
     diff(set1, set2).transformTarget()
 
-    // {{ // TODO temporary assertions
-    set1 should have size 1
-    val set1elem = set1.iterator().next()
-    set1elem should be === JSet("b")
-    //}}
-    // set1 should be === JSet(JSet("b")) // TODO fails. ivestigate
+    set1 should be === JSet(JSet("b"))
   }
 
   test("should replace element of a set within a set") {
@@ -156,12 +146,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(set1, set2).transformTarget()
 
-    // {{ // TODO temporary assertions
-    set1 should have size 1
-    val set1elem = set1.iterator().next()
-    set1elem should be === JSet("b")
-    //}}
-    // set1 should be === JSet(JSet("b")) // TODO fails. ivestigate
+    set1 should be === JSet(JSet("b"))
   }
 
   test("should replace an element of a list") {
@@ -289,10 +274,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(s1, s2).transformTarget()
 
-    //s1 should be === JSet(JList("a", "x", "b")) FIXME: fails, investigate
-    s1 should have size 1
-    s1.getClass() should be === JSet().getClass()
-    s1.firstElem() should be === JList("a", "x", "b")
+    s1 should be === JSet(JList("a", "x", "b"))
   }
 
   test("should shift an element in a list") {

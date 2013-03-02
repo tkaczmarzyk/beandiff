@@ -22,6 +22,10 @@ package org.beandiff.core.model
 import Path.EmptyPath
 import org.beandiff.core.model.change.Change
 import scala.annotation.tailrec
+import org.beandiff.TypeDefs.JSet
+import scala.collection.mutable.ArrayLike
+import java.util.ArrayList
+import collection.JavaConversions._
 
 
 private[model] class DeepDiff(
@@ -155,7 +159,16 @@ private[model] class DeepDiff(
   
   override def transformTarget() = {
     propChanges.foreach({
-      case (prop, changeSet) => changeSet.transformTarget()
+      case (prop, diff) => {
+        if (target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
+	      val set = target.asInstanceOf[JSet]
+	      set.remove(diff.target)
+	      diff.transformTarget()
+	      set.add(diff.target)
+	    } else {
+          diff.transformTarget()
+	    }
+      }
     })
   }
 
