@@ -20,5 +20,5 @@
 package org.beandiff.beans.scala
 
 case class Child(
-    private val name: String,
-    private val age: Int)
+    name: String,
+    age: Int)

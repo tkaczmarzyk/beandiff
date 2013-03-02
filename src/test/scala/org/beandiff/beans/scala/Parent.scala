@@ -22,5 +22,5 @@ package org.beandiff.beans.scala
 import java.util.List
 
 case class Parent(
-    private val name: String,
-    private val children: List[Child])
+    name: String,
+    children: List[Child])

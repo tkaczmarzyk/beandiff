@@ -22,27 +22,27 @@ package org.beandiff
 import org.beandiff.BeanDiff.diff
 import org.beandiff.DiffEngineBuilder._
 import org.beandiff.TestDefs.EverythingIsEntityWithNameId
-import org.beandiff.test.ObjectTestSupport.convert
 import org.beandiff.TypeDefs._
+import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.beans.SimpleJavaBean._
+import org.beandiff.beans.Simpsons
+import org.beandiff.core.DiffEngineCoordinator
+import org.beandiff.core.LcsDiffEngine
 import org.beandiff.core.model.Path
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.equality.SelectiveEqualityInvestigator
+import org.beandiff.lcs.NaiveLcsCalc
 import org.beandiff.test.JList
 import org.beandiff.test.JSet
-import org.beandiff.beans.SimpleJavaBean._
+import org.beandiff.test.ObjectTestSupport.convert
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.beandiff.beans.scala.Parent
+import org.beandiff.beans.scala.Child
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.beans.CollectionBean
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.core.LcsDiffEngine
-import org.beandiff.core.DiffEngineCoordinator
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.equality.SelectiveEqualityInvestigator
-import org.beandiff.beans.Simpsons
-import java.util.ArrayList
-import java.util.Arrays
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -386,7 +386,17 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       maggie.getValue() should be === 2
     }
   }
-  
+
+  ignore("todo") {
+    val a = JSet(Parent("b", JList(Child("c", 3))))
+    val b = JSet(Parent("b", JList()), Parent("b", JList(Child("c", -1))))
+
+    val d = diff(a, b)
+    d.transformTarget()
+
+    assert(a === b)
+  }
+
   test("should be able to transform a list to any of its permutations") {
     val list = List("a", "b", "c", "d", "e")
     val l1 = JList(list: _*)
