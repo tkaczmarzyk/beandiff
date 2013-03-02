@@ -54,6 +54,7 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
+import org.beandiff.beans.Simpsons
 
 
 @RunWith(classOf[JUnitRunner])
@@ -156,6 +157,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     d.leafChanges should have size 2
     d should haveChange(Insertion("a", 4))
     d should haveChange(NewValue(Property("[0]"), "a", "x"))
+  }
+  
+  test("should detect a single back shift") {
+    val l1 = JList("a", "b", "c", "d")
+    val l2 = JList("d", "a", "b", "c")
+    
+    val d = diff(l1, l2) 
+    d.leafChanges should have size 1
+    d should haveChange(Shift("d", 3, 0))
   }
   
   test("should detect shift and deletion in a list") {
