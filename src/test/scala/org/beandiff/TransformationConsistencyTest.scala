@@ -20,29 +20,36 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.BeanDiff.aDiffEngine
 import org.beandiff.beans.scala.Parent
 import org.beandiff.test.JList
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.scala.Child
 
 @RunWith(classOf[JUnitRunner])
 class TransformationConsistencyTest extends FunSuite with TransformationCheckUtils {
-  
-  test("BeanDiff.diff.transformTarget should transform a collection of Ints into other collection of Ints") {
-    check((a: List[Int], b: List[Int]) => transformsJCollections(a, b))
-  }
 
-  test("BeanDiff.diff.transformTarget should transform a collection of Strings into other collection of Strings") {
-    check((a: List[String], b: List[String]) => transformsJCollections(a, b))
-  }
-  
-  test("BeanDiff.diff.transformTarget should transform a collection of Ints into a collection of Strings") {
-    check((a: List[Int], b: List[String]) => transformsJCollections(a, b))
-  }
-  
-  test("BeanDiff.diff.transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
-    check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b))
+  val engines = List(aDiffEngine, aDiffEngine.withEntity[Child]("name"),
+    aDiffEngine.withEntity[Parent]("name"), aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name"))
+
+  for (engine <- engines) {
+    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into other collection of Ints") {
+      check((a: List[Int], b: List[Int]) => transformsJCollections(a, b))
+    }
+
+    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Strings into other collection of Strings") {
+      check((a: List[String], b: List[String]) => transformsJCollections(a, b))
+    }
+
+    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into a collection of Strings") {
+      check((a: List[Int], b: List[String]) => transformsJCollections(a, b))
+    }
+
+    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
+      check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b))
+    }
   }
 }

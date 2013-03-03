@@ -108,7 +108,7 @@ object BeanDiff {
   def printDiff(out: PrintWriter, o1: Any, o2: Any, modifiers: Any*) =
     print(out, diff(o1, o2, modifiers: _*))
 
-  def aDiffEngine() = DiffEngineBuilder.aDiffEngine()
+  def aDiffEngine() = DiffEngineBuilder.aDiffEngine() // TODO get rid of diffEngine() method, modifiers
     
   private def getEqInvestigatorMappings(objects: List[_]) = {
     objects.filter(_.isInstanceOf[EqInvestigatorBinding])
