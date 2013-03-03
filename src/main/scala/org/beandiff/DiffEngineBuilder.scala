@@ -84,12 +84,20 @@ class DiffEngineBuilder private () {
     this
   }
 
+  def withEndType[T](implicit m: Manifest[T]): DiffEngineBuilder = {
+    withEndType(m.erasure)
+  }
+  
+  def withEndType[T](eq: EqualityInvestigator)(implicit m: Manifest[T]): DiffEngineBuilder = {
+    withEndType(m.erasure, eq)
+  }
+  
   def withEndType[T](clazz: Class[T]) = {
     endTypes = endTypes.withLeaf(clazz)
     this
   }
 
-  def withEndType[T](clazz: Class[T])(eqDef: EqualityInvestigator): DiffEngineBuilder = {
+  def withEndType[T](clazz: Class[T], eqDef: EqualityInvestigator): DiffEngineBuilder = {
     withEqualityDef(clazz)(eqDef).withEndType(clazz)
   }
 

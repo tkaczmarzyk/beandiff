@@ -27,6 +27,7 @@ import java.util.HashSet
 import org.beandiff.BeanDiff.IgnoreCase
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
+import org.beandiff.BeanDiff.aDiffEngine
 import org.beandiff.beans.CollectionBean
 import org.beandiff.beans.NamedBean
 import org.beandiff.beans.ParentBean
@@ -55,6 +56,7 @@ import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.beans.Simpsons
+import org.beandiff.core.model.change.Addition
 
 
 @RunWith(classOf[JUnitRunner])
@@ -487,6 +489,20 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   test("an instertion to the list should be detected as a single difference") {
     val d = diff(Arrays.asList("default"), Arrays.asList("backgammon", "default"));
     d.changes should have size 1
+  }
+
+  test("should detect that an enity in a set was replaced with another one") {
+    new Simpsons {
+      val engine = aDiffEngine.withEntity[SimpleJavaBean]("value")
+
+      val s1 = JSet(bart)
+      val s2 = JSet(lisa)
+
+      val d = engine.calculateDiff(s1, s2)
+      d.leafChanges should have size 2
+      d should haveChange(Removal(bart))
+      d should haveChange(Addition(lisa))
+    }
   }
   
   test("example from site should work as described") {

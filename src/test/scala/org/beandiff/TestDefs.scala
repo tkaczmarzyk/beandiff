@@ -35,6 +35,7 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.beandiff.equality.Value
 import org.beandiff.core.DescendingStrategy
+import org.beandiff.equality.EqualityInvestigator
 
 
 object TestDefs {
@@ -42,6 +43,10 @@ object TestDefs {
   final val EverythingIsSimpleVal = new ClassDictionary[ObjectType](Value(new SelectiveEqualityInvestigator("name")))
   
   final val EverythingIsEntityWithNameId = new ClassDictionary[ObjectType](Entity(new SelectiveEqualityInvestigator("name")))
+  
+  final val EverythingIsEqual = new EqualityInvestigator {
+    override def areEqual(a: Any, b: Any) = true
+  }
   
   implicit def fun0ToAnswer[R](fun: Function1[InvocationOnMock, R]) = {
     new Answer[R] {

@@ -19,19 +19,18 @@
  */
 package org.beandiff.test
 
-import org.beandiff.core.model._
-import org.beandiff.core.model.Path.EmptyPath
-import org.scalatest.matchers._
 import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.change.Deletion
 
-class ChangeMatcher(
-    changeDef: ChangeDef = AnyChange(),
-    pathDef: PathDef = Exact(EmptyPath)) extends Matcher[Diff] {
+sealed trait ChangeDef {
+  def matches(change: Change): Boolean
+}
 
-  def apply(left: Diff): MatchResult = {
-    val filtered = left.leafChanges.filter(pathChange => pathDef.matches(pathChange._1) &&  changeDef.matches(pathChange._2))
-    MatchResult(!filtered.isEmpty, "Diff doesn't have " + changeDef + " at " + pathDef + ":\n" + left,
-        "Diff does have " + changeDef + " at " + pathDef + ":\n" + left)
-  }
+case class Specific(spec: Change) extends ChangeDef {
+  override def matches(change: Change) = change == spec
+  
+  override def toString = spec.toString()
+}
+
+case class AnyChange extends ChangeDef {
+  override def matches(change: Change) = true
 }

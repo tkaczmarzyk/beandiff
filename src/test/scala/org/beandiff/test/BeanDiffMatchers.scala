@@ -36,9 +36,11 @@ object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (m
   
   def haveDeletionAt(index: Int) = new DeletionMatcher(index) // TODO refactor to have(new Deletion(...)
   
-  def haveChange(change: Change) = new ChangeMatcher(change)
+  def haveChange(change: Change) = new ChangeMatcher(Specific(change))
   
   def haveChange(pathStr: String, change: Change): ChangeMatcher = haveChange(Path(pathStr), change)
   
-  def haveChange(path: Path, change: Change): ChangeMatcher = new ChangeMatcher(change, path)
+  def haveChange(path: Path, change: Change): ChangeMatcher = new ChangeMatcher(Specific(change), Exact(path))
+  
+  def haveAnyChange = new ChangeMatcher(pathDef = StartsWith(EmptyPath))
 }
