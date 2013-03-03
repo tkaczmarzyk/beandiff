@@ -1,3 +1,17 @@
+## 0.1.1 (2013-03-04)
+
+* fixed too-aggressive LCS optimization
+* fixed bug in `HashSet` transformation
+* fixed bug in `DeepDiff.forTarget()` causing invalid output for `Set` diffs
+* fixed cycle-detection (using identity instead of equality)
+* first version of `DiffEngineBuilder`
+* paths are now sorted in `PlainTextDiffPresenter` output
+* introduced `Shift` change
+* configurable depth level
+* `AnnotationEqualityInvestigator`
+* `SelectiveEqualityInvestigator`
+* minor improvements
+
 ## 0.1.0 (2013-02-18)
 
 * improved, LCS-based, list comparison
