@@ -36,6 +36,8 @@ import org.mockito.stubbing.Answer
 import org.beandiff.equality.Value
 import org.beandiff.core.DescendingStrategy
 import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.core.DiffEngine
+import org.beandiff.core.DiffEngineCoordinator
 
 
 object TestDefs {
@@ -71,6 +73,12 @@ object TestDefs {
     when(diff.hasDifference).thenReturn(true)
     when(diff.hasDifference(any[Path])).thenReturn(true)
     diff
+  }
+  
+  def mockCoordinator(fixedResult: Diff): DiffEngineCoordinator = {
+    val c = mock[DiffEngineCoordinator]
+    when(c.calculateDiff(anyDiff, anyProp, any, any)).thenReturn(fixedResult)
+    c
   }
   
   def mockMap[K, V](value: V) = {

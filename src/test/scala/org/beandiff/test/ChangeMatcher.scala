@@ -26,12 +26,22 @@ import org.beandiff.core.model.change.Change
 import org.beandiff.core.model.change.Deletion
 
 class ChangeMatcher(
-    changeDef: ChangeDef = AnyChange(),
-    pathDef: PathDef = Exact(EmptyPath)) extends Matcher[Diff] {
+    changeDefs: Seq[ChangeDef],
+    pathDef: PathDef) extends Matcher[Diff] {
 
+  def this(changeDef: ChangeDef = AnyChange(), pathDef: PathDef = Exact(EmptyPath)) = {
+    this(List(changeDef), pathDef)
+  }
+  
   def apply(left: Diff): MatchResult = {
-    val filtered = left.leafChanges.filter(pathChange => pathDef.matches(pathChange._1) &&  changeDef.matches(pathChange._2))
-    MatchResult(!filtered.isEmpty, "Diff doesn't have " + changeDef + " at " + pathDef + ":\n" + left,
-        "Diff does have " + changeDef + " at " + pathDef + ":\n" + left)
+    var notSeen = List[ChangeDef]()
+    for (changeDef <- changeDefs) {
+      val filtered = left.leafChanges.filter(pathChange => pathDef.matches(pathChange._1) &&  changeDef.matches(pathChange._2))
+      if (filtered.isEmpty) {
+        notSeen ::= changeDef
+      }
+    }
+    MatchResult(notSeen.isEmpty, "Diff doesn't have " + notSeen.mkString(", ") + " at " + pathDef + ":\n" + left,
+        "Diff does have " + notSeen.mkString(", ") + " at " + pathDef + ":\n" + left)
   }
 }

@@ -122,4 +122,10 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     
     assert(diff.hasDifference(Path("name")))
   }
+  
+  test("should yield itself when list of changes is empty") {
+    val diff = new FlatDiff(target, mockChange())
+    
+    diff.withChanges(EmptyPath, List()) should be === diff
+  }
 }

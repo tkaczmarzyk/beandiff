@@ -198,4 +198,10 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     
     diff.forTarget(grandpa).changes(EmptyPath).get.target should be === grandpa
   }
+  
+  test("should yield itself when list of changes is empty") {
+    val diff = new DeepDiff(parent, Map(Property("name") -> mockDiff()))
+    
+    diff.withChanges(Path("child"), List()) should be === diff
+  }
 }

@@ -42,5 +42,7 @@ object BeanDiffMatchers { // TODO move to main/src ? // TODO avoid haveSth... (m
   
   def haveChange(path: Path, change: Change): ChangeMatcher = new ChangeMatcher(Specific(change), Exact(path))
   
+  def haveChanges(changes: Change*) = new ChangeMatcher(changes.map(Specific(_)), StartsWith(EmptyPath))
+  
   def haveAnyChange = new ChangeMatcher(pathDef = StartsWith(EmptyPath))
 }

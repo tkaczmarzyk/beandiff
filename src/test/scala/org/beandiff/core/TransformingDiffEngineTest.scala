@@ -22,22 +22,33 @@ package org.beandiff.core
 import org.beandiff.TestDefs.anyChange
 import org.beandiff.TestDefs.anyDiff
 import org.beandiff.TestDefs.anyProp
-import org.beandiff.TestDefs.fun1ToAnswer
 import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.mockChange
+import org.beandiff.TestDefs.mockCoordinator
 import org.beandiff.TestDefs.mockMap
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.change.Addition
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Removal
+import org.beandiff.core.model.change.Shift
 import org.beandiff.core.translation.ChangeTranslation
+import org.beandiff.core.translation.DeletionToRemoval
+import org.beandiff.core.translation.InsertionToAddition
+import org.beandiff.core.translation.NewValueToRmAdd
+import org.beandiff.core.translation.ShiftToNothing
+import org.beandiff.test.BeanDiffMatchers.haveChange
+import org.beandiff.test.BeanDiffMatchers.haveChanges
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
-import org.beandiff.test.BeanDiffMatchers._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
@@ -98,5 +109,17 @@ class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
     
     d should haveChange(ch4)
     d should haveChange(ch5)
+  }
+  
+  test("should transform a list-diff into set-diff") {
+    val diff = Diff(o1, Deletion("b", 1), Insertion("a", 0), Shift("d", 4, 10), NewValue(Property("[3]"), "c", "C"))
+    
+    val engine = new TransformingDiffEngine(mockCoordinator(diff), NoopTransformer,
+        Map(classOf[Shift] -> new ShiftToNothing,
+          classOf[NewValue] -> new NewValueToRmAdd,
+          classOf[Insertion] -> new InsertionToAddition,
+          classOf[Deletion] -> new DeletionToRemoval))
+    
+    engine.calculateDiff(o1, o2) should haveChanges (Removal("b"), Addition("a"), Removal("c"), Addition("C"))
   }
 }
