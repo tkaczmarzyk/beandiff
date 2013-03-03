@@ -160,7 +160,7 @@ private[model] class DeepDiff(
   override def transformTarget() = {
     propChanges.foreach({
       case (prop, diff) => {
-        if (target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
+        if (prop != Self && target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
 	      val set = target.asInstanceOf[JSet]
 	      set.remove(diff.target)
 	      diff.transformTarget()
@@ -181,7 +181,13 @@ private[model] class DeepDiff(
     }
   }
   
-  override def forTarget(newTarget: Any) = new DeepDiff(newTarget, propChanges)
+  override def forTarget(newTarget: Any) = {
+    val newPropChanges = propChanges.get(Self) match {
+      case None => propChanges
+      case Some(subDiff) => propChanges + (Self -> subDiff.forTarget(newTarget))
+    }
+    new DeepDiff(newTarget, newPropChanges)
+  }
   
   override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
 }

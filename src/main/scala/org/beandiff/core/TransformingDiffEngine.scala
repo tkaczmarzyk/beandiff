@@ -20,16 +20,10 @@
 package org.beandiff.core
 
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.Property
-import org.beandiff.core.model.DeepDiff
-import org.beandiff.core.translation.ChangeTranslation
-import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Self
-import org.beandiff.core.model.FlatDiff
-import org.beandiff.core.model.FieldProperty
+import org.beandiff.core.translation.ChangeTranslation
+import org.beandiff.core.model.change.Change
 
 class TransformingDiffEngine(
   private val delegate: DiffEngineCoordinator,
@@ -53,16 +47,14 @@ class TransformingDiffEngine(
     selfChanges match {
       case None => original
       case Some(changes) =>
-        changes.leafChanges.foldLeft(original)(
-          (acc, pathChange) => {
-            val path = pathChange._1
-            val change = pathChange._2
-            translators.get(change.getClass) match {
-              case Some(t) => acc.without(path, change).withChanges(path, t.translate(change))
-              case None => acc
-            }
+        changes.leafChanges.foldLeft(original)((acc, pathChange) => {
+          val path = pathChange._1
+          val change = pathChange._2
+          translators.get(change.getClass) match {
+            case Some(t) => acc.without(path, change).withChanges(path, t.translate(change))
+            case None => acc
           }
-        )
+        })
     }
   }
 }

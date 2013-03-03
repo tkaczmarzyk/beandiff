@@ -369,14 +369,13 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     }
   }
 
-  ignore("todo") {
+  test("should perform both self and deep changes on a set") {
     val a = JSet(Parent("b", JList(Child("c", 3))))
     val b = JSet(Parent("b", JList()), Parent("b", JList(Child("c", -1))))
 
-    val d = diff(a, b)
-    d.transformTarget()
+    diff(a, b).transformTarget()
 
-    assert(a === b)
+    a should be === JSet(Parent("b", JList()), Parent("b", JList(Child("c", -1))))
   }
 
   test("should be able to transform a list to any of its permutations") {

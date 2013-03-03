@@ -33,6 +33,7 @@ import org.beandiff.TestDefs._
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.NewValue
 
 @RunWith(classOf[JUnitRunner])
 class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasDifference in assertions
@@ -183,5 +184,18 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val diff = new DeepDiff(parent, Map(Self -> new FlatDiff(parent, new NewValue(Property("name"), "parent", "newName"))))
     
     diff should haveDifference(Path("name"))
+  }
+  
+  test("should be able to change the target") {
+    val diff = new DeepDiff(parent, Map(Property("child") -> Diff(child, NewValue(Property("name"), "aa", "bb"))))
+    
+    diff.forTarget(grandpa).target should be === grandpa
+  }
+  
+  test("should change target in nested self-diff") {
+    val diff = new DeepDiff(parent, Map(Self -> Diff(parent, NewValue(Property("name"), "parent", "newName")),
+        Property("child") -> Diff(child, NewValue(Property("name"), "aa", "bb"))))
+    
+    diff.forTarget(grandpa).changes(EmptyPath).get.target should be === grandpa
   }
 }
