@@ -48,7 +48,7 @@ class PlainTextDiffPresenter(
           case Insertion(x, index) => {
             result.append(path.mkString).append(pathValueSeparator)
             result.append("inserted ").append(valueQuote).append(x).append(valueQuote)
-            result.append(" at [").append(index).append("]")
+            result.append(" at ").append(IndexProperty(index).mkString)
           }
           
           case Addition(x) => {
@@ -66,6 +66,13 @@ class PlainTextDiffPresenter(
 	        result.append(valueQuote).append(oldVal).append(valueQuote)
 	        result.append(valuesSeparator)
 	        result.append(valueQuote).append(newVal).append(valueQuote)
+          }
+          
+          case Shift(x, oldIndex, newIndex) => {
+            result.append(path.mkString).append(pathValueSeparator)
+            result.append(valueQuote).append(x).append(valueQuote)
+            result.append(" moved from ").append(IndexProperty(oldIndex).mkString)
+            result.append(" to ").append(IndexProperty(newIndex).mkString)
           }
           
           case x => {

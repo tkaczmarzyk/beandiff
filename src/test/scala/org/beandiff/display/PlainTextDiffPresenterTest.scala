@@ -45,6 +45,7 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Shift
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -91,5 +92,11 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
             
     presenter.present(diff) should be === "name -- 'old' vs 'new'\n" + ". -- inserted 'b' at [0]\n" + ". -- inserted 'a' at [1]\n" +
         "children[0].age -- '0' vs '1'\n" + "children[0].time -- '1' vs '2'\n" + "children[0].value -- '2' vs '3'\n" + "children[1].name -- 'c' vs 'd'\n"
+  }
+  
+  test("should present a Shift") {
+    val diff = Diff(null, Shift("a", 0, 2))
+    
+    presenter.present(diff) should be === ". -- 'a' moved from [0] to [2]\n"
   }
 }
