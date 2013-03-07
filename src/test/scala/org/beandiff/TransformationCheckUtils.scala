@@ -27,26 +27,27 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalatest.prop.Checkers
 import org.beandiff.test.JSet
+import org.beandiff.core.DiffEngine
 
 trait TransformationCheckUtils extends Checkers {
 
-  def transformsJCollections[T](a: List[T], b: List[T]): Boolean = {
+  def transformsJCollections[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
     transformsJLists(a, b) && transformsJSets(a, b)
   }
   
-  private def transformsJLists[T](a: List[T], b: List[T]): Boolean = {
+  private def transformsJLists[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
     val l1 = JList(a: _*)
     val l2 = JList(b: _*)
 
-    BeanDiff.diff(l1, l2).transformTarget()
+    engine.calculateDiff(l1, l2).transformTarget()
     l1 == l2
   }
   
-  private def transformsJSets[T](a: List[T], b: List[T]): Boolean = {
+  private def transformsJSets[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
     val s1 = JSet(a: _*)
     val s2 = JSet(b: _*)
     
-    BeanDiff.diff(s1, s2).transformTarget()
+    engine.calculateDiff(s1, s2).transformTarget()
     s1 == s2
   }
 

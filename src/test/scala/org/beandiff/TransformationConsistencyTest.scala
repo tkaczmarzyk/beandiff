@@ -37,19 +37,19 @@ class TransformationConsistencyTest extends FunSuite with TransformationCheckUti
 
   for (engine <- engines) {
     test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into other collection of Ints") {
-      check((a: List[Int], b: List[Int]) => transformsJCollections(a, b))
+      check((a: List[Int], b: List[Int]) => transformsJCollections(a, b)(engine))
     }
 
     test(engine + " BeanDiff.diff.transformTarget should transform a collection of Strings into other collection of Strings") {
-      check((a: List[String], b: List[String]) => transformsJCollections(a, b))
+      check((a: List[String], b: List[String]) => transformsJCollections(a, b)(engine))
     }
 
     test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into a collection of Strings") {
-      check((a: List[Int], b: List[String]) => transformsJCollections(a, b))
+      check((a: List[Int], b: List[String]) => transformsJCollections(a, b)(engine))
     }
 
     test(engine + " BeanDiff.diff.transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
-      check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b))
+      check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b)(engine))
     }
   }
 }
