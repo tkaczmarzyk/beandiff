@@ -32,23 +32,24 @@ import org.beandiff.beans.scala.Child
 @RunWith(classOf[JUnitRunner])
 class TransformationConsistencyTest extends FunSuite with TransformationCheckUtils {
 
-  val engines = List(aDiffEngine, aDiffEngine.withEntity[Child]("name"),
-    aDiffEngine.withEntity[Parent]("name"), aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name"))
+  val enginesWithLabels = List((aDiffEngine, "standard engine"), (aDiffEngine.withEntity[Child]("name"), "Child is entity (name is id)"),
+    (aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name"), "both Parent and Child are entities (name is id)"),
+    (aDiffEngine.withEntity[Parent]("name"), "Parent is entity (name is id)"))
 
-  for (engine <- engines) {
-    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into other collection of Ints") {
+  for ((engine, label) <- enginesWithLabels) {
+    test("[" + label + "] transformTarget should transform a collection of Ints into other collection of Ints") {
       check((a: List[Int], b: List[Int]) => transformsJCollections(a, b)(engine))
     }
 
-    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Strings into other collection of Strings") {
+    test("[" + label + "] transformTarget should transform a collection of Strings into other collection of Strings") {
       check((a: List[String], b: List[String]) => transformsJCollections(a, b)(engine))
     }
 
-    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Ints into a collection of Strings") {
+    test("[" + label + "] transformTarget should transform a collection of Ints into a collection of Strings") {
       check((a: List[Int], b: List[String]) => transformsJCollections(a, b)(engine))
     }
 
-    test(engine + " BeanDiff.diff.transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
+    test("[" + label + "] transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
       check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b)(engine))
     }
   }
