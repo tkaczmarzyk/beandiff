@@ -32,9 +32,9 @@ import org.beandiff.beans.scala.Child
 @RunWith(classOf[JUnitRunner])
 class TransformationConsistencyTest extends FunSuite with TransformationCheckUtils {
 
-  val enginesWithLabels = List((aDiffEngine, "standard engine"), (aDiffEngine.withEntity[Child]("name"), "Child is entity (name is id)"),
-    (aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name"), "both Parent and Child are entities (name is id)"),
-    (aDiffEngine.withEntity[Parent]("name"), "Parent is entity (name is id)"))
+  val enginesWithLabels = List((aDiffEngine, "standard engine"), (aDiffEngine.withEntity[Child]("name"), "Child is entity"),
+    (aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name"), "both Parent and Child are entities"),
+    (aDiffEngine.withEntity[Parent]("name"), "Parent is entity"))
 
   for ((engine, label) <- enginesWithLabels) {
     test("[" + label + "] transformTarget should transform a collection of Ints into other collection of Ints") {
