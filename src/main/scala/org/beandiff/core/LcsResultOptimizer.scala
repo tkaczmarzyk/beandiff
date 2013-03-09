@@ -70,8 +70,8 @@ class LcsResultOptimizer(
 
     for { // FIXME it changed into scary crap, refactor!
       (path, change1) <- diff.leafChanges.sorted(PathChangeOrdering)
-      (path, change2) <- diff.leafChanges.sorted(PathChangeOrdering)
-      if !(skip.contains(change1) || skip.contains(change2))
+      (path2, change2) <- diff.leafChanges.sorted(PathChangeOrdering)
+      if path == path2 && !(skip.contains(change1) || skip.contains(change2))
     } {
       (change1, change2) match {
         case (del @ Deletion(x, idx), ins @ Insertion(y, idx2)) if idx == idx2 &&

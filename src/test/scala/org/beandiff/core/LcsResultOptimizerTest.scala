@@ -55,6 +55,8 @@ import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.beans.Simpsons
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.PathChangeOrdering
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.change.Insertion
 
 @RunWith(classOf[JUnitRunner])
 class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons {
@@ -171,6 +173,15 @@ class LcsResultOptimizerTest extends FunSuite with ShouldMatchers with Simpsons 
     when(lcsEngine.calculateDiff(simpsons, children)).thenReturn(rawDiff)
     
     optimizer.calculateDiff(simpsons, children) should be === rawDiff
+  }
+  
+  test("should not optimize if changes are at different paths") { // nulls should be safe here, since nothing is expected to be optimized
+    val rawDiff = Diff(null, Self -> Diff(null, new Insertion(null, 0)),
+        Property("[0]") -> Diff(null, new Deletion(null, 0)))
+        
+    when(lcsEngine.calculateDiff(null, null)).thenReturn(rawDiff)
+    
+    optimizer.calculateDiff(null, null) should be === rawDiff 
   }
   
   // TODO should perform new-value even though... as long as...

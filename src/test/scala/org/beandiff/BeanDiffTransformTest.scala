@@ -134,7 +134,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   test("should remove an element from a set within a set") {
     val set1 = JSet(JSet("a", "b"))
     val set2 = JSet(JSet("b"))
-    
+
     diff(set1, set2).transformTarget()
 
     set1 should be === JSet(JSet("b"))
@@ -389,5 +389,14 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
       assert(l1 === l2, "Error for permutation: " + perm)
     }
+  }
+
+  test("should correctly transform lists of complex entities") {
+    val l1 = JList(Parent("a", JList(Child("d", -1), Child("d", -3))))
+    val l2 = JList(Parent("a", JList()), Parent("d", JList()))
+
+    aDiffEngine.withEntity[Parent]("name").calculateDiff(l1, l2).transformTarget()
+
+    assert(l1 === l2)
   }
 }
