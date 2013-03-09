@@ -27,11 +27,9 @@ import scala.collection.mutable.ArrayLike
 import java.util.ArrayList
 import collection.JavaConversions._
 
-
 private[model] class DeepDiff(
   val target: Any,
   private val propChanges: Map[Property, Diff]) extends Diff {
-
 
   override def leafChanges = // TODO generic method for traversation (with break option)
     propChanges.toList.flatMap({
@@ -54,7 +52,7 @@ private[model] class DeepDiff(
     } else this
   }
 
-  override def without(path: Path, change: Change): Diff = {// TODO verify // TODO detect when it should become a FlatDiff
+  override def without(path: Path, change: Change): Diff = { // TODO verify // TODO detect when it should become a FlatDiff
     propChanges.get(path.head) match {
       case None => this
       case Some(subDiff) =>
@@ -64,7 +62,7 @@ private[model] class DeepDiff(
           without(path.head).withChanges(path.head, subDiff.without(path.tail, change))
     }
   }
-  
+
   def hasDifference(): Boolean =
     !propChanges.isEmpty
 
@@ -88,11 +86,11 @@ private[model] class DeepDiff(
     propChanges.get(path.head) match {
       case Some(subDiff) =>
         if (path.depth <= 1) Some(subDiff)
-	    else subDiff.changes(path.tail)
+        else subDiff.changes(path.tail)
       case None => None
     }
   }
-  
+
   override def without(path: Path): Diff = {
     if (path == EmptyPath)
       Diff(target)
@@ -106,11 +104,11 @@ private[model] class DeepDiff(
         without(path.head).withChanges(path.head, subWithout)
     }
   }
-  
+
   override def withChanges(path: Path, changes: Seq[Change]) = {
     changes.foldLeft[Diff](this)((acc: Diff, change: Change) => acc.withChange(path, change))
   }
-  
+
   override def withChanges(property: Property, subDiff: Diff) = {
     if (!subDiff.hasDifference)
       this
@@ -119,33 +117,33 @@ private[model] class DeepDiff(
       val merged = {
         if (!existing.hasDifference) subDiff
         else subDiff.leafChanges.foldLeft(existing)(
-            (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
+          (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
       }
       new DeepDiff(target, propChanges + (property -> merged))
     }
   }
-  
+
   override def withChanges(path: Path, changes: Diff): Diff = {
     if (path.depth <= 1)
       withChanges(path.head, changes)
     else
       without(path.head).withChanges(path.head, interChangeset(path.head).withChanges(path.tail, changes))
   }
-  
+
   override def withChange(path: Path, change: Change): Diff = {
     if (path.depth <= 1)
       withChange(path.head, change)
     else
       without(path.head).withChanges(path.head, interChangeset(path.head).withChange(path.tail, change))
   }
-  
+
   private def interChangeset(property: Property): Diff = {
     propChanges.get(property) match {
       case Some(diff) => diff
       case None => new DeepDiff(property.value(target), Map())
     }
   }
-  
+
   override def withChange(property: Property, change: Change): DeepDiff = {
     val newMod = propChanges.get(property) match {
       case Some(mod) => mod.withChange(change)
@@ -154,33 +152,38 @@ private[model] class DeepDiff(
 
     new DeepDiff(target, propChanges + (property -> newMod))
   }
-  
+
   override def withChange(change: Change): DeepDiff = withChange(Self, change)
-  
+
   override def transformTarget() = {
     propChanges.foreach({
+      case (Self, diff) => {} // self changes must be performed after all nested ones
       case (prop, diff) => {
-        if (prop != Self && target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
-	      val set = target.asInstanceOf[JSet]
-	      set.remove(diff.target)
-	      diff.transformTarget()
-	      set.add(diff.target)
-	    } else {
+        if (target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
+          val set = target.asInstanceOf[JSet]
+          set.remove(diff.target)
           diff.transformTarget()
-	    }
+          set.add(diff.target)
+        } else {
+          diff.transformTarget()
+        }
       }
     })
+    propChanges.get(Self) match {
+      case Some(diff) => diff.transformTarget()
+      case None => {}
+    }
   }
 
   override def hashCode = 13 * target.hashCode + propChanges.hashCode
-  
+
   override def equals(other: Any) = {
     other match {
       case that: DeepDiff => that.target == target && that.propChanges == propChanges
       case _ => false
     }
   }
-  
+
   override def forTarget(newTarget: Any) = {
     val newPropChanges = propChanges.get(Self) match {
       case None => propChanges
@@ -188,6 +191,6 @@ private[model] class DeepDiff(
     }
     new DeepDiff(newTarget, newPropChanges)
   }
-  
+
   override def toString = "DeepDiff[" + propChanges.mkString("", ",", "") + "]"
 }

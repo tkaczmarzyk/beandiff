@@ -21,6 +21,7 @@ package org.beandiff.core.model
 
 import org.beandiff.BeanDiff
 import org.beandiff.beans.ParentBean
+import org.mockito.Mockito.inOrder
 import org.beandiff.test.BeanDiffMatchers._
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.core.model.Path.EmptyPath
@@ -34,6 +35,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.NewValue
+import org.mockito.InOrder
 
 @RunWith(classOf[JUnitRunner])
 class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasDifference in assertions
@@ -203,5 +205,17 @@ class DeepDiffTest extends FunSuite with ShouldMatchers { // TODO eliminate hasD
     val diff = new DeepDiff(parent, Map(Property("name") -> mockDiff()))
     
     diff.withChanges(Path("child"), List()) should be === diff
+  }
+  
+  test("should perform deeper changes first") {
+    val selfCh = mockChange("selfCh")
+    val deepCh = mockChange("deepCh")
+    val d = Diff(parent, Property("child") -> Diff(child, deepCh), Self -> Diff(parent, selfCh))
+    
+    d.transformTarget()
+    
+    val order = inOrder(selfCh, deepCh)
+    order.verify(deepCh).perform(child)
+    order.verify(selfCh).perform(parent)
   }
 }

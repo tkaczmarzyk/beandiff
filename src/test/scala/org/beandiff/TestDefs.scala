@@ -70,6 +70,15 @@ object TestDefs {
   
   def mockDiff() = {
     val diff = mock[Diff]
+    withDefaultMockDiffBehaviour(diff)
+  }
+  
+  def mockDiff(name: String) = {
+    val diff = mock[Diff](name)
+    withDefaultMockDiffBehaviour(diff)
+  }
+  
+  private def withDefaultMockDiffBehaviour(diff: Diff) = {
     when(diff.hasDifference).thenReturn(true)
     when(diff.hasDifference(any[Path])).thenReturn(true)
     diff

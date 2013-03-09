@@ -391,12 +391,21 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     }
   }
 
-  test("should correctly transform lists of complex entities") {
+  test("should correctly transform lists of entities with sublists") {
     val l1 = JList(Parent("a", JList(Child("d", -1), Child("d", -3))))
     val l2 = JList(Parent("a", JList()), Parent("d", JList()))
 
     aDiffEngine.withEntity[Parent]("name").calculateDiff(l1, l2).transformTarget()
 
+    assert(l1 === l2)
+  }
+
+  test("should correctly transform into set with multiple versions of the same entity") {
+    val l1 = JSet(Parent("c", JList(Child("b", 5))))
+    val l2 = JSet(Parent("c", JList()), Parent("c", JList(Child("b", 5))))
+    
+    aDiffEngine.withEntity[Parent]("name").calculateDiff(l1, l2).transformTarget()
+    
     assert(l1 === l2)
   }
 }
