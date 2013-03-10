@@ -25,7 +25,7 @@ object ChangeOrdering extends Ordering[Change] {
     (ch1, ch2) match {
       case (Shift(_, fromIdx, _), Deletion(_, idx)) => - fromIdx.compareTo(idx)
       case (Deletion(_, idx), Shift(_, fromIdx, _)) => - idx.compareTo(fromIdx)
-      case (Shift(_, fromIdx, _), Insertion(_, idx)) => fromIdx.compareTo(idx)
+      case (Shift(_, _, toIdx), Insertion(_, idx)) => toIdx.compareTo(idx)
       case (Insertion(_, idx), Shift(_, _, toIdx)) => idx.compareTo(toIdx)
       case (Deletion(_, _), Insertion(_, _)) => -1
       case (Insertion(_, _), Deletion(_, _)) => 1

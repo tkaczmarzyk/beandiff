@@ -43,6 +43,7 @@ import org.beandiff.beans.scala.Parent
 import org.beandiff.beans.scala.Child
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.core.model.change.ChangeOrdering
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -432,6 +433,14 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     val b = JSet(Parent("c", JList(Child("c", -3))))
 
     aDiffEngine.withEntity[Parent]("name").calculateDiff(a, b).transformTarget()
+    assert(a === b)
+  }
+  
+  test("should transform list of ints into other list of ints") {
+    val a = JList(0, -1, -2147483648, -2146959360, -2147483648, -1, -2147483648, 0, -773887957, -996860749, 0, -607992824, 253564682, 987035484)
+    val b = JList(-2147483648, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -2146959360, 1, 1, 1, 1, 1, 1, -2147483648, 1, 1, 1, 1)
+
+    diff(a, b).transformTarget()
     assert(a === b)
   }
 }

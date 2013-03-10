@@ -82,4 +82,18 @@ class ChangeOrderingTest extends FunSuite with ShouldMatchers {
     ChangeOrdering.compare(shift, ins) should be < 0
     ChangeOrdering.compare(ins, shift) should be > 0
   }
+  
+  test("shift(1->2) should be after deletion(3)") {
+    val shift = Shift(o, 1, 2)
+    val del = Deletion(o, 3)
+    ChangeOrdering.compare(shift, del) should be > 0
+    ChangeOrdering.compare(del, shift) should be < 0
+  }
+  
+  test("shift(2->0) should be before insertion(1)") {
+    val shift = Shift(o, 2, 0)
+    val ins = Insertion(o, 1)
+    ChangeOrdering.compare(shift, ins) should be < 0
+    ChangeOrdering.compare(ins, shift) should be > 0
+  }
 }
