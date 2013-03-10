@@ -401,11 +401,29 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
   }
 
   test("should correctly transform into set with multiple versions of the same entity") {
-    val l1 = JSet(Parent("c", JList(Child("b", 5))))
-    val l2 = JSet(Parent("c", JList()), Parent("c", JList(Child("b", 5))))
+    val s1 = JSet(Parent("c", JList(Child("b", 5))))
+    val s2 = JSet(Parent("c", JList()), Parent("c", JList(Child("b", 5))))
     
-    aDiffEngine.withEntity[Parent]("name").calculateDiff(l1, l2).transformTarget()
+    aDiffEngine.withEntity[Parent]("name").calculateDiff(s1, s2).transformTarget()
     
-    assert(l1 === l2)
+    assert(s1 === s2)
+  }
+
+  test("should transform entity lists of different lengths") {
+    val a = JList(Parent("a", JList(Child("c", 2), Child("d", 3), Child("c", -5), Child("d", -2))))
+    val b = JList(Parent("a", JList(Child("b", 2), Child("d", -2), Child("b", 0))),
+        Parent("c", JList()))
+
+    aDiffEngine.withEntity[Parent]("name").calculateDiff(a, b).transformTarget()
+    assert(a === b)
+  }
+  
+  test("should transfrom lists of entities with sub entities") {
+    val a = JList(Parent("a", JList(Child("c", 2), Child("d", 3), Child("c", -5), Child("d", -2))))
+    val b = JList(Parent("a", JList(Child("b", 2), Child("d", -2), Child("b", 0))),
+        Parent("c", JList()))
+
+    aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name").calculateDiff(a, b).transformTarget()
+    assert(a === b)
   }
 }

@@ -53,6 +53,7 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.IndexProperty
 import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.Self
 
 class LcsResultOptimizer(
   parent: DiffEngineCoordinator,
@@ -60,7 +61,10 @@ class LcsResultOptimizer(
 
   def calculateDiff(o1: Any, o2: Any) = {
     val diff = lcsEngine.calculateDiff(o1, o2)
-    optimize(diff)
+    diff.changes(EmptyPath) match {
+      case None => diff
+      case Some(_) => optimize(diff)
+    }
   }
 
   private def optimize(diff: Diff): Diff = {
@@ -68,14 +72,16 @@ class LcsResultOptimizer(
 
     var skip = List[Change]()
 
+    val selfChanges = diff.changes(EmptyPath).get.leafChanges.sorted(PathChangeOrdering)
+    
     for { // FIXME it changed into scary crap, refactor!
-      (path, change1) <- diff.leafChanges.sorted(PathChangeOrdering)
-      (path2, change2) <- diff.leafChanges.sorted(PathChangeOrdering)
-      if path == path2 && !(skip.contains(change1) || skip.contains(change2))
+      (path, change1) <- selfChanges
+      (path, change2) <- selfChanges
+      if !(skip.contains(change1) || skip.contains(change2))
     } {
       (change1, change2) match {
         case (del @ Deletion(x, idx), ins @ Insertion(y, idx2)) if idx == idx2 &&
-          isInPlace(path, del, ins)(diff.leafChanges) => { // TODO high complexity, factor out some stuff
+          isInPlace(path, del, ins)(selfChanges) => { // TODO high complexity, factor out some stuff
           
           result = result.without(path, change1).without(path, change2)
           skip = change1 :: change2 :: skip
@@ -87,7 +93,7 @@ class LcsResultOptimizer(
           }
         }
         case (Deletion(x, idx), Insertion(y, idx2)) if lcsEngine.objTypes(x.getClass).areEqual(x, y) &&
-          !diff.leafChanges.exists(shiftBlocker(diff.leafChanges)((path, change1), (path, change2))) => {
+          !selfChanges.exists(shiftBlocker(selfChanges)((path, change1), (path, change2))) => {
 
           result = result.without(path, change1).without(path, change2) // TODO add without(path, changes*)
           result = result.withChange(path, Shift(x, idx, idx2))
