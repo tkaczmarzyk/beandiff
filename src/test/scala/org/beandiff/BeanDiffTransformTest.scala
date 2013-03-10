@@ -426,4 +426,12 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     aDiffEngine.withEntity[Parent]("name").withEntity[Child]("name").calculateDiff(a, b).transformTarget()
     assert(a === b)
   }
+
+  test("should transform set when one version of an entity is going to be transformed to a one equal to the version to be removed") {
+    val a = JSet(Parent("c", JList(Child("c", -3))), Parent("c", JList())) // FIXME it might depend on the order after to-list transformation, add test with a comparator that would ensure the ordering
+    val b = JSet(Parent("c", JList(Child("c", -3))))
+
+    aDiffEngine.withEntity[Parent]("name").calculateDiff(a, b).transformTarget()
+    assert(a === b)
+  }
 }

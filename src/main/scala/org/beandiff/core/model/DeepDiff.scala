@@ -155,15 +155,16 @@ private[model] class DeepDiff(
 
   override def withChange(change: Change): DeepDiff = withChange(Self, change)
 
-  override def transformTarget() = {
+  override def transformTarget() = { // FIXME FIXME FIXME quick dirty fixes for sets
+    var transformedElems = List[Any]()
     propChanges.foreach({
-      case (Self, diff) => {} // self changes must be performed after all nested ones
+      case (Self, diff) => {} // self changes must be performed after all nested ones // FIMXE not really :(
       case (prop, diff) => {
-        if (target.isInstanceOf[JSet]) { // FIXME FIXME FIXME quick dirty fix
+        if (target.isInstanceOf[JSet]) {
           val set = target.asInstanceOf[JSet]
           set.remove(diff.target)
           diff.transformTarget()
-          set.add(diff.target)
+          transformedElems ::= diff.target
         } else {
           diff.transformTarget()
         }
@@ -172,6 +173,9 @@ private[model] class DeepDiff(
     propChanges.get(Self) match {
       case Some(diff) => diff.transformTarget()
       case None => {}
+    }
+    for (elem <- transformedElems) {
+      target.asInstanceOf[JSet].add(elem)
     }
   }
 
