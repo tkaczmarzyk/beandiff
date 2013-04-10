@@ -40,6 +40,7 @@ import org.beandiff.equality.Value
 import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.equality.DiffEqualityInvestigator
 import org.beandiff.core.CompositeDescendingStrategy
+import java.util.Date
 
 /**
  * A container for syntactic sugar methods
@@ -50,7 +51,9 @@ object BeanDiff {
 
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
 
-  final val DefaultEndTypes = EndOnSimpleTypeStrategy.withLeaf(classOf[JBigDecimal])
+  final val DefaultEndTypes = EndOnSimpleTypeStrategy
+		  .withLeaf(classOf[JBigDecimal])
+		  .withLeaf(classOf[Date])
   
   final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
       new EndOnNullStrategy(), DefaultEndTypes)
