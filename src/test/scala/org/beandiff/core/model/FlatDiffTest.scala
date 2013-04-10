@@ -128,4 +128,29 @@ class FlatDiffTest extends FunSuite with ShouldMatchers {
     
     diff.withChanges(EmptyPath, List()) should be === diff
   }
+  
+  test("should correctly combine with DeepDiff") {
+    val flat = new FlatDiff(parent, mockChange())
+    val deep = Diff(target, Property("test") -> mockDiff())
+    
+    val merged = flat.withChanges(Path("child"), deep)
+    merged should be === Diff(parent, Self -> flat, Property("child") -> deep)
+  }
+  
+  test("should correctly combine with other flat diff") {
+    val ch1 = mockChange("ch1")
+    val ch2 = mockChange("ch2")
+    
+    val f1 = new FlatDiff(target, ch1)
+    val f2 = new FlatDiff(target, ch2)
+    
+    f1.withChanges(EmptyPath, f2) should be === new FlatDiff(target, ch2, ch1)
+  }
+  
+  test("should yield itself when other diff has no changes") {
+    val d = Diff(parent, mockChange())
+    val d2 = Diff(target)
+    
+    d.withChanges(Path("child"), d2) should be === d
+  }
 }

@@ -101,13 +101,18 @@ private[model] class FlatDiff(
       toDiff.withChange(prop, change)
   }
 
-  override def withChanges(prop: Property, diff: Diff) = { // FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
-    if (selfChanges.isEmpty && prop == Self)
-      diff
-    else if (diff.changes.exists(pathDiff => pathDiff._1 != EmptyPath))
+  override def withChanges(prop: Property, diff: Diff) = { // TODO simplify :( // FIXME it's now based on some assumptions (e.g. that Self cannot be mapped to anything but FlatDiff)
+    if (prop == Self) {
+      if (selfChanges.isEmpty)
+        diff
+      else
+        diff.leafChanges.foldLeft[Diff](this)(
+            (acc: Diff, pathChange: (Path, Change)) => acc.withChange(pathChange._1, pathChange._2))
+    } else if (!diff.hasDifference) {
+      this
+    } else {
       toDiff.withChanges(prop, diff)
-    else
-      new FlatDiff(target, selfChanges ++ diff.leafChanges.map(_._2))
+    }
   }
 
   override def hasDifference = !selfChanges.isEmpty
