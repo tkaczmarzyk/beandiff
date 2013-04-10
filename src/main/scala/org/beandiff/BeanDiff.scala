@@ -113,7 +113,7 @@ object BeanDiff {
 
   def aDiffEngine() = DiffEngineBuilder.aDiffEngine() // TODO get rid of diffEngine() method, modifiers
     
-  private def getEqInvestigatorMappings(objects: List[_]) = {
+  private def getEqInvestigatorMappings(objects: List[Any]) = {
     objects.filter(_.isInstanceOf[EqInvestigatorBinding])
       .asInstanceOf[Iterable[EqInvestigatorBinding]]
   }

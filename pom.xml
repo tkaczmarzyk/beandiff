@@ -31,7 +31,7 @@
 	</developers>
 
 	<properties>
-		<scala.version>2.9.2</scala.version>
+		<scala.version>2.10.0</scala.version>
 		<scala-maven-plugin.version>3.1.0</scala-maven-plugin.version>
 		<wagon-ftp.version>2.2</wagon-ftp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -341,7 +341,7 @@
 		<dependency>
 			<groupId>org.scalatest</groupId>
 			<artifactId>scalatest_${scala.version}</artifactId>
-			<version>1.9.1</version>
+			<version>1.8</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

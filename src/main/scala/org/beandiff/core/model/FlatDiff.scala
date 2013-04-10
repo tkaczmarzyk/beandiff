@@ -91,7 +91,7 @@ private[model] class FlatDiff(
     if (path != EmptyPath)
       this
     else
-      new FlatDiff(target, selfChanges - change)
+      new FlatDiff(target, selfChanges.filter(_ != change)) // TODO perf
   }
   
   override def withChange(prop: Property, change: Change) = {
