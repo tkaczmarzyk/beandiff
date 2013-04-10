@@ -48,7 +48,8 @@ import org.beandiff.core.model.change.Shift
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy,
-  typeDefs: ClassDictionary[ObjectType] = null) extends DiffEngine with DiffEngineCoordinator {
+  typeDefs: ClassDictionary[ObjectType] = null,
+  filter: Filter = AcceptEverything) extends DiffEngine with DiffEngineCoordinator {
 
   private val objTypeDefs =
     if (typeDefs != null)
@@ -76,14 +77,18 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
   }
 
   def calculateDiff(zero: Diff, location: Property, o1: Any, o2: Any): Diff = {
-    if (visited.hasSeen(o1) || !descStrategy.shouldProceed(visited.currentPath.step(location), o1, o2)) {
+    val newLocation = visited.currentPath.step(location)
+    
+    if (filter.shouldSkip(newLocation, o1, o2)) {
+      zero
+    } else if (visited.hasSeen(o1) || !descStrategy.shouldProceed(newLocation, o1, o2)) {
       if (!getEqInvestigator(o1, o2).areEqual(o1, o2))
         zero.withChange(new NewValue(location, o1, o2))
       else
         zero
     } else {
       visited = visited.step(location, o1)
-      val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass)
+      val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass) // TODO as below
       val result = engine.calculateDiff(o1, o2)
       visited = visited.stepBack
       zero.withChanges(location, result)

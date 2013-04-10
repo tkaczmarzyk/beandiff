@@ -126,6 +126,42 @@ class DiffEngineBuilderTest extends FunSuite with ShouldMatchers with Simpsons {
     d should haveChange(Path("child"), NewValue(Property("child"), bart, lisa))
   }
   
+  test("should skip ignored field") {
+    val d = aDiffEngine.skipping("name").calculateDiff(bart, milhouse)
+    
+    d should not (haveDifference)
+  }
+  
+  test("should skip simple value field") {
+    val d = aDiffEngine.skipping("name", "value").calculateDiff(bart, lisa)
+    
+    d should not (haveDifference)
+  }
+  
+  test("should skip object field") {
+    val h1 = new ParentBean("homer", lisa)
+    val h2 = new ParentBean("homer", bart)
+    
+    val d = aDiffEngine.skipping("child").calculateDiff(h1, h2)
+    d should not (haveDifference)
+  }
+  
+  test("should skip nested ignored field") {
+    val h1 = new ParentBean("homer", lisa)
+    val h2 = new ParentBean("homer", lisa2)
+    
+    val d = aDiffEngine.skipping("child.value").calculateDiff(h1, h2)
+    d should not (haveDifference)
+  }
+  
+  test("should skip only the provided path") {
+    val h1 = new ParentBean("homer", lisa)
+    val h2 = new ParentBean("homer", lisa2)
+    
+    val d = aDiffEngine.skipping("child.name").calculateDiff(h1, h2)
+    d should haveDifference
+  }
+  
   // TODO
   ignore("should treat the specified class as entity") {
     val engine = aDiffEngine.withEntity[SimpleJavaBean]("name")

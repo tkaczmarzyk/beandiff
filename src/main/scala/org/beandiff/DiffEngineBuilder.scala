@@ -34,6 +34,11 @@ import org.beandiff.equality.ObjectType
 import org.beandiff.equality.SelectiveEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.core.model.Path
+import java.util.ArrayList
+import java.util.Arrays
+import org.beandiff.core.AcceptEverything
+import org.beandiff.core.PathFilter
 
 
 object DiffEngineBuilder {
@@ -49,6 +54,7 @@ class DiffEngineBuilder private () {
   private var endTypes = BeanDiff.DefaultEndTypes
   private var additionalDescStrategy: DescendingStrategy = null
   private var objTypes = new ClassDictionary[ObjectType]()
+  private var pathsToSkip = List[Path]()
 
   def ignoringCase = {
     eqInvestigators = eqInvestigators.withEntry(BeanDiff.IgnoreCase)
@@ -110,10 +116,23 @@ class DiffEngineBuilder private () {
     this
   }
 
+  @varargs
+  def skipping(path: String, paths: String*) = {
+	pathsToSkip ++= (path :: paths.toList).map(Path(_))
+    this
+  }
+  
   def build(): DiffEngine = {
-    new DelegatingDiffEngine(eqInvestigators, descendingStrategy(), objTypes)
+    new DelegatingDiffEngine(eqInvestigators, descendingStrategy(), objTypes, filter())
   }
 
+  private def filter() = {
+    if (pathsToSkip.isEmpty)
+      AcceptEverything
+    else
+      new PathFilter(pathsToSkip.toSet)
+  }
+  
   private def descendingStrategy() = {
     if (additionalDescStrategy == null)
       CompositeDescendingStrategy.allOf(new EndOnNullStrategy, endTypes)
