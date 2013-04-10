@@ -21,6 +21,10 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.FieldProperty
+import org.beandiff.support.FieldSupport.enrichField
+import org.beandiff.support.FieldSupport
+import org.beandiff.support.ClassSupport.convert
+
 
 class FieldRoutePlanner extends RoutePlanner {
 
@@ -38,7 +42,7 @@ class FieldRoutePlanner extends RoutePlanner {
   }
 
   override def routes(o1: Any, o2: Any) = {
-    getDeclaredFields(o1.getClass) map {
+    o1.getClass.fieldsInHierarchy.withFilter(!_.isStatic) map {
       f =>
         {
           f.setAccessible(true)
@@ -46,7 +50,8 @@ class FieldRoutePlanner extends RoutePlanner {
         }
     }
   }
-
-  protected def getDeclaredFields(c: Class[_]) =
+  
+  protected def getDeclaredFields(c: Class[_]) = { // TODO get rid of it
     c.getDeclaredFields()
+  }
 }

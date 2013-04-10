@@ -44,6 +44,7 @@ import org.beandiff.beans.scala.Child
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.change.ChangeOrdering
+import org.beandiff.beans.DescendantJavaBean
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -442,5 +443,14 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(a, b).transformTarget()
     assert(a === b)
+  }
+  
+  test("should update field in superclass") {
+    val a = new DescendantJavaBean("a", 1, "x")
+    val b = new DescendantJavaBean("b", 1, "x")
+    
+    diff(a, b).transformTarget()
+    
+    a.getName() should be === "b"
   }
 }

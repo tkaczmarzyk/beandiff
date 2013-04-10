@@ -20,6 +20,7 @@
 package org.beandiff.support
 
 import ClassSupport.convert
+import java.lang.reflect.Field
 
 object ClassSupport {
   implicit def convert(c: Class[_]): ClassSupport = new ClassSupport(c)
@@ -27,6 +28,27 @@ object ClassSupport {
 
 class ClassSupport(c: Class[_]) {
 
+  def fieldsInHierarchy: List[Field] = {
+    val fields = c.getDeclaredFields.toList
+    if (c.getSuperclass() != null)
+      fields ++ c.getSuperclass.fieldsInHierarchy
+    else fields
+  }
+  
+  def hasField(field: String) = findField(field) != null
+  
+  def findField(field: String) = {
+    def getField(clazz: Class[_]): Field = {
+      val fields = clazz.getDeclaredFields().filter(_.getName() == field)
+      if (!fields.isEmpty)
+        fields.head
+      else if (clazz.getSuperclass != null)
+        getField(clazz.getSuperclass)
+      else null
+    }
+    getField(c)
+  }
+  
   def allSuperTypes: List[Class[_]] = {
     if (c == classOf[Object])
       List()

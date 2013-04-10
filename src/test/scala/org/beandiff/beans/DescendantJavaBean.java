@@ -17,20 +17,19 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core
+package org.beandiff.beans;
 
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Property
-import org.beandiff.core.RoutePlanner.Route
+public class DescendantJavaBean extends SimpleJavaBean {
 
-object RoutePlanner {
-  type Route = (Property, (Any, Any)) // TODO generalize
-}
+	private String nickname;
+	
+	public DescendantJavaBean(String name, int value, String nickname) {
+		super(name, value);
+		this.nickname = nickname;
+	}
+	
+	public String getNickname() {
+		return nickname;
+	}
 
-trait RoutePlanner {
-  
-  @deprecated
-  def guide(current: Path, val1: Any, val2: Any, walker: ObjectWalker): Unit
-  
-  def routes(o1: Any, o2: Any): Iterable[Route]
 }

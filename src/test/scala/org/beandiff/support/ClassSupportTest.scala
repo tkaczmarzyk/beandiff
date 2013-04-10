@@ -27,31 +27,39 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.DescendantJavaBean
+import org.beandiff.beans.SimpleJavaBean
+
 
 @RunWith(classOf[JUnitRunner])
-class ObjectSupportTest extends FunSuite with ShouldMatchers {
+class ClassSupportTest extends FunSuite with ShouldMatchers {
 
-  test("String.allClasses == (String, Object) ") {
-    "aaa".allClasses should have size 2
-    assert("aaa".allClasses.contains(classOf[String]))
-    assert("aaa".allClasses.contains(classOf[Object]))
+  val descClass = classOf[DescendantJavaBean]
+  val superClass = classOf[SimpleJavaBean]
+  
+  
+  test("should include declared fields from the class itself") {
+    val fields = new ClassSupport(descClass).fieldsInHierarchy
+    
+    fields should contain (descClass.getDeclaredField("nickname"))
   }
   
-  test("Integer.allClasses == (Integer, Number, Object)") {
-    val classes = 1.allClasses
-    classes should have size 3
-    assert(classes.contains(classOf[Integer]))
-    assert(classes.contains(classOf[Number]))
-    assert(classes.contains(classOf[Object]))
+  test("should include declared fields from the superclass") {
+    val fields = new ClassSupport(descClass).fieldsInHierarchy
+    
+    fields should contain (superClass.getDeclaredField("name"))
+    fields should contain (superClass.getDeclaredField("value"))
   }
   
-  test("should resolve field from supertype") {
-    val o = new ObjectSupport(new DescendantJavaBean("bart", 10, "bartman"))
-    o.getField("name") should not be null
+  test("should find fields from class, parent and grandparent") {
+    val fields = new ClassSupport(classOf[GrandChild]).fieldsInHierarchy
+    
+    val numAllFields = classOf[GrandChild].getDeclaredFields.size +
+      classOf[DescendantJavaBean].getDeclaredFields.size + classOf[SimpleJavaBean].getDeclaredFields.size
+    
+    fields should have size numAllFields
   }
-  
-  test("should find field in supertype") {
-    val o = new ObjectSupport(new DescendantJavaBean("bart", 10, "bartman"))
-    o.hasField("name") should be === true
+
+  class GrandChild(name: String, value: Int, nickname: String) extends DescendantJavaBean(name, value, nickname) {
+    private val test = "test"
   }
 }

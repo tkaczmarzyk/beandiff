@@ -57,6 +57,7 @@ import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.beans.Simpsons
 import org.beandiff.core.model.change.Addition
+import org.beandiff.beans.DescendantJavaBean
 
 
 @RunWith(classOf[JUnitRunner])
@@ -522,5 +523,12 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff should haveDifference("children[1].name")
     
     BeanDiff.mkString(diff) should be === "name -- 'parent1' vs 'parent2'\n" + "children[1].name -- 'b' vs 'x'\n"
+  }
+  
+  test("should detect difference between fields in superclass") {
+    val a = new DescendantJavaBean("a", 1, "x")
+    val b = new DescendantJavaBean("b", 1, "x")
+    
+    diff(a, b) should haveDifference("name")
   }
 }
