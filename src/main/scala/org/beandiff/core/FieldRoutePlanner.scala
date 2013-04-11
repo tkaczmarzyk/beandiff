@@ -46,7 +46,7 @@ class FieldRoutePlanner extends RoutePlanner {
       f =>
         {
           f.setAccessible(true)
-          (new FieldProperty(f.getName), (f.get(o1), f.get(o2)))
+          (new FieldProperty(f.getName), (f.getFrom(o1), f.getFrom(o2)))
         }
     }
   }

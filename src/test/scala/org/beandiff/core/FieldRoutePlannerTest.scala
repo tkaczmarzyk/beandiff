@@ -48,8 +48,8 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     
     val routes = router.routes(b, b)
     
-    routes should contain ((Property("name"), ("b", "b")).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("value"), (1, 1)).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain ((Property("name"), (Some("b"), Some("b"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain ((Property("value"), (Some(1), Some(1))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
   }
   
   test("should include fields from supertype") {
@@ -58,8 +58,8 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     val routes = router.routes(c, c)
     
     routes should have size 3
-    routes should contain ((Property("name"), ("c", "c")).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("value"), (1, 1)).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("nickname"), ("x", "x")).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain ((Property("name"), (Some("c"), Some("c"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain ((Property("value"), (Some(1), Some(1))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain ((Property("nickname"), (Some("x"), Some("x"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
   }
 }

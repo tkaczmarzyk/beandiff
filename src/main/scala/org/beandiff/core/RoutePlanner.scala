@@ -24,7 +24,7 @@ import org.beandiff.core.model.Property
 import org.beandiff.core.RoutePlanner.Route
 
 object RoutePlanner {
-  type Route = (Property, (Any, Any)) // TODO generalize
+  type Route = (Property, (Option[Any], Option[Any])) // TODO generalize
 }
 
 trait RoutePlanner {

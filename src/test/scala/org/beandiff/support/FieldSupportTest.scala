@@ -17,21 +17,27 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff.core.translation
+package org.beandiff.support
 
-import org.beandiff.core.model.change.Change
-import org.beandiff.core.model.change.NewValue
-import org.beandiff.core.model.change.Removal
-import org.beandiff.core.model.IndexProperty
-import org.beandiff.core.model.change.Addition
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.beans.Simpsons
 
-class NewValueToRmAdd extends ChangeTranslation {
-
-  override def translate(change: Change) = {
-    change match {
-      case NewValue(IndexProperty(idx), oldVal, newVal) =>
-        List(Removal(oldVal.get), Addition(newVal.get))
-      case _ => throw new IllegalArgumentException("expected NewValue on an index property but was " + change)
-    }
+@RunWith(classOf[JUnitRunner])
+class FieldSupportTest extends FunSuite with ShouldMatchers with Simpsons {
+  
+  val nameField = classOf[SimpleJavaBean].getDeclaredField("name")
+  nameField.setAccessible(true)
+  
+  
+  test("should return None if object doesn't have such field") {
+    new FieldSupport(nameField).getFrom(new Object) should be === None
+  }
+  
+  test("should return value of the field") {
+    new FieldSupport(nameField).getFrom(bart) should be === Some("bart")
   }
 }

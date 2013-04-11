@@ -41,7 +41,9 @@ private class LeafDiffEngine( // TODO responsibility has been reduced, consider 
 
     routes.foldLeft(zero)(
       (accDiff, route) => route match {
-        case (prop, (obj1, obj2)) => delegate.calculateDiff(accDiff, prop, obj1, obj2)
+        case (prop, (Some(obj1), Some(obj2))) => delegate.calculateDiff(accDiff, prop, obj1, obj2)
+        case (prop, (Some(o), None)) => accDiff.withChange(Self, NewValue(prop, Some(o), None))
+        case (prop, (None, Some(o))) => accDiff // TODO
       })
   }
 

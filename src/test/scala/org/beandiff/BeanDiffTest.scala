@@ -58,6 +58,8 @@ import org.beandiff.core.model.change.Insertion
 import org.beandiff.beans.Simpsons
 import org.beandiff.core.model.change.Addition
 import org.beandiff.beans.DescendantJavaBean
+import org.beandiff.core.model.Path
+import org.beandiff.core.model.change.Change
 
 
 @RunWith(classOf[JUnitRunner])
@@ -530,5 +532,19 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val b = new DescendantJavaBean("b", 1, "x")
     
     diff(a, b) should haveDifference("name")
+  }
+  
+  test("should be able to compare instance of derived class with an instance of base class") {
+    val derived = new DescendantJavaBean("bbb", 2, "x")
+    val base = new SimpleJavaBean("aaa", 1)
+    
+    val d = diff(derived, base)
+    
+    d should haveDifference("name")
+    d should haveDifference("value")
+    d should haveDifference("nickname")
+    
+    val expectedChange: (Path, Change) = (EmptyPath, NewValue(Property("nickname"), Some("x"), None))
+    d.leafChanges should contain(expectedChange)
   }
 }

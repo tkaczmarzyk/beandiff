@@ -61,7 +61,7 @@ class PlainTextDiffPresenter(
             result.append("removed ").append(valueQuote).append(x).append(valueQuote)
           }
           
-          case NewValue(prop, oldVal, newVal) => {
+          case NewValue(prop, Some(oldVal), Some(newVal)) => {
             result.append(path.step(prop).mkString).append(pathValueSeparator)
 	        result.append(valueQuote).append(oldVal).append(valueQuote)
 	        result.append(valuesSeparator)

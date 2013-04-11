@@ -22,13 +22,25 @@ package org.beandiff.core.model.change
 import org.beandiff.core.model.Property
 
 
+object NewValue {
+  def apply(prop: Property, oldVal: Any, newVal: Any) = new NewValue(prop, oldVal, newVal)
+}
+
 case class NewValue(
   property: Property,
-  oldVal: Any, 
-  newVal: Any) extends Change with Equals {
+  oldVal: Option[Any], 
+  newVal: Option[Any]) extends Change with Equals {
 
-  override def perform(target: Any): Unit =
-    property.setValue(target, newVal)
+  def this(property: Property, oldVal: Any, newVal: Any) = {
+    this(property, Some(oldVal), Some(newVal))
+  }
+  
+  override def perform(target: Any): Unit = {
+    (oldVal, newVal) match {
+      case (Some(oldVal), Some(newVal)) => property.setValue(target, newVal)
+      case _ => {} // TODO is silent-ignore the best solution?
+    }
+  }
   
   override val targetProperty = property
 
@@ -43,9 +55,9 @@ case class NewValue(
     }
   }
   
-  override def oldValue = Some(oldVal)
+  override def oldValue = oldVal
   
-  override def newValue = Some(newVal)
+  override def newValue = newVal
   
   override def hashCode() = {
     val prime = 41

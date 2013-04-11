@@ -21,6 +21,7 @@ package org.beandiff.support
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import org.beandiff.support.ClassSupport.convert
 
 
 object FieldSupport {
@@ -30,4 +31,11 @@ object FieldSupport {
 class FieldSupport(f: Field) {
 
   def isStatic = Modifier.isStatic(f.getModifiers())
+  
+  def getFrom(src: Any): Option[Any] = {
+    if (src.getClass.hasField(f.getName))
+      Some(f.get(src))
+    else
+      None
+  }
 }
