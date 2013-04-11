@@ -116,7 +116,7 @@ class DiffEngineBuilder private () {
     this
   }
 
-  @varargs // TODO @vargars doesn't generate proper java varargs anymore
+  @varargs
   def skipping(path: String, paths: String*) = {
 	pathsToSkip ++= (path :: paths.toList).map(Path(_))
     this
