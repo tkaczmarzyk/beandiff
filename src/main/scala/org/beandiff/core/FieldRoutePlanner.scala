@@ -42,7 +42,11 @@ class FieldRoutePlanner extends RoutePlanner {
   }
 
   override def routes(o1: Any, o2: Any) = {
-    o1.getClass.fieldsInHierarchy.withFilter(!_.isStatic) map {
+    val allFields = 
+      if (o1.getClass == o2.getClass) o1.getClass.fieldsInHierarchy
+      else o1.getClass.fieldsInHierarchy.toSet ++ o2.getClass.fieldsInHierarchy
+    
+    allFields.withFilter(!_.isStatic) map {
       f =>
         {
           f.setAccessible(true)

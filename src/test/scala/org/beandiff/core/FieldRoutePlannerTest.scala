@@ -62,4 +62,11 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     routes should contain ((Property("value"), (Some(1), Some(1))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
     routes should contain ((Property("nickname"), (Some("x"), Some("x"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
   }
+  
+  test("should include fields from right even though they're not present on left") {
+    val base = new SimpleJavaBean("base", 1)
+    val derived = new DescendantJavaBean("derived", 1, "d")
+    
+    router.routes(base, derived) should have size 3
+  }
 }

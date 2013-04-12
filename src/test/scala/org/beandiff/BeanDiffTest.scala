@@ -547,4 +547,18 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val expectedChange: (Path, Change) = (EmptyPath, NewValue(Property("nickname"), Some("x"), None))
     d.leafChanges should contain(expectedChange)
   }
+  
+  test("should be able to compare instance of base class with an instance of derived class") {
+    val base = new SimpleJavaBean("aaa", 1)
+    val derived = new DescendantJavaBean("bbb", 2, "x")
+    
+    val d = diff(base, derived)
+    
+    d should haveDifference("name")
+    d should haveDifference("value")
+    d should haveDifference("nickname")
+    
+    val expectedChange: (Path, Change) = (EmptyPath, NewValue(Property("nickname"), None, Some("x")))
+    d.leafChanges should contain(expectedChange)
+  }
 }
