@@ -36,13 +36,14 @@ import org.mockito.invocation.InvocationOnMock
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.DiffEngineBuilder
 
 
 @RunWith(classOf[JUnitRunner])
 class DelegatingDiffEngineTest extends FunSuite with ShouldMatchers {
 
   val descStrategy = mock[DescendingStrategy]
-  val engine = new DelegatingDiffEngine(BeanDiff.DefaultEqInvestigators, descStrategy)
+  val engine = new DelegatingDiffEngine(DiffEngineBuilder.DefaultEqInvestigators, descStrategy)
   
   when(descStrategy.shouldProceed(anyPath, any, any))
   	.thenAnswer((inv: InvocationOnMock) => 

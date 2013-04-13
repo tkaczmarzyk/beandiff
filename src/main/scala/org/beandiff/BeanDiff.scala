@@ -51,35 +51,11 @@ object BeanDiff {
 
   private type EqInvestigatorBinding = (Class[_], EqualityInvestigator);
 
-  final val DefaultEndTypes = EndOnSimpleTypeStrategy
-		  .withLeaf(classOf[JBigDecimal])
-		  .withLeaf(classOf[Date])
-  
-  final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
-      new EndOnNullStrategy(), DefaultEndTypes)
-
   final val DefaultPresenter = new PlainTextDiffPresenter
 
-  final val DefaultEqInvestigators: ClassDictionary[EqualityInvestigator] = new ClassDictionary(new StdEqualityInvestigator)
-    .withEntry(classOf[JBigDecimal] -> new ComparableEqualityInvestigator)
-    .withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
-
-  final val IgnoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
-
+  
   def diff(o1: Any, o2: Any): Diff = {
-    diff(o1, o2, List(): _*)
-  }
-
-  @varargs
-  def diff(o1: Any, o2: Any, modifiers: Any*): Diff = {
-    diffEngine(modifiers: _*).calculateDiff(o1, o2)
-  }
-
-  @varargs
-  def diffEngine(modifiers: Any*): DiffEngine = {
-    val eqInvestigators = DefaultEqInvestigators.withEntries(getEqInvestigatorMappings(modifiers.toList))
-
-    new DelegatingDiffEngine(eqInvestigators, DefaultDescStrategy)
+    diffEngine().calculateDiff(o1, o2)
   }
 
   def mkString(diff: Diff) = DefaultPresenter.present(diff)
@@ -91,30 +67,14 @@ object BeanDiff {
   }
 
   def printDiff(o1: Any, o2: Any): Unit =
-    printDiff(o1, o2, List(): _*)
-
-  @varargs
-  def printDiff(o1: Any, o2: Any, modifiers: Any*): Unit =
-    printDiff(new PrintWriter(System.out), o1, o2, modifiers: _*)
+    printDiff(new PrintWriter(System.out), o1, o2)
 
   def printDiff(out: PrintStream, o1: Any, o2: Any): Unit =
     printDiff(new PrintWriter(out), o1, o2)
 
   def printDiff(out: PrintWriter, o1: Any, o2: Any): Unit =
-    printDiff(out, o1, o2, List(): _*)
+    print(out, diff(o1, o2))
 
-  @varargs
-  def printDiff(out: PrintStream, o1: Any, o2: Any, modifiers: Any*) =
-    print(new PrintWriter(out), diff(o1, o2, modifiers: _*))
-
-  @varargs
-  def printDiff(out: PrintWriter, o1: Any, o2: Any, modifiers: Any*) =
-    print(out, diff(o1, o2, modifiers: _*))
-
-  def aDiffEngine() = DiffEngineBuilder.aDiffEngine() // TODO get rid of diffEngine() method, modifiers
+  def diffEngine() = DiffEngineBuilder.aDiffEngine()
     
-  private def getEqInvestigatorMappings(objects: List[Any]) = {
-    objects.filter(_.isInstanceOf[EqInvestigatorBinding])
-      .asInstanceOf[Iterable[EqInvestigatorBinding]]
-  }
 }

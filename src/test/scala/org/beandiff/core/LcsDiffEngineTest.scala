@@ -78,7 +78,7 @@ class LcsDiffEngineTest extends FunSuite with ShouldMatchers {
     val l1 = JList(a1, b, c)
     val l2 = JList(a2, b, c)
 
-    val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+    val engine = new LcsDiffEngine(BeanDiff.diffEngine().build().asInstanceOf[DiffEngineCoordinator],
       EverythingIsEntityWithNameId, new NaiveLcsCalc()) // TODO simplify creation
 
     val d = engine.calculateDiff(l1, l2)

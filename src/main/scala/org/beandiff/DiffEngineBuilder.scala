@@ -20,29 +20,51 @@
 package org.beandiff
 
 import java.lang.annotation.Annotation
+import java.util.Date
+
 import scala.annotation.varargs
+
+import org.beandiff.TypeDefs.JBigDecimal
+import org.beandiff.core.AcceptEverything
 import org.beandiff.core.CompositeDescendingStrategy
 import org.beandiff.core.DelegatingDiffEngine
 import org.beandiff.core.DescendingStrategy
 import org.beandiff.core.DiffEngine
 import org.beandiff.core.EndOnNullStrategy
+import org.beandiff.core.EndOnSimpleTypeStrategy
 import org.beandiff.core.LimitedDepthStrategy
+import org.beandiff.core.PathFilter
+import org.beandiff.core.model.Path
 import org.beandiff.equality.AnnotationEqualityInvestigator
+import org.beandiff.equality.ComparableEqualityInvestigator
 import org.beandiff.equality.Entity
 import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.equality.IgnoreCaseStringEqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.SelectiveEqualityInvestigator
-import org.beandiff.support.ClassDictionary
 import org.beandiff.equality.StdEqualityInvestigator
-import org.beandiff.core.model.Path
-import java.util.ArrayList
-import java.util.Arrays
-import org.beandiff.core.AcceptEverything
-import org.beandiff.core.PathFilter
+import org.beandiff.support.ClassDictionary
+import org.beandiff.support.ValueTypes
+import org.beandiff.DiffEngineBuilder._
 
 
 object DiffEngineBuilder {
 
+  private final val IgnoreCase = (classOf[String], new IgnoreCaseStringEqualityInvestigator)
+  
+  final val DefaultEndTypes = EndOnSimpleTypeStrategy
+		  .withLeaf(classOf[JBigDecimal])
+		  .withLeaf(classOf[Date])
+  
+  final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
+      new EndOnNullStrategy(), DefaultEndTypes)
+
+
+  final val DefaultEqInvestigators: ClassDictionary[EqualityInvestigator] = new ClassDictionary(new StdEqualityInvestigator)
+    .withEntry(classOf[JBigDecimal] -> new ComparableEqualityInvestigator)
+    .withEntries(ValueTypes.all.map((_, new StdEqualityInvestigator)))
+  
+    
   def aDiffEngine(): DiffEngineBuilder = new DiffEngineBuilder
 
   implicit def builder2engine(builder: DiffEngineBuilder) = builder.build()
@@ -50,14 +72,14 @@ object DiffEngineBuilder {
 
 class DiffEngineBuilder private () {
 
-  private var eqInvestigators: ClassDictionary[EqualityInvestigator] = BeanDiff.DefaultEqInvestigators
-  private var endTypes = BeanDiff.DefaultEndTypes
+  private var eqInvestigators: ClassDictionary[EqualityInvestigator] = DefaultEqInvestigators
+  private var endTypes = DefaultEndTypes
   private var additionalDescStrategy: DescendingStrategy = null
   private var objTypes = new ClassDictionary[ObjectType]()
   private var pathsToSkip = List[Path]()
 
   def ignoringCase = {
-    eqInvestigators = eqInvestigators.withEntry(BeanDiff.IgnoreCase)
+    eqInvestigators = eqInvestigators.withEntry(IgnoreCase)
     this
   }
 

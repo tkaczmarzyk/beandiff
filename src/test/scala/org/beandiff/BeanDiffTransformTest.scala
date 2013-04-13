@@ -188,7 +188,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(x1, a2, b1, c1)
 
-      val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+      val engine = new LcsDiffEngine(BeanDiff.diffEngine().build().asInstanceOf[DiffEngineCoordinator],
         EverythingIsEntityWithNameId, new NaiveLcsCalc()) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()
@@ -259,7 +259,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
       val l1 = JList(a1, b1, c1)
       val l2 = JList(a2, b1, c1)
 
-      val engine = new LcsDiffEngine(BeanDiff.diffEngine().asInstanceOf[DiffEngineCoordinator],
+      val engine = new LcsDiffEngine(BeanDiff.diffEngine().build().asInstanceOf[DiffEngineCoordinator],
         EverythingIsEntityWithNameId, new NaiveLcsCalc()) // TODO simplify creation
 
       engine.calculateDiff(l1, l2).transformTarget()

@@ -24,22 +24,28 @@ import java.io.StringWriter
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.HashSet
-import org.beandiff.BeanDiff.IgnoreCase
+import org.beandiff.BeanDiff.diffEngine
 import org.beandiff.BeanDiff.diff
 import org.beandiff.BeanDiff.printDiff
-import org.beandiff.BeanDiff.aDiffEngine
+import org.beandiff.DiffEngineBuilder.builder2engine
 import org.beandiff.beans.CollectionBean
+import org.beandiff.beans.DescendantJavaBean
 import org.beandiff.beans.NamedBean
+import org.beandiff.beans.Node
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.beans.Simpsons
 import org.beandiff.core.model.Diff
-import org.beandiff.core.model.Property
-import org.beandiff.core.model.Self
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.Property
 import org.beandiff.core.model.change.Addition
+import org.beandiff.core.model.change.Change
+import org.beandiff.core.model.change.Deletion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Removal
+import org.beandiff.core.model.change.Shift
 import org.beandiff.test.BeanDiffMatchers.haveChange
 import org.beandiff.test.BeanDiffMatchers.haveDeletionAt
 import org.beandiff.test.BeanDiffMatchers.haveDifference
@@ -47,19 +53,9 @@ import org.beandiff.test.JList
 import org.beandiff.test.JSet
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
-import org.beandiff.beans.Node
-import org.beandiff.core.model.change.Shift
-import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.model.change.Insertion
-import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.model.change.Insertion
-import org.beandiff.beans.Simpsons
+import org.scalatest.junit.JUnitRunner
 import org.beandiff.core.model.change.Addition
-import org.beandiff.beans.DescendantJavaBean
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.change.Change
 
 
 @RunWith(classOf[JUnitRunner])
@@ -275,7 +271,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("subsequent calls should return the same result (difference)") {
     new SimpleBeans {
-      val engine = BeanDiff.diffEngine()
+      val engine = BeanDiff.diffEngine().build()
       engine.calculateDiff(a1a, b1) should be === Diff(a1a, new NewValue(Property("name"), "a", "b"))
       engine.calculateDiff(a1a, b1) should be === Diff(a1a, new NewValue(Property("name"), "a", "b"))
     }
@@ -283,7 +279,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
   
   test("subsequent calls should return the same result (no difference)") {
     new SimpleBeans {
-      val engine = BeanDiff.diffEngine()
+      val engine = BeanDiff.diffEngine().build()
       engine.calculateDiff(a1a, a1b) should not (haveDifference)
       engine.calculateDiff(a1a, a1b) should not (haveDifference)
     }
@@ -362,18 +358,6 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     p3.setChild(p4)
     
     diff(p1, p3)
-  }
-  
-  test("should be case sensitive if not specified otherwise") {
-    new SimpleBeans {
-      diff(a1a, A1) should haveDifference
-    }
-  }
-  
-  test("should ignore case if requested") {
-    new SimpleBeans {
-      diff(a1a, A1, IgnoreCase) should not (haveDifference)
-    }
   }
   
   test("should detect differnces in java lists of strings") {
@@ -496,7 +480,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
 
   test("should detect that an enity in a set was replaced with another one") {
     new Simpsons {
-      val engine = aDiffEngine.withEntity[SimpleJavaBean]("value")
+      val engine = diffEngine.withEntity[SimpleJavaBean]("value")
 
       val s1 = JSet(bart)
       val s2 = JSet(lisa)
