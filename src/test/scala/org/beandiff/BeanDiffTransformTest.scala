@@ -453,4 +453,38 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     
     a.getName() should be === "b"
   }
+  
+  test("should update instance of base class and ignore fields from derived one") {
+    val base = new SimpleJavaBean("aaa", 1)
+    val derived = new DescendantJavaBean("bbb", 2, "x")
+    
+    diff(base, derived).transformTarget()
+    
+    base.getName should be === "bbb"
+    base.getValue should be === 2
+  }
+  
+  test("should update instance of derived class but ignore fields not present in bean on the right") {
+    val derived = new DescendantJavaBean("bbb", 2, "x")
+    val base = new SimpleJavaBean("aaa", 1)
+    
+    diff(derived, base).transformTarget()
+    
+    derived.getName should be === "aaa"
+    derived.getValue should be === 1
+    derived.getNickname should be === "x"
+  }
+  
+  test("should update fields by name even though classes are different") {
+    val o1 = new SimpleJavaBean("a", 7)
+    val o2 = new Object() {
+      private val name = "b"
+      private val value = 9
+    }
+    
+    diff(o1, o2).transformTarget()
+    
+    o1.getName should be === "b"
+    o1.getValue should be === 9
+  }
 }
