@@ -30,7 +30,8 @@ class PlainTextDiffPresenter(
   private val pathValueSeparator: String = " -- ",
   private val valuesSeparator: String = " vs ",
   private val valueQuote: String = "'",
-  private val differenceSeparator: String = "\n") extends DiffPresenter {
+  private val differenceSeparator: String = "\n",
+  private val noPathLabel: String = "nothing (no such path)") extends DiffPresenter {
 
 
   override def present(d: Diff): String = {
@@ -61,11 +62,11 @@ class PlainTextDiffPresenter(
             result.append("removed ").append(valueQuote).append(x).append(valueQuote)
           }
           
-          case NewValue(prop, Some(oldVal), Some(newVal)) => {
+          case NewValue(prop, oldVal, newVal) => {
             result.append(path.step(prop).mkString).append(pathValueSeparator)
-	        result.append(valueQuote).append(oldVal).append(valueQuote)
+	        result.append(present(oldVal))
 	        result.append(valuesSeparator)
-	        result.append(valueQuote).append(newVal).append(valueQuote)
+	        result.append(present(newVal))
           }
           
           case Shift(x, oldIndex, newIndex) => {
@@ -87,6 +88,13 @@ class PlainTextDiffPresenter(
       }
 
       result.toString
+    }
+  }
+  
+  private def present(value: Option[Any]) = {
+    value match {
+      case None => noPathLabel
+      case Some(x) => valueQuote + x + valueQuote
     }
   }
 }

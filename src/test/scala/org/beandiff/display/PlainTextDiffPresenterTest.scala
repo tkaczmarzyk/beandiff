@@ -46,6 +46,8 @@ import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Shift
+import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.beans.DescendantJavaBean
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -98,5 +100,17 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
     val diff = Diff(null, Shift("a", 0, 2))
     
     presenter.present(diff) should be === ". -- 'a' moved from [0] to [2]\n"
+  }
+  
+  test("should present situation where bean on right has a field but one on left doesn't") {
+    val diff = Diff(null, NewValue(Property("id"), None, Some(17)))
+    
+    presenter.present(diff) should be === "id -- nothing (no such path) vs '17'\n"
+  }
+  
+  test("should present situation where bean on left has a field but one on right doesn't") {
+    val diff = Diff(null, NewValue(Property("id"), Some(17), None))
+    
+    presenter.present(diff) should be === "id -- '17' vs nothing (no such path)\n"
   }
 }
