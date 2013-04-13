@@ -21,6 +21,8 @@ package org.beandiff.support
 
 import ClassSupport.convert
 import java.lang.reflect.Field
+import org.beandiff.support.FieldSupport.enrichField
+
 
 object ClassSupport {
   implicit def convert(c: Class[_]): ClassSupport = new ClassSupport(c)
@@ -29,10 +31,18 @@ object ClassSupport {
 class ClassSupport(c: Class[_]) {
 
   def fieldsInHierarchy: List[Field] = {
-    val fields = c.getDeclaredFields.toList
-    if (c.getSuperclass() != null)
-      fields ++ c.getSuperclass.fieldsInHierarchy
-    else fields
+    val fields = c.getDeclaredFields.toList.map {
+      f => f.setAccessible(true); f
+    }
+    val allFields = 
+      if (c.getSuperclass() == null) fields
+      else fields ++ c.getSuperclass.fieldsInHierarchy
+    
+    allFields.filter(!_.isStatic)
+  }
+  
+  def fieldsInHierarchyByName: Map[String, Field] = {
+    fieldsInHierarchy.map(f => f.getName -> f).toMap
   }
   
   def hasField(field: String) = findField(field) != null

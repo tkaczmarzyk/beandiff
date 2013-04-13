@@ -43,6 +43,18 @@ class ClassSupportTest extends FunSuite with ShouldMatchers {
     fields should contain (descClass.getDeclaredField("nickname"))
   }
   
+  test("should make all fields accessible") {
+    val fields = new ClassSupport(superClass).fieldsInHierarchy
+    
+    fields.filter(!_.isAccessible()) should be ('empty)
+  }
+  
+  test("should skip static fields") {
+    val fields = new ClassSupport(superClass).fieldsInHierarchy
+    
+    fields should not contain (superClass.getDeclaredField("orderByName"))
+  }
+  
   test("should include declared fields from the superclass") {
     val fields = new ClassSupport(descClass).fieldsInHierarchy
     
@@ -50,16 +62,20 @@ class ClassSupportTest extends FunSuite with ShouldMatchers {
     fields should contain (superClass.getDeclaredField("value"))
   }
   
+  test("should map fieldnames to fields") {
+    val fieldByName = new ClassSupport(descClass).fieldsInHierarchyByName
+    
+    fieldByName should be === Map("name" -> superClass.getDeclaredField("name"),
+        "value" -> superClass.getDeclaredField("value"), "nickname" -> descClass.getDeclaredField("nickname"))
+  }
+  
   test("should find fields from class, parent and grandparent") {
     val fields = new ClassSupport(classOf[GrandChild]).fieldsInHierarchy
     
-    val numAllFields = classOf[GrandChild].getDeclaredFields.size +
-      classOf[DescendantJavaBean].getDeclaredFields.size + classOf[SimpleJavaBean].getDeclaredFields.size
-    
-    fields should have size numAllFields
+    fields should have size 4
   }
+}
 
-  class GrandChild(name: String, value: Int, nickname: String) extends DescendantJavaBean(name, value, nickname) {
-    private val test = "test"
-  }
+class GrandChild(name: String, value: Int, nickname: String) extends DescendantJavaBean(name, value, nickname) {
+  private val test = "test"
 }

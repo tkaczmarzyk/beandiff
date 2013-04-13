@@ -48,8 +48,8 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     
     val routes = router.routes(b, b)
     
-    routes should contain ((Property("name"), (Some("b"), Some("b"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("value"), (Some(1), Some(1))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain (Route(Property("name"), Some("b"), Some("b")))
+    routes should contain (Route(Property("value"), Some(1), Some(1)))
   }
   
   test("should include fields from supertype") {
@@ -58,9 +58,9 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     val routes = router.routes(c, c)
     
     routes should have size 3
-    routes should contain ((Property("name"), (Some("c"), Some("c"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("value"), (Some(1), Some(1))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
-    routes should contain ((Property("nickname"), (Some("x"), Some("x"))).asInstanceOf[Route]) // TODO eliminate asInstanceOf
+    routes should contain (Route(Property("name"), Some("c"), Some("c")))
+    routes should contain (Route(Property("value"), Some(1), Some(1)))
+    routes should contain (Route(Property("nickname"), Some("x"), Some("x")))
   }
   
   test("should include fields from right even though they're not present on left") {
@@ -68,5 +68,20 @@ class FieldRoutePlannerTest extends FunSuite with ShouldMatchers {
     val derived = new DescendantJavaBean("derived", 1, "d")
     
     router.routes(base, derived) should have size 3
+  }
+  
+  test("should correctly retrieve routes from instances of different types") {
+    val o1 = new SimpleJavaBean("a", 7)
+    val o2 = new Object() {
+      private val name = "b"
+      private val id = 99
+    }
+    
+    val routes = router.routes(o1, o2)
+    
+    routes should have size 3
+    routes should contain (Route(Property("name"), Some("a"), Some("b")))
+    routes should contain (Route(Property("value"), Some(7), None))
+    routes should contain (Route(Property("id"), None, Some(99)))
   }
 }

@@ -561,4 +561,27 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val expectedChange: (Path, Change) = (EmptyPath, NewValue(Property("nickname"), None, Some("x")))
     d.leafChanges should contain(expectedChange)
   }
+  
+  test("should compare instances of 2 different classes with the same fields") {
+    val o1 = new SimpleJavaBean("a", 7)
+    val o2 = new Object() {
+      private val name = "b"
+      private val value = 9
+    }
+    
+    val d = diff(o1, o2)
+    d.leafChanges should have size 2
+    d should haveDifference("name")
+    d should haveDifference("value")
+  }
+  
+  test("should see that instances of 2 different have no difference in fields") {
+    val o1 = new SimpleJavaBean("a", 7)
+    val o2 = new Object() {
+      private val name = "a"
+      private val value = 7
+    }
+    
+    diff(o1, o2) should not (haveDifference)
+  }
 }

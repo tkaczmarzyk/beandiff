@@ -24,6 +24,7 @@ import org.beandiff.core.model.FieldProperty
 import org.beandiff.support.FieldSupport.enrichField
 import org.beandiff.support.FieldSupport
 import org.beandiff.support.ClassSupport.convert
+import org.beandiff.core.model.Property
 
 
 class FieldRoutePlanner extends RoutePlanner {
@@ -32,7 +33,7 @@ class FieldRoutePlanner extends RoutePlanner {
     getDeclaredFields(o1.getClass) foreach {
       f =>
         f.setAccessible(true)
-
+        
         val val1 = f.get(o1)
         val val2 = f.get(o2)
         val path = current.step(new FieldProperty(f.getName))
@@ -41,16 +42,25 @@ class FieldRoutePlanner extends RoutePlanner {
     }
   }
 
-  override def routes(o1: Any, o2: Any) = {
-    val allFields = 
-      if (o1.getClass == o2.getClass) o1.getClass.fieldsInHierarchy
-      else o1.getClass.fieldsInHierarchy.toSet ++ o2.getClass.fieldsInHierarchy
-    
-    allFields.withFilter(!_.isStatic) map {
+  override def routes(o1: Any, o2: Any) = { // TODO too much responsibility?
+    if (o1.getClass == o2.getClass) {
+      o1.getClass.fieldsInHierarchy map {
       f =>
         {
-          f.setAccessible(true)
           (new FieldProperty(f.getName), (f.getFrom(o1), f.getFrom(o2)))
+        }
+      }
+    } else {
+      val o1fields = o1.getClass.fieldsInHierarchyByName
+      val o2fields = o2.getClass.fieldsInHierarchyByName
+      
+      val fieldNames = o1fields.keySet ++ o2fields.keySet
+      
+      for (fname <- fieldNames)
+        yield (o1fields.get(fname), o2fields.get(fname)) match {
+          case (Some(f1), Some(f2)) => (Property(fname), (Some(f1.get(o1)), Some(f2.get(o2))))
+          case (None, Some(f2)) => (Property(fname), (None, Some(f2.get(o2))))
+          case (Some(f1), None) => (Property(fname), (Some(f1.get(o1)), None))
         }
     }
   }

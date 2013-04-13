@@ -95,7 +95,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
     }
   }
 
-  private def getEqInvestigator(val1: Any, val2: Any) = { // TODO: move null-checks to ClassDictionary ?
+  private def getEqInvestigator(val1: Any, val2: Any) = { // TODO: move null-checks to ClassDictionary ? // TODO finding common ancenstor if classes different?
     if (val1 == null && val2 == null)
       eqInvestigators.defaultValue
     else {
