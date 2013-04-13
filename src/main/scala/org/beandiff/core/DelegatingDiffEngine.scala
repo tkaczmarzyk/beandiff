@@ -21,29 +21,24 @@ package org.beandiff.core
 
 import org.beandiff.TypeDefs.JList
 import org.beandiff.TypeDefs.JSet
-import org.beandiff.core.model.Diff
 import org.beandiff.core.model.DescendingHistory
+import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Property
-import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Self
-import org.beandiff.core.model.Path
-import org.beandiff.core.model.Path.EmptyPath
-import org.beandiff.equality.EqualityInvestigator
-import org.beandiff.lcs.NaiveLcsCalc
-import org.beandiff.support.ClassDictionary
-import org.beandiff.core.model.change.Insertion
 import org.beandiff.core.model.change.Deletion
-import org.beandiff.core.translation.InsertionToAddition
+import org.beandiff.core.model.change.Insertion
+import org.beandiff.core.model.change.NewValue
+import org.beandiff.core.model.change.Shift
 import org.beandiff.core.translation.DeletionToRemoval
-import org.beandiff.lcs.MemoizedLcsCalc
-import org.beandiff.equality.DiffEqualityInvestigator
-import org.beandiff.equality.StdEqualityInvestigator
-import org.beandiff.equality.ObjectType
-import org.beandiff.equality.Value
-import org.beandiff.equality.StdEqualityInvestigator
+import org.beandiff.core.translation.InsertionToAddition
 import org.beandiff.core.translation.NewValueToRmAdd
 import org.beandiff.core.translation.ShiftToNothing
-import org.beandiff.core.model.change.Shift
+import org.beandiff.equality.DiffEqualityInvestigator
+import org.beandiff.equality.EqualityInvestigator
+import org.beandiff.equality.ObjectType
+import org.beandiff.equality.Value
+import org.beandiff.lcs.BottomUpLcsCalc
+import org.beandiff.support.ClassDictionary
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
@@ -62,7 +57,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
-      new LcsDiffEngine(this, objTypeDefs, new MemoizedLcsCalc)))
+      new LcsDiffEngine(this, objTypeDefs, new BottomUpLcsCalc)))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
         Map(classOf[Shift] -> new ShiftToNothing,
