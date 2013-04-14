@@ -50,6 +50,10 @@ class PathTest extends FunSuite with ShouldMatchers {
     assert(Path.of("a[1]") === new PathImpl(Vector(new FieldProperty("a"), new IndexProperty(1))))
   }
   
+  test("should parse a key property") {
+    assert(Path("[aa]") === new PathImpl(Vector(new KeyProperty("aa"))))
+  }
+  
   test("should parse chain of property names") {
     assert(Path.of("a.b") === new PathImpl(Vector(new FieldProperty("a"), new FieldProperty("b"))))
   }

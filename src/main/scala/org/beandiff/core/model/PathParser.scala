@@ -35,8 +35,12 @@ class PathParser extends RegexParsers with JavaTokenParsers {
     "[" ~> positiveInt <~ "]" ^^ (new IndexProperty(_))
   }
   
+  def keyProperty: Parser[KeyProperty] = {
+    "[" ~> stringKey <~ "]" ^^ (new KeyProperty(_))
+  }
+  
   def property: Parser[Property] = {
-    indexProperty | fieldProperty
+    indexProperty | fieldProperty | keyProperty
   }
   
   def nestedProperty: Parser[Property] = {
@@ -47,6 +51,10 @@ class PathParser extends RegexParsers with JavaTokenParsers {
     
   def positiveInt: Parser[Int] = {
     """\d+""".r ^^ (_.toInt)
+  }
+  
+  def stringKey: Parser[String] = {
+    "[^\\]]+".r ^^ (_.toString)
   }
 
   def path: Parser[Path] = {
