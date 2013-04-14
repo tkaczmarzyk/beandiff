@@ -21,7 +21,7 @@ package org.beandiff.support
 
 import java.lang.Object
 import java.lang.reflect.Field
-import org.beandiff.support.ClassSupport.convert
+import org.beandiff.support.ClassSupport.RichClass
 
 object ObjectSupport {
 

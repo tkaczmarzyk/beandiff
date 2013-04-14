@@ -19,7 +19,7 @@
  */
 package org.beandiff.support
 
-import org.beandiff.support.ClassSupport.convert
+import org.beandiff.support.ClassSupport.RichClass
 import org.beandiff.support.ClassDictionary.Entry
 
 object ClassDictionary {

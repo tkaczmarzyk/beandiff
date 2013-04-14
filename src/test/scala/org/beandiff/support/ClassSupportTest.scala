@@ -28,6 +28,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.DescendantJavaBean
 import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.support.ClassSupport.RichClass
 
 
 @RunWith(classOf[JUnitRunner])
@@ -38,39 +39,39 @@ class ClassSupportTest extends FunSuite with ShouldMatchers {
   
   
   test("should include declared fields from the class itself") {
-    val fields = new ClassSupport(descClass).fieldsInHierarchy
+    val fields = descClass.fieldsInHierarchy
     
     fields should contain (descClass.getDeclaredField("nickname"))
   }
   
   test("should make all fields accessible") {
-    val fields = new ClassSupport(superClass).fieldsInHierarchy
+    val fields = superClass.fieldsInHierarchy
     
     fields.filter(!_.isAccessible()) should be ('empty)
   }
   
   test("should skip static fields") {
-    val fields = new ClassSupport(superClass).fieldsInHierarchy
+    val fields = superClass.fieldsInHierarchy
     
     fields should not contain (superClass.getDeclaredField("orderByName"))
   }
   
   test("should include declared fields from the superclass") {
-    val fields = new ClassSupport(descClass).fieldsInHierarchy
+    val fields = descClass.fieldsInHierarchy
     
     fields should contain (superClass.getDeclaredField("name"))
     fields should contain (superClass.getDeclaredField("value"))
   }
   
   test("should map fieldnames to fields") {
-    val fieldByName = new ClassSupport(descClass).fieldsInHierarchyByName
+    val fieldByName = descClass.fieldsInHierarchyByName
     
     fieldByName should be === Map("name" -> superClass.getDeclaredField("name"),
         "value" -> superClass.getDeclaredField("value"), "nickname" -> descClass.getDeclaredField("nickname"))
   }
   
   test("should find fields from class, parent and grandparent") {
-    val fields = new ClassSupport(classOf[GrandChild]).fieldsInHierarchy
+    val fields = classOf[GrandChild].fieldsInHierarchy
     
     fields should have size 4
   }
