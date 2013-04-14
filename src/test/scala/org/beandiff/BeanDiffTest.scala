@@ -571,6 +571,13 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff(o1, o2) should not(haveDifference)
   }
 
+  test("should detect that null in list has been changed to int") {
+    val l1 = JList(null)
+    val l2 = JList(1)
+    
+    diff(l1, l2) should haveDifference("[0]")
+  }
+  
   test("should detect that entry in a map has changed") {
     val m1 = JMap("a" -> 1, "b" -> 2)
     val m2 = JMap("a" -> 9, "b" -> 2)
@@ -592,5 +599,19 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val m2 = JMap("a" -> 1, "b" -> 2)
 
     diff(m1, m2).leafChanges should be === List((EmptyPath, KeyRemoval("c", 3)))
+  }
+  
+  test("should handle change of a null value in map") {
+    val m1 = JMap("a" -> null)
+    val m2 = JMap("a" -> 1)
+    
+    diff(m1, m2).leafChanges should be === List((EmptyPath, NewValue(Property("[a]"), null, 1)))
+  }
+  
+  test("should detect that a map value has changed to null") {
+    val m1 = JMap("a" -> 1)
+    val m2 = JMap("a" -> null)
+    
+    diff(m1, m2).leafChanges should be === List((EmptyPath, NewValue(Property("[a]"), 1, null)))
   }
 }

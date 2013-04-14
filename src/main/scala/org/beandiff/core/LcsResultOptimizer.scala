@@ -86,13 +86,13 @@ class LcsResultOptimizer(
           result = result.without(path, change1).without(path, change2)
           skip = change1 :: change2 :: skip
 
-          if (lcsEngine.objTypes(x.getClass).allowedToDiff(x, y)) { // FIXME what if y is entity here?
+          if (lcsEngine.objTypes(x, y).allowedToDiff(x, y)) { // FIXME what if y is entity here?
             result = parent.calculateDiff(result, change1.targetProperty, change1.oldValue.get, change2.newValue.get)
           } else {
             result = result.withChange(path, NewValue(IndexProperty(idx), x, y))
           }
         }
-        case (Deletion(x, idx), Insertion(y, idx2)) if lcsEngine.objTypes(x.getClass).areEqual(x, y) &&
+        case (Deletion(x, idx), Insertion(y, idx2)) if lcsEngine.objTypes(x, y).areEqual(x, y) &&
           !selfChanges.exists(shiftBlocker(selfChanges)((path, change1), (path, change2))) => {
 
           result = result.without(path, change1).without(path, change2) // TODO add without(path, changes*)

@@ -64,6 +64,6 @@ class MapDiffEngine(
     val v1 = m1.get(key)
     val v2 = m2.get(key)
     
-    objTypes(v1.getClass).areEqual(v1, v2)
+    objTypes(v1, v2).areEqual(v1, v2)
   }
 }

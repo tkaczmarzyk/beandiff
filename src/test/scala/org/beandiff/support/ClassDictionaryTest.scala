@@ -21,6 +21,8 @@ package org.beandiff.support
 
 import org.beandiff.TestDefs.mock
 import org.beandiff.TypeDefs._
+import org.beandiff.test.JList
+import org.beandiff.test.JSet
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSuite
@@ -30,9 +32,10 @@ import java.util.LinkedList
 import java.util.TreeSet
 import java.util.HashSet
 import java.util.AbstractSequentialList
+import org.scalatest.matchers.ShouldMatchers
 
 @RunWith(classOf[JUnitRunner])
-class ClassDictionaryTest extends FunSuite {
+class ClassDictionaryTest extends FunSuite with ShouldMatchers {
 
   val defaultVal = mock[Object]("defaultVal")
   val valForSets = mock[Object]("valForSets")
@@ -80,4 +83,15 @@ class ClassDictionaryTest extends FunSuite {
     assert(dict(mockList.getClass) === valForLists)
   }
   
+  test("should return value for the first candidate's class") {
+    dict(JList(), JSet()) should be === valForArrayList
+  }
+  
+  test("should return value for the second candidate's class") {
+    dict(null, JSet()) should be === valForSets
+  }
+  
+  test("should return default value when both candidates null") {
+    dict(null, null) should be === dict.defaultValue
+  }
 }

@@ -56,6 +56,15 @@ class ClassDictionary[T](
     new ClassDictionary(defaultValue, content ++ entries.toMap)
   }
 
+  def apply(candidate1: Any, candidate2: Any): T = { // TODO finding common ancestor if classes different?
+    if (candidate1 == null && candidate2 == null)
+      defaultValue
+    else {
+      val nonNull = if (candidate1 != null) candidate1 else candidate2
+      apply(nonNull.getClass)
+    }
+  }
+  
   def apply(c: Class[_]): T = {
     if (content.contains(c))
       content(c)

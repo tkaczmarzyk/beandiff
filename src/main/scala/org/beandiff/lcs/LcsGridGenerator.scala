@@ -40,7 +40,7 @@ private[lcs] class LcsGridGenerator {
       (x, i) <- xs.zipWithIndex
       (y, j) <- ys.zipWithIndex
     } {
-      if (objTypes(x.getClass).areEqual(x, y)) {
+      if (objTypes(x, y).areEqual(x, y)) {
         val len = grid((i - 1, j - 1))._1 + 1
         grid((i, j)) = (len, 'diag)
       } else {
