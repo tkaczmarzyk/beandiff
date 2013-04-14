@@ -29,6 +29,10 @@ import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.DescendantJavaBean
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.support.ClassSupport.RichClass
+import java.util.NavigableSet
+import java.util.TreeSet
+import java.util.SortedSet
+import java.util.Collection
 
 
 @RunWith(classOf[JUnitRunner])
@@ -74,6 +78,16 @@ class ClassSupportTest extends FunSuite with ShouldMatchers {
     val fields = classOf[GrandChild].fieldsInHierarchy
     
     fields should have size 4
+  }
+  
+  test("should find interfaces from all super levels") {
+    val superTypes = classOf[TreeSet[_]].allSuperTypes
+    
+    assert(superTypes.contains(classOf[NavigableSet[_]]))
+    assert(superTypes.contains(classOf[SortedSet[_]]))
+    assert(superTypes.contains(classOf[java.util.Set[_]]))
+    assert(superTypes.contains(classOf[Collection[_]]))
+    assert(superTypes.contains(classOf[java.lang.Iterable[_]]))
   }
 }
 
