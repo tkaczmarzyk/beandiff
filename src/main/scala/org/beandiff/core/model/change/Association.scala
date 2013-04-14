@@ -17,12 +17,28 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.core.model.change
 
-object TypeDefs {
+import org.beandiff.core.model.KeyProperty
+import org.beandiff.TypeDefs.JMap
+import org.beandiff.core.model.KeyProperty
+import java.util.Map.Entry
 
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[Any]
-  type JSet = java.util.Set[Any]
-  type JMap = java.util.Map[Any, Any]
+
+object Association {
+  def apply[K, V](entry: Entry[K, V]): Association = apply(entry.getKey, entry.getValue)
+}
+
+case class Association(
+    key: Any,
+    value: Any) extends Change {
+
+  override def perform(target: Any) = {
+    //target.asInstanceOf[JMap].put(targetProperty.key, newValue)
+  }
+  
+  override def oldValue = None
+  override def newValue = Some(value)
+  
+  override def targetProperty = new KeyProperty(key)
 }

@@ -20,6 +20,7 @@
 package org.beandiff.core
 
 import org.beandiff.TypeDefs.JList
+import org.beandiff.TypeDefs.JMap
 import org.beandiff.TypeDefs.JSet
 import org.beandiff.core.model.DescendingHistory
 import org.beandiff.core.model.Diff
@@ -40,6 +41,7 @@ import org.beandiff.equality.Value
 import org.beandiff.lcs.BottomUpLcsCalc
 import org.beandiff.support.ClassDictionary
 
+
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
   private val descStrategy: DescendingStrategy,
@@ -56,6 +58,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
       new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
 
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
+  	.withEntry(classOf[JMap] -> new MapDiffEngine(this, objTypeDefs))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
       new LcsDiffEngine(this, objTypeDefs, new BottomUpLcsCalc)))
     .withEntry(classOf[JSet] ->

@@ -17,12 +17,18 @@
  * along with BeanDiff; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.beandiff
+package org.beandiff.test
 
-object TypeDefs {
+import java.util.HashMap
+import java.util.Map
 
-  type JBigDecimal = java.math.BigDecimal
-  type JList = java.util.List[Any]
-  type JSet = java.util.Set[Any]
-  type JMap = java.util.Map[Any, Any]
+object JMap {
+
+  def apply[K, V](entries: (K, V)*): Map[K, V] = {
+    val map = new HashMap[K, V]
+    for (entry <- entries) {
+      map.put(entry._1, entry._2)
+    }
+    map
+  }
 }
