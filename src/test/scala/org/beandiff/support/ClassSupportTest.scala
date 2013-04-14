@@ -21,7 +21,7 @@ package org.beandiff.support
 
 import java.lang.Number
 import java.lang.Object
-import org.beandiff.support.ObjectSupport.convert
+import org.beandiff.support.ObjectSupport.RichObject
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

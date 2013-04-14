@@ -21,7 +21,7 @@ package org.beandiff.support
 
 import java.lang.annotation.Annotation
 import java.lang.reflect.Field
-import org.beandiff.support.ObjectSupport.convert
+import org.beandiff.support.ObjectSupport.RichObject
 import java.lang.reflect.Method
 
 object AnnotationUtil {

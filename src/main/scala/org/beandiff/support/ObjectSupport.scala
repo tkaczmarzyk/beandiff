@@ -25,38 +25,36 @@ import org.beandiff.support.ClassSupport.RichClass
 
 object ObjectSupport {
 
-  implicit def convert(o: Any) = new ObjectSupport(o)
-}
+  implicit class RichObject(val target: Any) extends AnyVal {
 
-class ObjectSupport(val target: Any) {
-
-  def hasField(name: String) = {
-    target.getClass.hasField(name)
-  }
-
-  def getFieldVal(name: String) = {
-    getField(name).get(target)
-  }
-
-  def getField(name: String) = {
-    val f = target.getClass.findField(name)
-    f.setAccessible(true)
-    f
-  }
-
-  def setFieldVal(fieldName: String, value: Any) = {
-    getField(fieldName).set(target, value)
-  }
-
-  def allClasses: List[Class[_]] = {
-    def allClasses(c: Class[_]): List[Class[_]] = {
-      if (c == classOf[Object])
-        List(c)
-      else
-        c :: allClasses(c.getSuperclass())
+    def hasField(name: String) = {
+      new RichClass(target.getClass).hasField(name)
     }
-    allClasses(target.getClass)
-  }
 
-  def apply(index: Int) = target.asInstanceOf[java.util.List[_]].get(index).asInstanceOf[Object]
+    def getFieldVal(name: String) = {
+      getField(name).get(target)
+    }
+
+    def getField(name: String) = {
+      val f = target.getClass.findField(name)
+      f.setAccessible(true)
+      f
+    }
+
+    def setFieldVal(fieldName: String, value: Any) = {
+      getField(fieldName).set(target, value)
+    }
+
+    def allClasses: List[Class[_]] = {
+      def allClasses(c: Class[_]): List[Class[_]] = {
+        if (c == classOf[Object])
+          List(c)
+        else
+          c :: allClasses(c.getSuperclass())
+      }
+      allClasses(target.getClass)
+    }
+
+    def apply(index: Int) = target.asInstanceOf[java.util.List[_]].get(index).asInstanceOf[Object]
+  }
 }

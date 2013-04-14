@@ -21,7 +21,7 @@ package org.beandiff.support
 
 import java.lang.Number
 import java.lang.Object
-import org.beandiff.support.ObjectSupport.convert
+import org.beandiff.support.ObjectSupport.RichObject
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -46,12 +46,12 @@ class ObjectSupportTest extends FunSuite with ShouldMatchers {
   }
   
   test("should resolve field from supertype") {
-    val o = new ObjectSupport(new DescendantJavaBean("bart", 10, "bartman"))
+    val o = new DescendantJavaBean("bart", 10, "bartman")
     o.getField("name") should not be null
   }
   
   test("should find field in supertype") {
-    val o = new ObjectSupport(new DescendantJavaBean("bart", 10, "bartman"))
+    val o = new DescendantJavaBean("bart", 10, "bartman")
     o.hasField("name") should be === true
   }
 }
