@@ -56,7 +56,7 @@ class ClassDictionary[T](
     new ClassDictionary(defaultValue, content ++ entries.toMap)
   }
 
-  def apply(candidate1: Any, candidate2: Any): T = { // TODO finding common ancestor if classes different?
+  def apply(candidate1: Any, candidate2: Any): T = { // TODO or rather if (o1 == null) defaultValue else apply(o1.getClass) ? // TODO finding common ancestor if classes different?
     if (candidate1 == null && candidate2 == null)
       defaultValue
     else {

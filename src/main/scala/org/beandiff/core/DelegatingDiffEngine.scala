@@ -80,25 +80,16 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
     if (filter.shouldSkip(newLocation, o1, o2)) {
       zero
     } else if (visited.hasSeen(o1) || !descStrategy.shouldProceed(newLocation, o1, o2)) {
-      if (!getEqInvestigator(o1, o2).areEqual(o1, o2))
+      if (!eqInvestigators(o1, o2).areEqual(o1, o2))
         zero.withChange(new NewValue(location, o1, o2))
       else
         zero
     } else {
       visited = visited.step(location, o1)
-      val engine = if (o1 == null) engines.defaultValue else engines(o1.getClass) // TODO as below
+      val engine = engines(o1, o2)
       val result = engine.calculateDiff(o1, o2)
       visited = visited.stepBack
       zero.withChanges(location, result)
-    }
-  }
-
-  private def getEqInvestigator(val1: Any, val2: Any) = { // TODO: move null-checks to ClassDictionary ? // TODO finding common ancenstor if classes different?
-    if (val1 == null && val2 == null)
-      eqInvestigators.defaultValue
-    else {
-      val nonNull = if (val1 != null) val1 else val2
-      eqInvestigators(nonNull.getClass)
     }
   }
 }
