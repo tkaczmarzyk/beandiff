@@ -25,17 +25,16 @@ import org.beandiff.support.ClassSupport.RichClass
 
 
 object FieldSupport {
-  implicit def enrichField(f: Field): FieldSupport = new FieldSupport(f)
-}
 
-class FieldSupport(f: Field) {
+  implicit class RichField(val f: Field) extends AnyVal {
 
-  def isStatic = Modifier.isStatic(f.getModifiers())
-  
-  def getFrom(src: Any): Option[Any] = {
-    if (src.getClass.hasField(f.getName))
-      Some(f.get(src))
-    else
-      None
+    def isStatic = Modifier.isStatic(f.getModifiers())
+
+    def getFrom(src: Any): Option[Any] = {
+      if (src.getClass.hasField(f.getName))
+        Some(f.get(src))
+      else
+        None
+    }
   }
 }

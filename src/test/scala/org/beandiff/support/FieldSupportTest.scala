@@ -25,6 +25,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.beans.Simpsons
+import org.beandiff.support.FieldSupport.RichField
+
 
 @RunWith(classOf[JUnitRunner])
 class FieldSupportTest extends FunSuite with ShouldMatchers with Simpsons {
@@ -34,10 +36,10 @@ class FieldSupportTest extends FunSuite with ShouldMatchers with Simpsons {
   
   
   test("should return None if object doesn't have such field") {
-    new FieldSupport(nameField).getFrom(new Object) should be === None
+    nameField.getFrom(new Object) should be === None
   }
   
   test("should return value of the field") {
-    new FieldSupport(nameField).getFrom(bart) should be === Some("bart")
+    nameField.getFrom(bart) should be === Some("bart")
   }
 }

@@ -21,7 +21,7 @@ package org.beandiff.core
 
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.FieldProperty
-import org.beandiff.support.FieldSupport.enrichField
+import org.beandiff.support.FieldSupport.RichField
 import org.beandiff.support.FieldSupport
 import org.beandiff.support.ClassSupport.RichClass
 import org.beandiff.core.model.Property

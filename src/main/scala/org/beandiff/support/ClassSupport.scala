@@ -20,7 +20,7 @@
 package org.beandiff.support
 
 import java.lang.reflect.Field
-import org.beandiff.support.FieldSupport.enrichField
+import org.beandiff.support.FieldSupport.RichField
 
 object ClassSupport {
 
