@@ -31,7 +31,9 @@ class PlainTextDiffPresenter(
   private val valuesSeparator: String = " vs ",
   private val valueQuote: String = "'",
   private val differenceSeparator: String = "\n",
-  private val noPathLabel: String = "nothing (no such path)") extends DiffPresenter {
+  private val noPathLabel: String = "nothing (no such path)",
+  private val keyRemovalLabel: String = "removed entry: ",
+  private val associationLabel: String = "initialized with ") extends DiffPresenter {
 
 
   override def present(d: Diff): String = {
@@ -41,20 +43,20 @@ class PlainTextDiffPresenter(
       val result = new StringBuilder
 
       for ((path, change) <- d.leafChanges.sorted(PathChangeOrdering)) { // TODO temporary amendments to the new model
-        change match { // TODO better hierarchy for changes // TODO use sealed classes?
+        change match { // FIXME generic presentation to avoid so many cases // TODO visitor pattern? // TODO use sealed classes?
           case Deletion(x, index) => {
             result.append(path.withIndex(index).mkString).append(pathValueSeparator).append("deleted")
           }
           
           case Insertion(x, index) => {
             result.append(path.mkString).append(pathValueSeparator)
-            result.append("inserted ").append(valueQuote).append(x).append(valueQuote)
+            result.append("inserted ").append(present(x))
             result.append(" at ").append(IndexProperty(index).mkString)
           }
           
           case Addition(x) => {
             result.append(path.mkString).append(pathValueSeparator);
-            result.append("added ").append(valueQuote).append(x).append(valueQuote)
+            result.append("added ").append(present(x))
           }
           
           case Removal(x) => {
@@ -71,16 +73,27 @@ class PlainTextDiffPresenter(
           
           case Shift(x, oldIndex, newIndex) => {
             result.append(path.mkString).append(pathValueSeparator)
-            result.append(valueQuote).append(x).append(valueQuote)
+            result.append(present(x))
             result.append(" moved from ").append(IndexProperty(oldIndex).mkString)
             result.append(" to ").append(IndexProperty(newIndex).mkString)
           }
           
+          case KeyRemoval(key, oldVal) => {
+            result.append(path.mkString).append(pathValueSeparator)
+            result.append(keyRemovalLabel).append(present(key))
+            result.append(" -> ").append(present(oldVal))
+          }
+          
+          case Association(key, value) => {
+            result.append(path.step(change.targetProperty).mkString).append(pathValueSeparator)
+            result.append(associationLabel).append(present(value))
+          }
+          
           case x => {
             result.append(path.mkString).append(pathValueSeparator)
-	        result.append(valueQuote).append(change.oldValue).append(valueQuote)
+	        result.append(present(change.oldValue))
 	        result.append(valuesSeparator)
-	        result.append(valueQuote).append(change.newValue).append(valueQuote)
+	        result.append(present(change.newValue))
           }
         }
         
@@ -91,10 +104,11 @@ class PlainTextDiffPresenter(
     }
   }
   
-  private def present(value: Option[Any]) = {
+  private def present(value: Any) = {
     value match {
       case None => noPathLabel
       case Some(x) => valueQuote + x + valueQuote
+      case v => valueQuote + v + valueQuote
     }
   }
 }

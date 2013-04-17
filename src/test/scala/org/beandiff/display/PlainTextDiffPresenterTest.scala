@@ -48,6 +48,8 @@ import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.change.Shift
 import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.beans.DescendantJavaBean
+import org.beandiff.core.model.change.Association
+import org.beandiff.core.model.change.KeyRemoval
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -114,7 +116,15 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
     presenter.present(diff) should be === "id -- '17' vs nothing (no such path)\n"
   }
   
-  test("should present") {
+  test("should present association") {
+    val diff = Diff(null, Association("key", "value"))
     
+    presenter.present(diff) should be === "[key] -- initialized with 'value'\n"
+  }
+  
+  test("should present key removal") {
+    val diff = Diff(null, KeyRemoval("key", "oldValue"))
+    
+    presenter.present(diff) should be === ". -- removed entry: 'key' -> 'oldValue'\n"
   }
 }
