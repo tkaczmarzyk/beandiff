@@ -614,4 +614,18 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     
     diff(m1, m2).leafChanges should be === List((EmptyPath, NewValue(Property("[a]"), 1, null)))
   }
+  
+  test("should detect that property of a value in the map has changed") {
+    val m1 = JMap("a" -> new SimpleJavaBean("a", 1))
+    val m2 = JMap("a" -> new SimpleJavaBean("a", 2))
+    
+    diff(m1, m2) should haveDifference("[a].value")
+  }
+  
+  test("should detect no difference between between maps") { // SimpleJavaBean has not overridden equals/hashcode
+    val m1 = JMap("a" -> new SimpleJavaBean("a", 1))
+    val m2 = JMap("a" -> new SimpleJavaBean("a", 1))
+    
+    diff(m1, m2) should not (haveDifference)
+  }
 }

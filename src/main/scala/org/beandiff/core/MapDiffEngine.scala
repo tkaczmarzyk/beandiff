@@ -29,6 +29,7 @@ import org.beandiff.core.model.change.Association
 import org.beandiff.core.model.change.NewValue
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.KeyProperty
+import org.beandiff.core.model.KeyProperty
 
 
 class MapDiffEngine(
@@ -48,7 +49,7 @@ class MapDiffEngine(
       } else if (!valuesEqual(entry.getKey)(m1, m2)) {
         val oldVal = m1.get(entry.getKey)
         val newVal = m2.get(entry.getKey)
-        diff = diff.withChange(NewValue(KeyProperty(entry.getKey), Some(oldVal), Some(newVal)))
+        diff = delegate.calculateDiff(diff, KeyProperty(entry.getKey()), oldVal, newVal) // TODO duplicated diff calculation when diff eqInvestigator is used: !valuesEqual(entry.getKey)(m1, m2)
       }
     }
     for (entry <- m2.entrySet()) {

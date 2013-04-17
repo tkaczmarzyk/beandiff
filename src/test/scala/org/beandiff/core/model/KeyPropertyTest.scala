@@ -19,37 +19,38 @@
  */
 package org.beandiff.core.model
 
-import org.beandiff.TypeDefs.JMap
+import org.beandiff.test.JMap
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.matchers.ShouldMatchers
 
 
-case class KeyProperty(key: Any) extends Property {
+@RunWith(classOf[JUnitRunner])
+class KeyPropertyTest extends FunSuite with ShouldMatchers {
 
-  override def value(o: Any) = {
-    None
+  val map = JMap("a" -> null, "b" -> 1)
+  
+  
+  test("should return None if no such key") {
+    KeyProperty("c").get(map) should be === None
   }
   
-  override def get(o: Any) = {
-    val m = o.asInstanceOf[JMap]
-    if (m.containsKey(key)) Some(m.get(key))
-    else None
+  test("should return Some if key exists") {
+    KeyProperty("b").get(map) should be === Some(1)
+    KeyProperty("a").get(map) should be === Some(null)
   }
   
-  def setValue(target: Any, value: Any) = {
-    target.asInstanceOf[JMap].put(key, value)
+  test("should put value under the key") {
+    KeyProperty("c").setValue(map, 3)
+    
+    map.get("c") should be === 3
   }
-  
-  override def equals(other: Any) = {
-    other match {
-      case that: KeyProperty => key == that.key
-      case _ => false
-    }
+ 
+  test("should overwrite old value") {
+    KeyProperty("b").setValue(map, 2)
+    
+    map.get("b") should be === 2
   }
-  
-  override def hashCode() = {
-    key.hashCode
-  }
-  
-  override def toString() = mkString
-  
-  override def mkString = "[" + key + "]"
 }
