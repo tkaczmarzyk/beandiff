@@ -140,14 +140,14 @@ private[model] class DeepDiff(
   private def interChangeset(property: Property): Diff = {
     propChanges.get(property) match {
       case Some(diff) => diff
-      case None => new DeepDiff(property.value(target), Map())
+      case None => new DeepDiff(property.get(target).get, Map())
     }
   }
 
   override def withChange(property: Property, change: Change): DeepDiff = {
     val newMod = propChanges.get(property) match {
       case Some(mod) => mod.withChange(change)
-      case None => new FlatDiff(property.value(target), change)
+      case None => new FlatDiff(property.get(target).get, change) // TODO unsafe Option.get ?
     }
 
     new DeepDiff(target, propChanges + (property -> newMod))

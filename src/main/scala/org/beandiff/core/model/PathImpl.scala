@@ -30,13 +30,6 @@ final class PathImpl(
 
   override def withIndex(i: Int): Path = step(new IndexProperty(i))
 
-  override def value(o: Any): Any = {
-    if (props.isEmpty)
-      o
-    else
-      tail.value(props.head.value(o))
-  }
-  
   override def get(o: Any) = {
     if (props.isEmpty) Some(o)
     else props.head.get(o) match {

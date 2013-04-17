@@ -113,4 +113,8 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
     
     presenter.present(diff) should be === "id -- '17' vs nothing (no such path)\n"
   }
+  
+  test("should present") {
+    
+  }
 }

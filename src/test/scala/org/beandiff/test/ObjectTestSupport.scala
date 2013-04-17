@@ -33,7 +33,7 @@ class ObjectTestSupport[T](val target: T) {
   
   def apply[V](pathStr: String): ObjectTestSupport[V] = apply(Path(pathStr))
   
-  def apply[V](path: Path): ObjectTestSupport[V] = new ObjectTestSupport(path.value(target).asInstanceOf[V])
+  def apply[V](path: Path): ObjectTestSupport[V] = new ObjectTestSupport(path.get(target).get.asInstanceOf[V])
   
   def get(pathStr: String): T = get(Path(pathStr))
   

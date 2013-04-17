@@ -25,12 +25,6 @@ import org.beandiff.support.ObjectSupport._
 
 case class IndexProperty(val index: Int) extends Property {
   
-  override def value(o: Any) = {
-    if (o.isInstanceOf[JList])
-      o(index)
-    else null //TODO
-  }
-  
   override def get(o: Any) = {
     if (o.isInstanceOf[JList])
       Some(o(index))

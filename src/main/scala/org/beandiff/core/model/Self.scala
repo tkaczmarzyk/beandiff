@@ -22,8 +22,6 @@ package org.beandiff.core.model
 
 object Self extends Property {
 
-  override def value(target: Any) = target
-  
   override def get(target: Any) = Some(target)
   
   def setValue(target: Any, value: Any) =

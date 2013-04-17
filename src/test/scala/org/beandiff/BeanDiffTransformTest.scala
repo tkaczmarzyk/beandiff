@@ -85,7 +85,7 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
 
     diff(parent1, parent2).transformTarget()
 
-    Path("child.name").value(parent1) should be === "lisa"
+    Path("child.name").get(parent1) should be === Some("lisa")
   }
 
   test("should insert an element to a list") {

@@ -24,13 +24,6 @@ import org.beandiff.support.ObjectSupport._
 
 class FieldProperty(val name: String) extends Property with Equals {
 
-  override def value(o: Any): Any = {
-    if (o == null) throw new IllegalArgumentException("cannot get field '" + name + "' from null")
-    if (o hasField name)
-      o getFieldVal name
-    else null
-  }
-  
   override def get(o: Any) = {
     if (o != null && (o hasField name))
       Some(o getFieldVal name)

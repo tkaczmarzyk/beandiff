@@ -24,10 +24,6 @@ import org.beandiff.TypeDefs.JMap
 
 case class KeyProperty(key: Any) extends Property {
 
-  override def value(o: Any) = {
-    None
-  }
-  
   override def get(o: Any) = {
     val m = o.asInstanceOf[JMap]
     if (m.containsKey(key)) Some(m.get(key))
