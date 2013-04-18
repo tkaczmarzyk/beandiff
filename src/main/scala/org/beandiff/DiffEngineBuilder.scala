@@ -55,6 +55,7 @@ object DiffEngineBuilder {
   final val DefaultEndTypes = EndOnSimpleTypeStrategy
 		  .withLeaf(classOf[JBigDecimal])
 		  .withLeaf(classOf[Date])
+		  .withLeaf(classOf[Class[_]])
   
   final val DefaultDescStrategy = CompositeDescendingStrategy.allOf(
       new EndOnNullStrategy(), DefaultEndTypes)
