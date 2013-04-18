@@ -78,11 +78,45 @@ class DiffEngineBuilder private () {
   private var objTypes = new ClassDictionary[ObjectType]()
   private var pathsToSkip = List[Path]()
 
+  /**
+   * The DiffEngine being build will be case-insensitive
+   *  when comparing String values.
+   * 
+   * @return this builder instance (for method chaining)
+   */
   def ignoringCase = {
     eqInvestigators = eqInvestigators.withEntry(IgnoreCase)
     this
   }
 
+  /**
+   * Sets the depth limit for property traversal.
+   * 
+   * For instance consider that diff has to be calculated for instances of the following class:
+   * {{{
+   * class A {
+   *   private String name;
+   *   private A delegate;
+   * }
+   * }}}
+   * 
+   * When there is no depth limit, the diff engine will step down to properties
+   * of the delegate object (and potentially delegate's delegate and so on). 
+   * 
+   * With depth limit set to 2, the delegates' name will be compared, but the engine
+   *  will not step to investigate delegates' delegate properties -- it will just test
+   *  them for equality.
+   * 
+   * With depth limit set to 1, the engine will not step to delegates' properties,
+   *  it will just both field pairs of targets for equality.
+   * 
+   * When set to zero, the resulting diff engine will just use equals 
+   *  (or more precisely, the configured [[org.beandiff.equality.EqualityInvestigator]])
+   *   to compare the targets.
+   * 
+   * @param maxDepth maximum allowed path depth
+   * @return this builder instance (for method chaining)
+   */
   def withDepthLimit(maxDepth: Int) = {
     additionalDescStrategy = new LimitedDepthStrategy(maxDepth)
     this
@@ -138,17 +172,47 @@ class DiffEngineBuilder private () {
     this
   }
 
+  /**
+   * Specifies path(s) (as in [[org.beandiff.core.model.Path]])
+   * to be excluded from diff calculation.
+   * 
+   * If a path is skipped, then any difference on that path will not
+   * be present in the result [[org.beandiff.core.model.Diff]]s.
+   * 
+   * @param path the path to be excluded
+   * @param paths additional paths to skip
+   * @return this builder instance (for method chaining)
+   */
   @varargs
   def skipping(path: String, paths: String*) = {
 	pathsToSkip ++= (path :: paths.toList).map(Path(_))
     this
   }
 
+  /**
+   * Specifies paths (as in [[org.beandiff.core.model.Path]])
+   * to be excluded from diff calculation.
+   * 
+   * If a path is skipped, then any difference on that path will not
+   * be present in the result [[org.beandiff.core.model.Diff]].
+   * 
+   * @param paths list of paths to skip
+   * @return this builder instance (for method chaining)
+   */
   def skipping(paths: Array[String]) = {
     pathsToSkip ++= paths.toList.map(Path(_))
     this
   }
   
+  /**
+   * Returns the [[org.beandiff.core.DiffEngine]] being built.
+   * 
+   * Each invocation returns a new engine instance. The engine, once returned,
+   * will not be affected by further method invocations on this builder. It's 
+   * allowed to call this method multiple times to obtain many engines.
+   * 
+   * @return a [[org.beandiff.core.DiffEngine]] instance
+   */
   def build(): DiffEngine = {
     new DelegatingDiffEngine(eqInvestigators, descendingStrategy(), objTypes, filter())
   }
