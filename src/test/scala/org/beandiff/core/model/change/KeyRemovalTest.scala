@@ -19,28 +19,19 @@
  */
 package org.beandiff.core.model.change
 
-import org.beandiff.core.model.Property
-import org.beandiff.core.model.KeyProperty
-import java.util.Map.Entry
-import org.beandiff.TypeDefs.JMap
+import org.scalatest.FunSuite
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.beandiff.test.JMap
 
 
-object KeyRemoval {
-  def apply[K, V](entry: Entry[K, V]): KeyRemoval = apply(entry.getKey, entry.getValue)
-}
+@RunWith(classOf[JUnitRunner])
+class KeyRemovalTest extends FunSuite with ShouldMatchers {
 
-case class KeyRemoval(
-    key: Any,
-    oldVal: Any) extends Change {
-
-  
-  def perform(target: Any) = {
-    target.asInstanceOf[JMap].remove(key)
+  test("should remove entry from the map") {
+    val m = JMap("a" -> 1)
+    KeyRemoval("a", 1).perform(m)
+    m.entrySet should be ('empty)
   }
-  
-  def targetProperty = new KeyProperty(key)
-  
-  def newValue = None
-  
-  def oldValue = Some(oldVal)
 }

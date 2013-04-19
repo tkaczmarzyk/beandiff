@@ -34,7 +34,7 @@ case class Association(
     value: Any) extends Change {
 
   override def perform(target: Any) = {
-    //target.asInstanceOf[JMap].put(targetProperty.key, newValue)
+    target.asInstanceOf[JMap].put(targetProperty.key, value)
   }
   
   override def oldValue = None

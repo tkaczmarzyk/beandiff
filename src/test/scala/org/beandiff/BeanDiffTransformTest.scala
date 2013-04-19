@@ -20,6 +20,7 @@
 package org.beandiff
 
 import org.beandiff.BeanDiff.diff
+import org.beandiff.BeanDiff.diffEngine
 import org.beandiff.DiffEngineBuilder._
 import org.beandiff.TestDefs.EverythingIsEntityWithNameId
 import org.beandiff.TypeDefs._
@@ -45,6 +46,7 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.core.model.change.ChangeOrdering
 import org.beandiff.beans.DescendantJavaBean
+import org.beandiff.test.JMap
 
 @RunWith(classOf[JUnitRunner])
 class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
@@ -486,5 +488,75 @@ class BeanDiffTransformTest extends FunSuite with ShouldMatchers {
     
     o1.getName should be === "b"
     o1.getValue should be === 9
+  }
+  
+  test("should change a simple entry in a map") {
+    val m1 = JMap("a" -> 1, "b" -> 2)
+    val m2 = JMap("a" -> 9, "b" -> 2)
+
+    diff(m1, m2).transformTarget()
+
+    m1 should be === JMap("a" -> 9, "b" -> 2)
+  }
+
+  test("should add a new entry to the map") {
+    val m1 = JMap("a" -> 1, "b" -> 2)
+    val m2 = JMap("a" -> 1, "b" -> 2, "c" -> 3)
+
+    diff(m1, m2).transformTarget()
+    
+    m1 should be === JMap("a" -> 1, "b" -> 2, "c" -> 3)
+  }
+
+  test("should remove an entry from a map") {
+    val m1 = JMap("a" -> 1, "b" -> 2, "c" -> 3)
+    val m2 = JMap("a" -> 1, "b" -> 2)
+
+    diff(m1, m2).transformTarget()
+    
+    m1 should be === JMap("a" -> 1, "b" -> 2)
+  }
+  
+  test("should change a null value in the map") {
+    val m1: JMap = JMap("a" -> null)
+    val m2 = JMap("a" -> 1)
+    
+    diff(m1, m2).transformTarget()
+    
+    m1.get("a") should be === 1
+  }
+  
+  test("should change a value in the map to null") {
+    val m1 = JMap("a" -> 1)
+    val m2 = JMap("a" -> null)
+    
+    diff(m1, m2).transformTarget()
+    
+    m1 should be === JMap("a" -> null)
+  }
+  
+  test("should change property of a value in the map") {
+    new Beans {
+      val m1 = JMap("a" -> a1)
+      val m2 = JMap("a" -> a2)
+    
+      diff(m1, m2).transformTarget()
+      
+      m1 should be === JMap("a" -> a1)
+      a1.getValue should be === 2
+    }
+  }
+  
+  test("should replace an entity in the map") {
+    new Beans {
+      val engine = diffEngine().withEntity[SimpleJavaBean]("value")
+      
+      val m1 = JMap("a" -> a1)
+      val m2 = JMap("a" -> a2)
+    
+      engine.calculateDiff(m1, m2).transformTarget()
+      
+      m1 should be === JMap("a" -> a2)
+    }
   }
 }
