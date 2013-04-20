@@ -43,6 +43,7 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.beans.DescendantJavaBean
 
 
 @RunWith(classOf[JUnitRunner])
@@ -160,6 +161,14 @@ class DiffEngineBuilderTest extends FunSuite with ShouldMatchers with Simpsons {
     
     val d = aDiffEngine.skipping("child.name").calculateDiff(h1, h2)
     d should haveDifference
+  }
+  
+  test("should not step into properties of 2 different classes when requested") {
+    val cbg = new DescendantJavaBean("Jeff Albertson", 34, "Comic Book Guy")
+    
+    val engine = aDiffEngine.breakWhenClassesDifferent.build
+    
+    engine.calculateDiff(bart, cbg) should be === Diff(bart, NewValue(Self, bart, cbg))
   }
   
   // TODO

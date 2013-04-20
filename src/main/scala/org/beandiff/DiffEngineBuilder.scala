@@ -214,6 +214,49 @@ class DiffEngineBuilder private () {
   }
   
   /**
+   * The engine being built will not step into properties
+   * whenever the classes of targets are different.
+   * 
+   * For example, consider the following classes:
+   * {{{
+   * class Foo {
+   *   String name = "foo";
+   *   int value = 1;
+   * }
+   * 
+   * class Bar {
+   *   String name = "bar";
+   *   int value = 2;
+   * }
+   * }}}
+   * 
+   * This invocation:
+   * {{{BeanDiff.diffEngine().build().calculateDiff(new Foo(), new Bar())
+   * }}}
+   * would match properties by name and compare them with each other
+   * even though the classes are different. The result would be 2 differences:
+   * one on path `name`, the other on path `value`.
+   * 
+   * On the contrary, using `breakWhenClassesDifferent` as follows:
+   * {{{BeanDiff.diffEngine()
+   *   .breakWhenClassesDifferent()
+   *   .build().calculateDiff(new Foo(), new Bar())
+   * }}}
+   * would produce just a single difference, without inspecting
+   * the properties.
+   * 
+   * @return this builder instance (for method chaining)
+   */
+  def breakWhenClassesDifferent() = {
+    classDifferenceHandler = new DescendingStrategy {
+      override def shouldProceed(path: Path, o1: Any, o2: Any) = {
+        o1.getClass == o2.getClass
+      }
+    }
+    this
+  }
+  
+  /**
    * Returns the [[org.beandiff.core.DiffEngine]] being built.
    * 
    * Each invocation returns a new engine instance. The engine, once returned,
