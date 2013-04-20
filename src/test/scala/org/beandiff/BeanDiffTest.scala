@@ -59,6 +59,7 @@ import org.beandiff.core.model.change.Addition
 import org.beandiff.test.JMap
 import org.beandiff.core.model.change.Association
 import org.beandiff.core.model.change.KeyRemoval
+import org.beandiff.core.model.Self
 
 
 @RunWith(classOf[JUnitRunner])
@@ -640,5 +641,12 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     val m2 = JMap("a" -> new SimpleJavaBean("a", 1))
     
     diff(m1, m2) should not (haveDifference)
+  }
+  
+  test("should just use equals when comparing collection with non-collection") {
+    new Simpsons {
+      diff(JList(1, 2), bart).leafChanges should be === List((EmptyPath, NewValue(Self, JList(1, 2), bart)))
+      diff(bart, JList(1, 2)).leafChanges should be === List((EmptyPath, NewValue(Self, bart, JList(1, 2))))
+    }
   }
 }

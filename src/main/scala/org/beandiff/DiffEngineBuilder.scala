@@ -21,9 +21,7 @@ package org.beandiff
 
 import java.lang.annotation.Annotation
 import java.util.Date
-
 import scala.annotation.varargs
-
 import org.beandiff.TypeDefs.JBigDecimal
 import org.beandiff.core.AcceptEverything
 import org.beandiff.core.CompositeDescendingStrategy
@@ -46,6 +44,7 @@ import org.beandiff.equality.StdEqualityInvestigator
 import org.beandiff.support.ClassDictionary
 import org.beandiff.support.ValueTypes
 import org.beandiff.DiffEngineBuilder._
+import java.util.Collection
 
 
 object DiffEngineBuilder {
@@ -76,6 +75,15 @@ class DiffEngineBuilder private () {
   private var eqInvestigators: ClassDictionary[EqualityInvestigator] = DefaultEqInvestigators
   private var endTypes = DefaultEndTypes
   private var additionalDescStrategy: DescendingStrategy = null
+  
+  private var classDifferenceHandler = new DescendingStrategy {
+    override def shouldProceed(path: Path, o1: Any, o2: Any) = {
+      val col1 = classOf[Collection[Any]].isAssignableFrom(o1.getClass)
+      val col2 = classOf[Collection[Any]].isAssignableFrom(o2.getClass)
+      (col1 && col2) || (!col1 && !col2)
+    }
+  }
+  
   private var objTypes = new ClassDictionary[ObjectType]()
   private var pathsToSkip = List[Path]()
 
@@ -227,9 +235,9 @@ class DiffEngineBuilder private () {
   
   private def descendingStrategy() = {
     if (additionalDescStrategy == null)
-      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, endTypes)
+      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, classDifferenceHandler, endTypes)
     else
-      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, additionalDescStrategy, endTypes)
+      CompositeDescendingStrategy.allOf(new EndOnNullStrategy, additionalDescStrategy, classDifferenceHandler, endTypes)
   }
   
 }
