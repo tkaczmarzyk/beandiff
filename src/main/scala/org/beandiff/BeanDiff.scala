@@ -75,6 +75,16 @@ object BeanDiff {
   def printDiff(out: PrintWriter, o1: Any, o2: Any): Unit =
     print(out, diff(o1, o2))
 
+  /**
+   * Returns a [[org.beandiff.DiffEngineBuilder]] which can be used 
+   * to obtain a custom [[org.beandiff.core.DiffEngine]].
+   * 
+   * The builder exposes a fluent API for configuration. If nothing
+   * is configured, the engine being built will behave in the default way,
+   * i.e. exactly the same as the `BeanDiff.diff` method.
+   * 
+   * @return a new builder instance
+   */
   def diffEngine() = DiffEngineBuilder.aDiffEngine()
     
 }

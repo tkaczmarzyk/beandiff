@@ -70,6 +70,17 @@ object DiffEngineBuilder {
   implicit def builder2engine(builder: DiffEngineBuilder) = builder.build()
 }
 
+/**
+ * Allows to build a custom [[org.beandiff.core.DiffEngine]].
+ * 
+ * Use the fluent API to customize the default behavior, and then
+ * call `build` method to instantiate the engine. For example this expression:
+ * {{{DiffEngineBuilder.aDiffEngine().ignoringCase().build()}}}
+ * will return an engine that ignores case when comparing `String` values,
+ * but besides that works in default manner.
+ * 
+ * @author Tomasz Kaczmarzyk
+ */
 class DiffEngineBuilder private () {
 
   private var eqInvestigators: ClassDictionary[EqualityInvestigator] = DefaultEqInvestigators
