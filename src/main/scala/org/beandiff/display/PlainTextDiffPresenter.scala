@@ -45,7 +45,8 @@ class PlainTextDiffPresenter(
       for ((path, change) <- d.leafChanges.sorted(PathChangeOrdering)) { // TODO temporary amendments to the new model
         change match { // FIXME generic presentation to avoid so many cases // TODO visitor pattern? // TODO use sealed classes?
           case Deletion(x, index) => {
-            result.append(path.withIndex(index).mkString).append(pathValueSeparator).append("deleted")
+            result.append(path.withIndex(index).mkString).append(pathValueSeparator)
+            result.append("deleted ").append(present(x))
           }
           
           case Insertion(x, index) => {

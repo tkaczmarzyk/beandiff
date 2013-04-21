@@ -50,6 +50,7 @@ import org.beandiff.beans.SimpleJavaBean
 import org.beandiff.beans.DescendantJavaBean
 import org.beandiff.core.model.change.Association
 import org.beandiff.core.model.change.KeyRemoval
+import org.beandiff.core.model.change.Deletion
 
 @RunWith(classOf[JUnitRunner])
 class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
@@ -126,5 +127,11 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
     val diff = Diff(null, KeyRemoval("key", "oldValue"))
     
     presenter.present(diff) should be === ". -- removed entry: 'key' -> 'oldValue'\n"
+  }
+  
+  test("should present deletion") {
+    val diff = Diff(null, Deletion("aa", 0))
+    
+    presenter.present(diff) should be === "[0] -- deleted 'aa'\n"
   }
 }
