@@ -111,19 +111,17 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     }
   }
 
-  // TODO
-  ignore("should compare elements of different type") {
+  test("should compare elements of different type") {
     val o1 = new SimpleJavaBean("name", 1)
     val o2 = new ParentBean("name", 2)
 
     val d = diff(o1, o2)
-    d should haveDifference("@type")
+//    d should haveDifference("@type") // TODO
     d should haveDifference("child") // ParentBean's property
     d should haveDifference("value") // SimpleJavaBean's property
   }
 
-  // TODO
-  ignore("should handle elements of different types in a list") {
+  test("should handle elements of different types in a list") {
     val a = new ParentBean(new NamedBean("a"))
     val o1 = JList(a, new NamedBean("c"))
     val b = new NamedBean("b")
