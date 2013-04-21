@@ -171,10 +171,14 @@ class DiffEngineBuilderTest extends FunSuite with ShouldMatchers with Simpsons {
     engine.calculateDiff(bart, cbg) should be === Diff(bart, NewValue(Self, bart, cbg))
   }
   
-  // TODO
-  ignore("should treat the specified class as entity") {
+  test("should treat the specified class as entity") {
     val engine = aDiffEngine.withEntity[SimpleJavaBean]("name")
     engine.calculateDiff(maggie, lisa) should be === Diff(maggie, NewValue(Self, maggie, lisa))
+  }
+  
+  test("should detect difference in an entity") {
+    val engine = aDiffEngine.withEntity[SimpleJavaBean]("name")
+    engine.calculateDiff(maggie, maggie2) should be === Diff(maggie, NewValue(Property("value"), 1, 2))
   }
   
 }

@@ -19,11 +19,9 @@
  */
 package org.beandiff.core
 
-import org.beandiff.TypeDefs.JList
-import org.beandiff.TypeDefs.JMap
-import org.beandiff.TypeDefs.JSet
 import org.beandiff.core.model.DescendingHistory
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.change.Deletion
@@ -35,16 +33,18 @@ import org.beandiff.core.translation.InsertionToAddition
 import org.beandiff.core.translation.NewValueToRmAdd
 import org.beandiff.core.translation.ShiftToNothing
 import org.beandiff.equality.DiffEqualityInvestigator
+import org.beandiff.equality.Entity
 import org.beandiff.equality.EqualityInvestigator
 import org.beandiff.equality.ObjectType
 import org.beandiff.equality.Value
 import org.beandiff.lcs.BottomUpLcsCalc
 import org.beandiff.support.ClassDictionary
+import org.beandiff.TypeDefs._
 
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
   private val eqInvestigators: ClassDictionary[EqualityInvestigator],
-  private val descStrategy: DescendingStrategy,
+  descengingStrategy: DescendingStrategy,
   typeDefs: ClassDictionary[ObjectType] = null,
   filter: Filter = AcceptEverything) extends DiffEngine with DiffEngineCoordinator {
 
@@ -57,6 +57,17 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
     else
       new ClassDictionary[ObjectType](Value(new DiffEqualityInvestigator(this)))
 
+  private val endOnEntity = new DescendingStrategy {
+    override def shouldProceed(path: Path, o1: Any, o2: Any) = {
+      objTypeDefs(o1, o2) match {
+        case Entity(eq) => eq.areEqual(o1, o2) // TODO potential repetition (DRY)
+        case Value(_) => true
+      }
+    }
+  }
+      
+  private val descStrategy = CompositeDescendingStrategy.allOf(descengingStrategy, endOnEntity)
+      
   private val engines = (new ClassDictionary(new LeafDiffEngine(this)))
   	.withEntry(classOf[JMap] -> new MapDiffEngine(this, objTypeDefs))
     .withEntry(classOf[JList] -> new LcsResultOptimizer(this,
