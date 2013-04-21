@@ -75,7 +75,9 @@ object DiffEngineBuilder {
  * 
  * Use the fluent API to customize the default behavior, and then
  * call `build` method to instantiate the engine. For example this expression:
- * {{{DiffEngineBuilder.aDiffEngine().ignoringCase().build()}}}
+ * {{{
+ * DiffEngineBuilder.aDiffEngine().ignoringCase().build()
+ * }}}
  * will return an engine that ignores case when comparing `String` values,
  * but besides that works in default manner.
  * 
@@ -242,14 +244,16 @@ class DiffEngineBuilder private () {
    * }}}
    * 
    * This invocation:
-   * {{{BeanDiff.diffEngine().build().calculateDiff(new Foo(), new Bar())
+   * {{{
+   * BeanDiff.diffEngine().build().calculateDiff(new Foo(), new Bar())
    * }}}
    * would match properties by name and compare them with each other
    * even though the classes are different. The result would be 2 differences:
    * one on path `name`, the other on path `value`.
    * 
    * On the contrary, using `breakWhenClassesDifferent` as follows:
-   * {{{BeanDiff.diffEngine()
+   * {{{
+   * BeanDiff.diffEngine()
    *   .breakWhenClassesDifferent()
    *   .build().calculateDiff(new Foo(), new Bar())
    * }}}
