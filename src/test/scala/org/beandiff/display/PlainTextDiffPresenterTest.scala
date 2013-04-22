@@ -134,4 +134,11 @@ class PlainTextDiffPresenterTest extends FunSuite with ShouldMatchers {
     
     presenter.present(diff) should be === "[0] -- deleted 'aa'\n"
   }
+  
+  test("should use the provided format for path presentation") {
+    val presenter = new PlainTextDiffPresenter(pathFormat = "__%s__")
+    val diff = Diff(null, NewValue(Property("name"), "aa", "bb"))
+    
+    presenter.present(diff) should be === "__name__ -- 'aa' vs 'bb'\n"
+  }
 }
