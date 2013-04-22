@@ -19,28 +19,27 @@
  */
 package org.beandiff.core.model
 
-import java.io.StringReader
+import org.beandiff.TypeDefs.JSet
 import org.beandiff.support.ClassDictionary
 
 
-object Property {
+case class ElementProperty(element: Any) extends Property {
 
-  def apply(propStr: String): Property = {
-    val path = new PathParser().parsePath(propStr)
-    if (path.depth != 1)
-      throw new IllegalArgumentException("not a single property: " + propStr)
-    else
-      path.head
+  override def get(src: Any) = {
+    src match {
+      case set: JSet if set.contains(element) => Some(element)
+      case _ => None
+    }
   }
-}
-
-trait Property {
   
-  def get(target: Any): Option[Any]
+  override def setValue(target: Any, value: Any) = {
+    throw new UnsupportedOperationException("ElementProperty.setValue")
+  }
   
-  def setValue(target: Any, value: Any)
-  
-  def mkString: String
-  
-  def mkString(elemToStrDict: ClassDictionary[(Any => String)]): String = mkString
+  override def mkString: String = "[]"
+    
+  override def mkString(dict: ClassDictionary[(Any => String)]): String = {
+    val toStr = if (element == null) dict.defaultValue else dict(element.getClass) // TODO move to ClassDictionary ?
+    "[" + toStr(element) + "]"
+  }
 }

@@ -26,6 +26,7 @@ import Path.EmptyPath
 import org.scalatest.matchers.ShouldMatchers
 import org.beandiff.beans.ParentBean
 import org.beandiff.beans.SimpleJavaBean
+import org.beandiff.support.ClassDictionary
 
 @RunWith(classOf[JUnitRunner])
 class PathTest extends FunSuite with ShouldMatchers {
@@ -114,5 +115,12 @@ class PathTest extends FunSuite with ShouldMatchers {
   test("should return Some with the value at the path") {
     val o = new ParentBean("homer", new SimpleJavaBean("bart", 10))
     Path("child.name").get(o) should be === Some("bart")
+  }
+  
+  test("should use the provided toString impls") {
+    val p = Path(Property("set"), ElementProperty(new Object), Property("name"))
+    val dict = new ClassDictionary((o: Any) => "elem")
+    
+    p.mkString(dict) should be === "set[elem].name"
   }
 }

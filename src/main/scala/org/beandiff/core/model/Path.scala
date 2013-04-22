@@ -19,6 +19,8 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.support.ClassDictionary
+
 
 object Path {
 
@@ -38,9 +40,14 @@ object Path {
 
   def apply(pathStr: String) = Path.of(pathStr)
   
-  def apply(properties: Property*): Path = {
-    new PathImpl(Vector(properties.dropWhile(_ == Self):_*)) // TODO it's kind of workaround
+  def apply(props: Property*): Path = {
+    new PathImpl(Vector(props.dropWhile(_ == Self):_*)) // TODO it's kind of workaround
+    //apply(properties)
   }
+  
+//  def apply(props: Seq[Property]): Path = {
+//    
+//  }
   
   val EmptyPath: Path = new PathImpl(Vector())
 }
@@ -56,7 +63,7 @@ abstract class Path {
   def step(p: Property): Path
   def stepBack: Path
   
-  def props: Iterable[Property]
+  def props: Seq[Property]
   
   def ++(other: Path): Path
 
@@ -76,4 +83,6 @@ abstract class Path {
   def isPrefixOf(other: Path): Boolean
   
   def mkString: String
+  
+  def mkString(toStrDict: ClassDictionary[(Any => String)]): String
 }

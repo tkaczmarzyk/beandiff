@@ -19,6 +19,8 @@
  */
 package org.beandiff.core.model
 
+import org.beandiff.support.ClassDictionary
+
 final class PathImpl(
   val props: Vector[Property]) extends Path with Equals {
 
@@ -69,16 +71,20 @@ final class PathImpl(
     
   override def toString() = "Path[" + mkString + "]"
   
-  override def mkString = { // TODO
+  override def mkString = {
+    mkString(new ClassDictionary((o: Any) => o.toString)) // FIXME introduce and use factory for ClassDictionary which would return an effective implementation here
+  }
+  
+  override def mkString(dict: ClassDictionary[(Any => String)]): String = { // TODO
     if (depth == 0)
       "."
     else
-      head.mkString + {
+      head.mkString(dict) + {
         if (tail.depth > 0)
           if (tail.head.isInstanceOf[FieldProperty]) // FIXME avoid type check
-            Path.FieldSeparator + tail.mkString
+            Path.FieldSeparator + tail.mkString(dict)
           else
-            tail.mkString
+            tail.mkString(dict)
         else ""
       }
   }
