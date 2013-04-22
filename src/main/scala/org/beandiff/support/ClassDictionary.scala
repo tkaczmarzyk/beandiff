@@ -51,11 +51,19 @@ class ClassDictionary[T](
   def withEntry[U >: T](entry: Entry[U]) = {
     new ClassDictionary(defaultValue, content + entry)
   }
+  
+  def withEntry[C, U >: T](clazz: Class[C], value: T) = {
+    new ClassDictionary(defaultValue, content + (clazz, value).asInstanceOf[Entry[U]]) // FIXME fix generics
+  }
 
   def withEntries[U >: T](entries: Iterable[Entry[U]]) = {
     new ClassDictionary(defaultValue, content ++ entries.toMap)
   }
 
+  def map[A](fun: T => A): ClassDictionary[A] = {
+    new ClassDictionary(fun(defaultValue), content.map(classValue => (classValue._1, fun(classValue._2))))
+  }
+  
   def apply(candidate1: Any, candidate2: Any): T = { // TODO or rather if (o1 == null) defaultValue else apply(o1.getClass) ? // TODO finding common ancestor if classes different?
     if (candidate1 == null && candidate2 == null)
       defaultValue

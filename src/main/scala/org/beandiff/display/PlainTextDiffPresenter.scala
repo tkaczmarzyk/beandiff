@@ -24,6 +24,8 @@ import org.beandiff.core.model.Path
 import org.beandiff.core.model._
 import org.beandiff.core.model.change._
 import org.beandiff.display.PlainTextDiffPresenter._
+import org.beandiff.support.ClassDictionary
+import org.beandiff.support.ToString
 
 
 object PlainTextDiffPresenter {
@@ -53,7 +55,8 @@ class PlainTextDiffPresenter(
   private var deletionLabel: String = DefaultDeletionLabel,
   private var removalLabel: String = DefaultRemovalLabel,
   private var insertionLabel: String = DefaultInsertionLabel,
-  private var additionLabel: String = DefaultAdditionLabel) extends DiffPresenter {
+  private var additionLabel: String = DefaultAdditionLabel,
+  private var pathToStrings: ClassDictionary[Any => String] = null) extends DiffPresenter {
 
 
   def this() = { // additional constructor to make java users happy :P
@@ -223,6 +226,11 @@ class PlainTextDiffPresenter(
     this
   }
   
+  def setPathToStrings(dict: ClassDictionary[ToString]) = { // TODO doc, better name
+    pathToStrings = dict.map(toStr => (o => toStr.mkString(o)))
+    this
+  }
+  
   private def present(value: Any) = {
     value match {
       case None => noPathLabel
@@ -232,6 +240,7 @@ class PlainTextDiffPresenter(
   }
   
   private def format(path: Path) = {
-    String.format(pathFormat, path.mkString)
+    val pathStr = if (pathToStrings == null) path.mkString else path.mkString(pathToStrings)
+    String.format(pathFormat, pathStr)
   }
 }
