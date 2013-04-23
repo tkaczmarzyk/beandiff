@@ -19,11 +19,19 @@
  */
 package org.beandiff.core
 
+import java.util.ArrayList
+import java.util.Arrays
 import org.beandiff.core.model.Diff
+import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
+import org.beandiff.core.model.Property
 import org.beandiff.core.model.Self
-import org.beandiff.core.translation.ChangeTranslation
 import org.beandiff.core.model.change.Change
+import org.beandiff.core.translation.ChangeTranslation
+import org.beandiff.core.model.change.Deletion
+import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.ElementProperty
 
 class TransformingDiffEngine(
   private val delegate: DiffEngineCoordinator,
@@ -36,9 +44,16 @@ class TransformingDiffEngine(
 
     val diff = delegate.calculateDiff(Diff(o1), Self, t1, t2) // FIXME in feint test: Diff[[0]-> Diff[Self->Flat....  -- but then unnecessary Diff[Self is removed below
 
-    val result = translateSelfChanges(diff)
-
-    result.forTarget(o1)
+    val result = translateSelfChanges(diff).forTarget(o1)
+    
+    // FIXME FIXME FIXME quick dirty impl, refactor and factor out from here:
+    result.forTarget(o1).changes.foldLeft(result)(
+        (acc: Diff, propDiff: (Property, Diff)) => {
+          propDiff match {
+            case (prop @ IndexProperty(_), subdiff) => acc.without(prop).withChanges(Path(ElementProperty(subdiff.target)), subdiff)
+            case _ => acc
+          }
+        })
   }
 
   private def translateSelfChanges(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
@@ -57,4 +72,5 @@ class TransformingDiffEngine(
         })
     }
   }
+
 }

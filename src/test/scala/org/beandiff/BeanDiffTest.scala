@@ -60,6 +60,7 @@ import org.beandiff.test.JMap
 import org.beandiff.core.model.change.Association
 import org.beandiff.core.model.change.KeyRemoval
 import org.beandiff.core.model.Self
+import org.beandiff.core.model.ElementProperty
 
 
 @RunWith(classOf[JUnitRunner])
@@ -246,8 +247,10 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff(bean1, bean2) should not(haveDifference)
   }
 
-  test("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs
-    val col1 = new CollectionBean(JSet(new SimpleJavaBean("Donald", 1)))
+  test("should calculate diff when 2 sets are on the path") { // tests handling of transformed targets when creating subdiffs // TODO ugly since ElementProperty introduction, refactor // TODO better test name
+    val donald = new SimpleJavaBean("Donald", 1)
+    val set1 = JSet(donald)
+    val col1 = new CollectionBean(set1)
     val bean1 = new ParentBean("bean", JSet(col1))
 
     val col2 = new CollectionBean(JSet(new SimpleJavaBean("Sknerus", 1)))
@@ -255,19 +258,21 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
 
     val d = diff(bean1, bean2)
 
-    d should haveDifference("child[0].collection[0].name")
+    d should haveDifference(Path(Property("child"), ElementProperty(col1), Property("collection"), ElementProperty(donald), Property("name"))) // TODO concise way to express it
   }
 
   test("should find difference between a sets within sets") {
-    val set1 = JSet(JSet(1))
+    val nested1 = JSet(1)
+    val set1 = JSet(nested1)
     val set2 = JSet(JSet(2))
 
     val d = diff(set1, set2)
 
     //d should haveDifference("[0][0]") // old way
-    d should haveDifference("[0]")
-    d should haveChange("[0]", Removal(1))
-    d should haveChange("[0]", Addition(2))
+    // d should haveDifference("[0]") // newer (but still old ;)) way
+    d should haveDifference(ElementProperty(nested1))
+    d should haveChange(ElementProperty(nested1), Removal(1))
+    d should haveChange(ElementProperty(nested1), Addition(2))
   }
 
   test("subsequent calls should return the same result (difference)") {
