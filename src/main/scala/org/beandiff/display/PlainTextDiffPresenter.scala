@@ -43,6 +43,18 @@ object PlainTextDiffPresenter {
   val DefaultAdditionLabel = "added "
 }
 
+/**
+ * Presents a [[org.beandiff.core.model.Diff]] using flat text format. For instance:
+ * {{{
+ * myList[0].child.name -- 'foo' vs 'bar'
+ * myList[1] -- removed 'Child[baz]'
+ * myMap[ccc].children[0].name -- 'homer' vs 'marge'
+ * myMap -- removed entry: 'bbb' -> 'BBB'
+ * myMap[aaa] -- initialized with 'AAA'
+ * }}}
+ * 
+ * @author Tomasz Kaczmarzyk
+ */
 class PlainTextDiffPresenter(
   private var pathValueSeparator: String = DefaultPathValueSeparator,
   private var valuesSeparator: String = DefaultValueSeparator,
@@ -189,6 +201,7 @@ class PlainTextDiffPresenter(
    * children[0].name -- 'test' vs 'null'
    * }}}
    * 
+   * @param a separator to set
    * @return this presenter instance (for method chaining)
    */
   def setPathValueSeparator(separator: String) = {
@@ -204,6 +217,7 @@ class PlainTextDiffPresenter(
    * childrenSet -- removed 'Child[name="test"]'
    * }}}
    * 
+   * @param a label to set
    * @return this presenter instance (for method chaining)
    */
   def setRemovalLabel(label: String) = {
@@ -219,6 +233,7 @@ class PlainTextDiffPresenter(
    * children[0] -- deleted 'Child[name="test"]'
    * }}}
    * 
+   * @param a label to set
    * @return this presenter instance (for method chaining)
    */
   def setDeletionLabel(label: String) = {
@@ -226,7 +241,31 @@ class PlainTextDiffPresenter(
     this
   }
   
-  def setPathToStrings(dict: ClassDictionary[ToString]) = { // TODO doc, better name
+  /**
+   * Sets a dictionary with [[org.beandiff.display.ToString]]s, which will be
+   * used to present elements on [[org.beandiff.core.model.Path]]s.
+   * 
+   * It's relevant for presenting paths that include Sets. The default way of presenting
+   * such paths is:
+   * {{{
+   * mySet[].name
+   * }}}
+   * which may be ambiguous. It's good to present the target element of a Set between
+   * the braces:
+   * {{{
+   * mySet[elemA].name
+   * }}}
+   * Such representation should be concise though, so most of the `toString`
+   * implementations are not a good candidates. Hence the [[org.beandiff.display.ToString]]s
+   * with appropriate implementation are required.
+   * 
+   * The dictionary being set is expected to have a value for any class,
+   * therefore it's recommended to initialize it with a default value.
+   * 
+   * @param dictionary with ToStrings mapped to Classes
+   * @return this presenter instance (for method chaining)
+   */
+  def setPathToStrings(dict: ClassDictionary[ToString]) = {
     pathToStrings = dict.map(toStr => (o => toStr.mkString(o)))
     this
   }
