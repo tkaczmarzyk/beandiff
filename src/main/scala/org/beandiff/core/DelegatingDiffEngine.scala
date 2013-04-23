@@ -61,10 +61,7 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
 
   private val endOnEntity = new DescendingStrategy {
     override def shouldProceed(path: Path, o1: Any, o2: Any) = {
-      objTypeDefs(o1, o2) match {
-        case Entity(eq) => eq.areEqual(o1, o2) // TODO potential repetition (DRY)
-        case Value(_) => true
-      }
+      objTypeDefs(o1, o2).allowedToDiff(o1, o2)
     }
   }
       
