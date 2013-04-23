@@ -1,3 +1,23 @@
+## 0.2.0 (2013-04-XX)
+
+* switched to Scala 2.10
+* handling `java.util.Map` targets
+* calculating diffs for instances of different classes
+* handling fields from supertypes
+* respecting object type (entity/value) definition for elements outside collections
+* introduced filters + API to set paths to exclude
+* extended documentation + doc package is now in Javadoc format (thanks to genjavadoc plugin)
+* new LCS implementation (bottom-up)
+* removed modifier-based API of `BeanDiff` class in favour of `DiffEngineBuilder`
+* `java.util.Date` and `java.lang.Class` are now default end-types
+* fixes in `Set` transformations
+* fixed handling of `null` values in collections
+* ignoring static fields
+* introduced `ElementProperty` which is now used for Sets
+* configurable presentation of `ElementProperty` 
+* extended configuration API of `PlainTextDiffPresenter`
+* `PlainTextDiffPresenter` now displays a value deleted from a list
+
 ## 0.1.1 (2013-03-04)
 
 * fixed too-aggressive LCS optimization
