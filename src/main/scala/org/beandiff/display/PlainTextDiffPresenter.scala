@@ -25,7 +25,6 @@ import org.beandiff.core.model._
 import org.beandiff.core.model.change._
 import org.beandiff.display.PlainTextDiffPresenter._
 import org.beandiff.support.ClassDictionary
-import org.beandiff.support.ToString
 
 
 object PlainTextDiffPresenter {
