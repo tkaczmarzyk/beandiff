@@ -55,7 +55,7 @@ class MapDiffEngine(
         val newVal = m2.get(entry.getKey)
         
         if (objTypes(oldVal, newVal).allowedToDiff(oldVal, newVal)) {
-          diff = delegate.calculateDiff(diff, KeyProperty(entry.getKey()), oldVal, newVal) // TODO duplicated diff calculation when diff eqInvestigator is used: !valuesEqual(entry.getKey)(m1, m2)
+          diff = delegate.calculateDiff(diff, KeyProperty(entry.getKey()), oldVal, newVal)
         } else {
           diff = diff.withChange(Self, NewValue(KeyProperty(entry.getKey), Some(oldVal), Some(newVal)))
         }
