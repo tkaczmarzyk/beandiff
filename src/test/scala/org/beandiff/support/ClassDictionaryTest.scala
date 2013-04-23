@@ -94,4 +94,15 @@ class ClassDictionaryTest extends FunSuite with ShouldMatchers {
   test("should return default value when both candidates null") {
     dict(null, null) should be === dict.defaultValue
   }
+  
+  test("should transform the entries") {
+    val dict = new ClassDictionary("default").withEntries(List(classOf[String] -> "string",
+        classOf[Int] -> "int"))
+    
+    val mapped = dict.map(s => s.toUpperCase())
+    
+    mapped.defaultValue should be === "DEFAULT"
+    mapped(classOf[String]) should be === "STRING"
+    mapped(classOf[Int]) should be === "INT"
+  }
 }
