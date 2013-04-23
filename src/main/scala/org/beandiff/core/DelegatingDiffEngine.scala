@@ -40,6 +40,8 @@ import org.beandiff.equality.Value
 import org.beandiff.lcs.BottomUpLcsCalc
 import org.beandiff.support.ClassDictionary
 import org.beandiff.TypeDefs._
+import org.beandiff.core.model.IndexProperty
+import org.beandiff.core.model.ElementProperty
 
 
 class DelegatingDiffEngine( // TODO responsibility has been extended, consider renaming + separate interface?
@@ -74,10 +76,12 @@ class DelegatingDiffEngine( // TODO responsibility has been extended, consider r
       new LcsDiffEngine(this, objTypeDefs, new BottomUpLcsCalc)))
     .withEntry(classOf[JSet] ->
       new TransformingDiffEngine(this, new ToListTransformer,
-        Map(classOf[Shift] -> new ShiftToNothing,
+        changeTranslators = Map(classOf[Shift] -> new ShiftToNothing,
           classOf[NewValue] -> new NewValueToRmAdd,
           classOf[Insertion] -> new InsertionToAddition,
-          classOf[Deletion] -> new DeletionToRemoval)))
+          classOf[Deletion] -> new DeletionToRemoval),
+        propertyTranslators = Map(
+          classOf[IndexProperty] -> ((prop, target) => ElementProperty(target)))))
 
   private var visited = DescendingHistory()
 

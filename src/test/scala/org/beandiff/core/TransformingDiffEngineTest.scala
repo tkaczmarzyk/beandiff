@@ -26,6 +26,7 @@ import org.beandiff.TestDefs.mock
 import org.beandiff.TestDefs.mockChange
 import org.beandiff.TestDefs.mockCoordinator
 import org.beandiff.TestDefs.mockMap
+import org.beandiff.TestDefs.of
 import org.beandiff.core.model.Diff
 import org.beandiff.core.model.Path
 import org.beandiff.core.model.Path.EmptyPath
@@ -44,6 +45,7 @@ import org.beandiff.core.translation.NewValueToRmAdd
 import org.beandiff.core.translation.ShiftToNothing
 import org.beandiff.test.BeanDiffMatchers.haveChange
 import org.beandiff.test.BeanDiffMatchers.haveChanges
+import org.beandiff.test.BeanDiffMatchers.haveDifference
 import org.junit.runner.RunWith
 import org.mockito.Matchers.any
 import org.mockito.Mockito.never
@@ -52,21 +54,29 @@ import org.mockito.Mockito.when
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.core.model.Self
+import org.beandiff.core.model.FieldProperty
 
 
 @RunWith(classOf[JUnitRunner])
 class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
   
-  private val delegate = mock[DiffEngineCoordinator]
-  private val translation = mock[ChangeTranslation]
-  private val engine = new TransformingDiffEngine(delegate, NoopTransformer, mockMap(translation))
+  type PropertyTranslation = (Property, Any) => Property
   
-  private val o1 = new Object
-  private val o2 = new Object
-  private val ch1 = mockChange("ch1")
-  private val ch2 = mockChange("ch2")
-  private val ch3 = mockChange("ch3")
-  private val testDiff = Diff(o1, Self -> Diff(o1, ch1, ch2), Property("name") -> Diff(null, ch3))
+  val delegate = mock[DiffEngineCoordinator]
+  val translation = mock[ChangeTranslation]
+  val mockPropTranslation = mock[PropertyTranslation]
+  val mockPropTranslations: Map[Class[_ <: Property], PropertyTranslation] = mockMap(mockPropTranslation)
+  val engine = new TransformingDiffEngine(delegate, NoopTransformer, mockMap(translation))
+  
+  val o1 = new Object
+  val o2 = new Object
+  val ch1 = mockChange("ch1")
+  val ch2 = mockChange("ch2")
+  val ch3 = mockChange("ch3")
+  val testDiff = Diff(o1, Self -> Diff(o1, ch1, ch2), Property("name") -> Diff(null, ch3))
+  val translatedProp1 = mock[Property]
+  val translatedProp2 = mock[Property]
   
   when(translation.translate(anyChange)).thenReturn(Seq(mockChange("translated")))
   when(delegate.calculateDiff(anyDiff, anyProp, any, any)).thenReturn(testDiff)
@@ -109,6 +119,20 @@ class TransformingDiffEngineTest extends FunSuite with ShouldMatchers {
     
     d should haveChange(ch4)
     d should haveChange(ch5)
+  }
+  
+  test("should translate all the 1st level properties") {
+    val engine = new TransformingDiffEngine(delegate, NoopTransformer, mockMap(translation), mockPropTranslations)
+    
+    when(translatedProp1.get(any)).thenReturn(Some(new Object))
+    when(translatedProp2.get(any)).thenReturn(Some(new Object))
+    when(mockPropTranslation.apply(of(Self), any)).thenReturn(translatedProp1)
+    when(mockPropTranslation.apply(of(Property("name")), any)).thenReturn(translatedProp2)
+    
+    val d = engine.calculateDiff(o1, o2)
+    
+    d should haveDifference(translatedProp1)
+    d should haveDifference(translatedProp2)
   }
   
   test("should transform a list-diff into set-diff") {

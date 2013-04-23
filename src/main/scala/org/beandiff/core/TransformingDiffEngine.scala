@@ -36,7 +36,8 @@ import org.beandiff.core.model.ElementProperty
 class TransformingDiffEngine(
   private val delegate: DiffEngineCoordinator,
   private val transformer: ObjectTransformer,
-  private val translators: Map[Class[_ <: Change], ChangeTranslation]) extends DiffEngine { // TODO
+  private val changeTranslators: Map[Class[_ <: Change], ChangeTranslation],
+  private val propertyTranslators: Map[Class[_ <: Property], ((Property, Any) => Property)] = Map()) extends DiffEngine { // TODO
 
   override def calculateDiff(o1: Any, o2: Any): Diff = {
     val t1 = transformer.transform(o1)
@@ -46,14 +47,7 @@ class TransformingDiffEngine(
 
     val result = translateSelfChanges(diff).forTarget(o1)
     
-    // FIXME FIXME FIXME quick dirty impl, refactor and factor out from here:
-    result.forTarget(o1).changes.foldLeft(result)(
-        (acc: Diff, propDiff: (Property, Diff)) => {
-          propDiff match {
-            case (prop @ IndexProperty(_), subdiff) => acc.without(prop).withChanges(Path(ElementProperty(subdiff.target)), subdiff)
-            case _ => acc
-          }
-        })
+    translateProperties(result)
   }
 
   private def translateSelfChanges(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
@@ -65,7 +59,7 @@ class TransformingDiffEngine(
         changes.leafChanges.foldLeft(original)((acc, pathChange) => {
           val path = pathChange._1
           val change = pathChange._2
-          translators.get(change.getClass) match {
+          changeTranslators.get(change.getClass) match {
             case Some(t) => acc.without(path, change).withChanges(path, t.translate(change))
             case None => acc
           }
@@ -73,4 +67,18 @@ class TransformingDiffEngine(
     }
   }
 
+  private def translateProperties(original: Diff): Diff = {
+    original.changes.foldLeft(original)(
+        (acc: Diff, propDiff: (Property, Diff)) => {
+          propertyTranslators.get(propDiff._1.getClass) match {
+            case Some(t) => {
+              val oldProp = propDiff._1
+              val subdiff = propDiff._2
+              val newProp = t(oldProp, subdiff.target)
+              acc.without(oldProp).withChanges(newProp, subdiff)
+            }
+            case None => acc
+          }
+        })
+  }
 }
