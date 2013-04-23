@@ -626,7 +626,7 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff(m1, m2) should haveDifference("[a].value")
   }
   
-  test("should detect that entity in the map has changed") {
+  test("should detect that entity in a map has been replaced with another entity") {
     val a1 = new SimpleJavaBean("a", 1)
     val a2 = new SimpleJavaBean("a", 2)
     
@@ -639,11 +639,31 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
     diff should haveChange(NewValue(Property("[a]"), a1, a2))
   }
   
+  test("should detect no difference between maps with simple keys & values") {
+    val m1 = JMap("a" -> "A", "b" -> "B")
+    val m2 = JMap("a" -> "A", "b" -> "B")
+    
+    diff(m1, m2) should not (haveDifference)
+  }
+  
   test("should detect no difference between between maps") { // SimpleJavaBean has not overridden equals/hashcode
     val m1 = JMap("a" -> new SimpleJavaBean("a", 1))
     val m2 = JMap("a" -> new SimpleJavaBean("a", 1))
     
     diff(m1, m2) should not (haveDifference)
+  }
+  
+  test("should detect that property of an entity in a map has changed") {
+    val a1 = new SimpleJavaBean("a", 1)
+    val a2 = new SimpleJavaBean("a", 2)
+    
+    val engine = diffEngine().withEntity[SimpleJavaBean]("name")
+    
+    val m1 = JMap("a" -> a1)
+    val m2 = JMap("a" -> a2)
+    
+    val diff = engine.calculateDiff(m1, m2)
+    diff should haveChange(Path("[a]"), NewValue(Property("value"), 1, 2))
   }
   
   test("should just use equals when comparing collection with non-collection") {

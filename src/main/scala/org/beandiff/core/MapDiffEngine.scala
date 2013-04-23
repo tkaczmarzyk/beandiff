@@ -50,13 +50,14 @@ class MapDiffEngine(
     for (entry <- m1.entrySet()) {
       if (!m2.containsKey(entry.getKey)) {
         diff = diff.withChange(KeyRemoval(entry))
-      } else if (!valuesEqual(entry.getKey)(m1, m2)) {
+      } else {
         val oldVal = m1.get(entry.getKey)
         val newVal = m2.get(entry.getKey)
         
-        objTypes(oldVal, newVal) match {
-          case Value(_) => diff = delegate.calculateDiff(diff, KeyProperty(entry.getKey()), oldVal, newVal) // TODO duplicated diff calculation when diff eqInvestigator is used: !valuesEqual(entry.getKey)(m1, m2)
-          case Entity(_) => diff = diff.withChange(Self, NewValue(KeyProperty(entry.getKey), Some(oldVal), Some(newVal)))
+        if (objTypes(oldVal, newVal).allowedToDiff(oldVal, newVal)) {
+          diff = delegate.calculateDiff(diff, KeyProperty(entry.getKey()), oldVal, newVal) // TODO duplicated diff calculation when diff eqInvestigator is used: !valuesEqual(entry.getKey)(m1, m2)
+        } else {
+          diff = diff.withChange(Self, NewValue(KeyProperty(entry.getKey), Some(oldVal), Some(newVal)))
         }
       }
     }
@@ -67,12 +68,5 @@ class MapDiffEngine(
     }
     
     diff
-  }
-
-  private def valuesEqual(key: Any)(m1: JMap, m2: JMap) = {
-    val v1 = m1.get(key)
-    val v2 = m2.get(key)
-    
-    objTypes(v1, v2).areEqual(v1, v2) // TODO
   }
 }
