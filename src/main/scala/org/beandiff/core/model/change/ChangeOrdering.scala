@@ -33,6 +33,8 @@ object ChangeOrdering extends Ordering[Change] {
       case (Addition(_), Removal(_)) => 1
       case (Insertion(_, idx1), Insertion(_, idx2)) => idx1.compare(idx2)
       case (Deletion(_, idx1), Deletion(_, idx2)) => - idx1.compareTo(idx2)
+      case (KeyRemoval(_, _), Association(_, _)) => -1
+      case (Association(_, _), KeyRemoval(_, _)) => 1
       case (NewValue(p1, _, _), NewValue(p2, _, _)) => p1.mkString.compareTo(p2.mkString)
       case (NewValue(_, _, _), _) => -1
       case (_, NewValue(_, _, _)) => 1

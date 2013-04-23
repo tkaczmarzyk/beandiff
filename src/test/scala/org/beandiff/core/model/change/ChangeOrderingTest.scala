@@ -96,4 +96,12 @@ class ChangeOrderingTest extends FunSuite with ShouldMatchers {
     ChangeOrdering.compare(shift, ins) should be < 0
     ChangeOrdering.compare(ins, shift) should be > 0
   }
+  
+  test("KeyRemoval should be before Association") {
+    val association = Association("key", "val")
+    val keyRemoval = KeyRemoval("key", "oldVal")
+    
+    ChangeOrdering.compare(keyRemoval, association) should be < 0
+    ChangeOrdering.compare(association, keyRemoval) should be > 0
+  }
 }

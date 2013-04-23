@@ -59,7 +59,7 @@ class TransformingDiffEngine(
   private def translateSelfChanges(original: Diff) = { // TODO tests (e.g. transform(Diff[[0] -> FlatChangeSet[NewValue[1->2]]]))
     val selfChanges = original.changes(EmptyPath)
 
-    selfChanges match {
+    selfChanges match { // TODO reeduce complexity of this expression
       case None => original
       case Some(changes) =>
         changes.leafChanges.foldLeft(original)((acc, pathChange) => {
