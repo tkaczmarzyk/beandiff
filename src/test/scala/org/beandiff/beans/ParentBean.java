@@ -51,6 +51,12 @@ public class ParentBean {
 	}
 	
 	public String toString() {
-		return "ParentBean[name=" + name  + ", child=" + child + "]";
+		String childStr;
+		if (child instanceof ParentBean && ((ParentBean) child).child == this) {
+			childStr = "<child>";
+		} else {
+			childStr = child.toString();
+		}
+		return "ParentBean[name=" + name  + ", child=" + childStr + "]";
 	}
 }

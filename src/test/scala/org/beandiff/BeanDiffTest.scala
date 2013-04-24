@@ -365,6 +365,22 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
 
     diff(p1, p3)
   }
+  
+  test("should correctly calculate diff of a object cycle") {
+    val p1 = new ParentBean("p1")
+    val p2 = new ParentBean("p2", p1)
+    p1.setChild(p2)
+
+    val p3 = new ParentBean("p3")
+    val p4 = new ParentBean("p4", p3)
+    p3.setChild(p4)
+
+    val d = diff(p1, p3)
+    d.leafChanges should have size 3
+    d should haveDifference("name")
+    d should haveDifference("child.name")
+    d should haveDifference("child.child")
+  }
 
   test("should detect differnces in java lists of strings") {
     new Collections {
