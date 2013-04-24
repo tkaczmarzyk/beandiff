@@ -225,6 +225,73 @@ class PlainTextDiffPresenter(
   }
   
   /**
+   * Sets the label to be displayed before a value added to a set.
+   * 
+   * Default label is 'added ', e.g.:
+   * {{{
+   * childrenSet -- added 'Child[name="test"]'
+   * }}}
+   * 
+   * @param a label to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setAdditionLabel(label: String) = {
+    additionLabel = label
+    this
+  }
+  
+  /**
+   * Sets the label to be displayed when an object doesn't
+   * have a property. It might happen for example when an instance of a base
+   * class is to be compared with an instance of a subclass (and a subclass
+   * has more fields than a base class).
+   * 
+   * Default label is 'nothing (no such path)', e.g.:
+   * {{{
+   * name -- 'Gambit' vs nothing (no such path)
+   * }}}
+   * 
+   * @param a label to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setNoPathLabel(label: String) = {
+    noPathLabel = label
+    this
+  }
+  
+  /**
+   * Sets the label to be displayed before an entry added to a map.
+   * 
+   * Default label is 'initialized with ', e.g.:
+   * {{{
+   * beansByName[abc] -- initialized with 'Bean[name=abc]'
+   * }}}
+   * 
+   * @param a label to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setAssociationLabel(label: String) = {
+    associationLabel = label
+    this
+  }
+  
+  /**
+   * Sets the label to be displayed before an entry removed from a map.
+   * 
+   * Default label is 'removed entry: ', e.g.:
+   * {{{
+   * beansByName -- removed entry: [abc] -> 'Bean[name=abc]'
+   * }}}
+   * 
+   * @param a label to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setKeyRemovalLabel(label: String) = {
+    keyRemovalLabel = label
+    this
+  }
+  
+  /**
    * Sets the label to be displayed before a value deleted from a list.
    * 
    * Default label is 'deleted ', e.g.:
@@ -266,6 +333,38 @@ class PlainTextDiffPresenter(
    */
   def setPathToStrings(dict: ClassDictionary[ToString]) = {
     pathToStrings = dict.map(toStr => (o => toStr.mkString(o)))
+    this
+  }
+  
+  /**
+   * Sets the string which will be prepended and appended to each value
+   * 
+   * Default value is a single quote ('), e.g.:
+   * {{{
+   * name -- 'foo' vs 'bar'
+   * }}}
+   * 
+   * @param a quote to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setValueQuote(quote: String) = {
+    valueQuote = quote
+    this
+  }
+  
+  /**
+   * Sets the label to be displayed before a value inserted to a list.
+   * 
+   * Default label is 'inserted ', e.g.:
+   * {{{
+   * children -- inserted 'Child[name="test"]' at [0]
+   * }}}
+   * 
+   * @param a label to set
+   * @return this presenter instance (for method chaining)
+   */
+  def setInsertionLabel(label: String) = {
+    insertionLabel = label
     this
   }
   
