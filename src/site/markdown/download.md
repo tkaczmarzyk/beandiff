@@ -6,7 +6,7 @@ Stable releases of BeanDiff are available in the Maven Central Repository. Check
 	<dependency>
 		<groupId>org.beandiff</groupId>
 		<artifactId>beandiff</artifactId>
-		<version>0.1.1</version>
+		<version>0.2.0</version>
 	</dependency>
 
 Please be aware that there may be some delay (usually no longer than 2h) before a new release is put to the central repo. If you don't want to wait or need a <tt>SNAPSHOT</tt> version, you can access it from one of the following locations:
