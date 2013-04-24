@@ -32,25 +32,31 @@ import org.beandiff.beans.scala.Child
 @RunWith(classOf[JUnitRunner])
 class TransformationConsistencyTest extends FunSuite with TransformationCheckUtils {
 
-  val enginesWithLabels = List((diffEngine, "standard engine"), (diffEngine.withEntity[Child]("name"), "Child is entity"),
-    (diffEngine.withEntity[Parent]("name").withEntity[Child]("name"), "both Parent and Child are entities"),
-    (diffEngine.withEntity[Parent]("name"), "Parent is entity"))
+  val enginesWithLabels = List((diffEngine.build(), "standard engine"), (diffEngine.withEntity[Child]("name").build(), "Child is entity"),
+    (diffEngine.withEntity[Parent]("name").withEntity[Child]("name").build(), "both Parent and Child are entities"),
+    (diffEngine.withEntity[Parent]("name").build(), "Parent is entity"))
 
-  for ((engine, label) <- enginesWithLabels) {
-    test("[" + label + "] transformTarget should transform a collection of Ints into other collection of Ints") {
-      check((a: List[Int], b: List[Int]) => transformsJCollections(a, b)(engine))
-    }
+  for (i <- 0 until 3) {
+    for ((engine, label) <- enginesWithLabels) {
+      test("[" + label + "] transformTarget should transform a collection of Ints into other collection of Ints " + i) {
+        check((a: List[Int], b: List[Int]) => transformsJLists(a, b)(engine))
+        check((a: List[Int], b: List[Int]) => transformsJSets(a, b)(engine))
+      }
 
-    test("[" + label + "] transformTarget should transform a collection of Strings into other collection of Strings") {
-      check((a: List[String], b: List[String]) => transformsJCollections(a, b)(engine))
-    }
+      test("[" + label + "] transformTarget should transform a collection of Strings into other collection of Strings " + i) {
+        check((a: List[String], b: List[String]) => transformsJLists(a, b)(engine))
+        check((a: List[String], b: List[String]) => transformsJSets(a, b)(engine))
+      }
 
-    test("[" + label + "] transformTarget should transform a collection of Ints into a collection of Strings") {
-      check((a: List[Int], b: List[String]) => transformsJCollections(a, b)(engine))
-    }
+      test("[" + label + "] transformTarget should transform a collection of Ints into a collection of Strings " + i) {
+        check((a: List[Int], b: List[String]) => transformsJLists(a, b)(engine))
+        check((a: List[Int], b: List[String]) => transformsJSets(a, b)(engine))
+      }
 
-    test("[" + label + "] transformTarget should transform a collection of Parent beans into other collection of Parent beans") {
-      check((a: List[Parent], b: List[Parent]) => transformsJCollections(a, b)(engine))
+      test("[" + label + "] transformTarget should transform a collection of Parent beans into other collection of Parent beans " + i) {
+        check((a: List[Parent], b: List[Parent]) => transformsJLists(a, b)(engine))
+        check((a: List[Parent], b: List[Parent]) => transformsJSets(a, b)(engine))
+      }
     }
   }
 }

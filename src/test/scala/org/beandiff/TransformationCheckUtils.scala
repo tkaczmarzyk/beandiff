@@ -35,7 +35,7 @@ trait TransformationCheckUtils extends Checkers {
     transformsJLists(a, b) && transformsJSets(a, b)
   }
   
-  private def transformsJLists[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
+  def transformsJLists[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
     val l1 = JList(a: _*)
     val l2 = JList(b: _*)
 
@@ -43,7 +43,7 @@ trait TransformationCheckUtils extends Checkers {
     l1 == l2
   }
   
-  private def transformsJSets[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
+  def transformsJSets[T](a: List[T], b: List[T])(implicit engine: DiffEngine): Boolean = {
     val s1 = JSet(a: _*)
     val s2 = JSet(b: _*)
     
