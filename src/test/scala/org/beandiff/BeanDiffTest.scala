@@ -672,4 +672,15 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       diff(bart, JList(1, 2)).leafChanges should be === List((EmptyPath, NewValue(Self, bart, JList(1, 2))))
     }
   }
+  
+  ignore("should not merge Deletion+Removal into subdiff when classes are different (unless configured otherwise)") {
+    val o1 = new Object {
+      val name = "o1"
+    }
+    val o2 = new Object {
+      val name = "o2"
+    }
+    
+    diff(JList(o1), JList(o2)) should be === Diff(JList(o1), Deletion(o1, 0), Insertion(o2, 0))
+  }
 }
