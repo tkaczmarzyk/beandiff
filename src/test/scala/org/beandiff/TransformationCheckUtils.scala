@@ -28,6 +28,7 @@ import org.scalacheck.Gen
 import org.scalatest.prop.Checkers
 import org.beandiff.test.JSet
 import org.beandiff.core.DiffEngine
+import org.beandiff.test.JMap
 
 trait TransformationCheckUtils extends Checkers {
 
@@ -49,6 +50,14 @@ trait TransformationCheckUtils extends Checkers {
     
     engine.calculateDiff(s1, s2).transformTarget()
     s1 == s2
+  }
+  
+  def transformsJMaps[K, V](a: Map[K, V], b: Map[K, V])(implicit engine: DiffEngine): Boolean = {
+    val m1 = JMap(a.toList: _*)
+    val m2 = JMap(b.toList: _*)
+    
+    engine.calculateDiff(m1, m2).transformTarget()
+    m1 == m2
   }
 
   val genName = Gen.oneOf("a", "b", "c", "d")
@@ -72,5 +81,22 @@ trait TransformationCheckUtils extends Checkers {
       })
   } yield Parent(name, JList(children: _*))
 
+  val genMap = for {
+    numEntries <- Gen.choose(0, 20)
+    keys = Gen.choose(-10, 10).take(numEntries)
+    parents = genParent.take(numEntries)
+    entries = keys.zip(parents)
+  } yield Map(entries: _*)
+  
   implicit val arbitraryParent = Arbitrary(Gen.resize(5, Gen.containerOf[List, Parent](genParent)))
+  
+  implicit val arbitraryMap = Arbitrary(genMap)
+  
+  implicit class RichGen[T](gen: Gen[T]) {
+    def take(n: Int): Seq[T] = {
+      val elems = for (i <- 0 until n)
+        yield gen.apply(new Gen.Params).getOrElse(null)
+      elems.asInstanceOf[Seq[T]] // FIXME
+    }
+  }
 }
