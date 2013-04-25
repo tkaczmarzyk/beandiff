@@ -20,6 +20,7 @@
 package org.beandiff.core.model
 
 import org.beandiff.TypeDefs.JMap
+import org.beandiff.support.ClassDictionary
 
 
 case class KeyProperty(key: Any) extends Property {
@@ -48,4 +49,8 @@ case class KeyProperty(key: Any) extends Property {
   override def toString() = mkString
   
   override def mkString = "[" + key + "]"
+  
+  override def mkString(toStrs: ClassDictionary[Any => String]) = {
+    "[" + toStrs(key.getClass)(key) + "]"
+  }
 }

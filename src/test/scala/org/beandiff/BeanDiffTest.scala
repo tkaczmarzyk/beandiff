@@ -61,6 +61,7 @@ import org.beandiff.core.model.change.Association
 import org.beandiff.core.model.change.KeyRemoval
 import org.beandiff.core.model.Self
 import org.beandiff.core.model.ElementProperty
+import org.beandiff.core.model.KeyProperty
 
 
 @RunWith(classOf[JUnitRunner])
@@ -687,6 +688,13 @@ class BeanDiffTest extends FunSuite with ShouldMatchers {
       diff(JList(1, 2), bart).leafChanges should be === List((EmptyPath, NewValue(Self, JList(1, 2), bart)))
       diff(bart, JList(1, 2)).leafChanges should be === List((EmptyPath, NewValue(Self, bart, JList(1, 2))))
     }
+  }
+  
+  test("should detect difference in values associated with a null-key") {
+    val m1 = JMap((null, "a"))
+    val m2 = JMap((null, "b"))
+    
+    diff(m1, m2).leafChanges should be === List((EmptyPath, NewValue(KeyProperty(null), "a", "b")))
   }
   
   ignore("should not merge Deletion+Removal into subdiff when classes are different (unless configured otherwise)") {

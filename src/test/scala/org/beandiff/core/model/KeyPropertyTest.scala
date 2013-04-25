@@ -25,6 +25,7 @@ import org.scalatest.FunSuite
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.matchers.ShouldMatchers
+import org.beandiff.support.ClassDictionary
 
 
 @RunWith(classOf[JUnitRunner])
@@ -52,5 +53,10 @@ class KeyPropertyTest extends FunSuite with ShouldMatchers {
     KeyProperty("b").setValue(map, 2)
     
     map.get("b") should be === 2
+  }
+  
+  test("should present the key using provided ToString") {
+    val toStrs = new ClassDictionary((o: Any) => "testStr")
+    KeyProperty(new Object).mkString(toStrs) should be === "[testStr]"
   }
 }

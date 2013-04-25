@@ -48,7 +48,7 @@ class ElementPropertyTest extends FunSuite with ShouldMatchers {
     ElementProperty(elem).mkString should be === "[]"
   }
   
-  test("should use present the element using provided toString") {
+  test("should present the element using provided toString") {
     val dict = new ClassDictionary((o: Any) => "elem")
     ElementProperty(elem).mkString(dict) should be === "[elem]"
   }
