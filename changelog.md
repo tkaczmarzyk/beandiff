@@ -1,4 +1,4 @@
-## 0.2.0 (2013-04-25)
+## 0.2.0 (2013-04-26)
 
 * switched to Scala 2.10
 * handling `java.util.Map` targets
